@@ -249,9 +249,15 @@ test(
           }
 
           const choose = async (name, value) => {
-            const select = document.querySelector('.ml-generator-config-panel select[name="' + name + '"]');
-            if (!select) throw new Error("Missing select: " + name);
-            const option = [...select.options].find((item) => item.value === value);
+            let select;
+            let option;
+            for (let attempt = 0; attempt < 40; attempt += 1) {
+              select = document.querySelector('.ml-generator-config-panel select[name="' + name + '"]');
+              option = select && [...select.options].find((item) => item.value === value);
+              if (select && option) break;
+              await new Promise((resolve) => setTimeout(resolve, 50));
+            }
+            if (!select) throw new Error("Missing select after render wait: " + name);
             if (!option) throw new Error("Missing option " + value + " for " + name);
             select.value = value;
             select.dispatchEvent(new Event("change", { bubbles: true }));
@@ -271,12 +277,19 @@ test(
             await pause();
           };
 
+          const setMode = async (label) => {
+            for (let attempt = 0; attempt < 40; attempt += 1) {
+              const button = [...document.querySelectorAll(".ml-generator-mode button")]
+                .find((item) => item.textContent.trim() === label);
+              if (button?.getAttribute("aria-pressed") === "true") return;
+              button?.click();
+              await new Promise((resolve) => setTimeout(resolve, 50));
+            }
+            throw new Error("Mode did not become active: " + label);
+          };
+
           await choose("templateId", "yolo-detection-training");
-          const productionButton = [...document.querySelectorAll(".ml-generator-mode button")]
-            .find((button) => button.textContent.trim() === "Production-oriented");
-          if (!productionButton) throw new Error("Missing Production-oriented mode button");
-          productionButton.click();
-          await pause();
+          await setMode("Production-oriented");
           await choose("task", "train-export");
           await choose("modelSize", "extra-large");
           await choose("environment", "raspberry-pi");
