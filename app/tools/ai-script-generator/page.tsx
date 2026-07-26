@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useReducer, useRef } from "react";
 import Link from "next/link";
+
 import { SectionHeading } from "@/components/SectionHeading";
 import {
   ConfigurationField,
@@ -13,62 +14,105 @@ import {
   type GeneratorInfoTab,
 } from "@/components/tools/ml-generator/GeneratorInfoTabs";
 import {
-  ML_TEMPLATES,
-  buildMlGeneratorResult,
-  getDefaultConfig,
-  getFieldOptions,
-  getVisibleFields,
-  normalizeTemplateConfig,
-} from "@/lib/tools/ml-templates";
-
-type Mode = "starter" | "production";
+  type LoadedMlRecipe,
+  type MlGeneratorMode,
+  type MlGeneratorResult,
+  useMlGeneratorRecipe,
+} from "@/lib/hooks/useMlGeneratorRecipe";
+import { ML_RECIPE_CATALOG } from "@/lib/tools/ml-generator/catalog";
+import {
+  getRecipeDefaultConfig,
+  getRecipeFieldOptions,
+  getRecipeVisibleFields,
+  normalizeRecipeConfig,
+} from "@/lib/tools/ml-generator/engine";
+import { prefetchRecipe } from "@/lib/tools/ml-generator/load-recipe";
+import { ML_SOURCES } from "@/lib/tools/ml-generator/sources";
 
 type FieldMetadata = GeneratorField & {
-  disabledWhen?: (config: Record<string, unknown>, mode: Mode) => boolean;
+  disabledWhen?: (
+    config: Record<string, unknown>,
+    mode: MlGeneratorMode,
+  ) => boolean;
 };
 
-type TemplateMetadata = {
+type RecipeManifest = {
   id: string;
-  name: string;
+  title: string;
   shortDescription: string;
-  category: string;
-  fields: FieldMetadata[];
+  domainId: string;
+  taskId: string;
+  frameworkId: string;
+  sourceRefs: string[];
 };
 
 type GeneratorState = {
-  mode: Mode;
+  mode: MlGeneratorMode;
   templateId: string;
+  recipe: LoadedMlRecipe | null;
   config: Record<string, unknown>;
   rawNumericValues: Record<string, string>;
   activeInfoTab: GeneratorInfoTab;
   copyStatus: "idle" | "copied" | "failed";
   correctionMessage: string;
+  reloadToken: number;
 };
 
 type GeneratorAction =
-  | { type: "set-mode"; mode: Mode }
+  | { type: "recipe-loaded"; recipe: LoadedMlRecipe }
+  | { type: "set-mode"; mode: MlGeneratorMode }
   | { type: "set-template"; templateId: string }
   | { type: "set-field"; fieldId: string; value: string | boolean }
   | { type: "set-raw-number"; fieldId: string; value: string }
   | { type: "commit-number"; fieldId: string }
   | { type: "set-tab"; tab: GeneratorInfoTab }
   | { type: "set-copy-status"; status: GeneratorState["copyStatus"] }
+  | { type: "retry-recipe" }
   | { type: "clear-correction" };
 
-const TEMPLATES = ML_TEMPLATES as unknown as TemplateMetadata[];
+type SourceMetadata = {
+  id: string;
+  title: string;
+  owner: string;
+  url: string;
+  sourceType: string;
+  licenseStatus: string;
+  licenseName: string;
+  versionOrDate: string;
+  verifiedAt: string;
+};
+
+const TEMPLATES = ML_RECIPE_CATALOG as unknown as RecipeManifest[];
+
+const EMPTY_RESULT: MlGeneratorResult = {
+  templateId: "",
+  filename: "",
+  code: "",
+  dependencies: [],
+  dataset: {},
+  metrics: [],
+  artifacts: [],
+  hardware: {},
+  deployment: [],
+  notes: [],
+  warnings: [],
+  readiness: {},
+  config: {},
+  validationErrors: {},
+};
 
 function getTemplateMetadata(templateId: string) {
-  return TEMPLATES.find((template) => template.id === templateId) ?? TEMPLATES[0];
+  return TEMPLATES.find((template) => template.id === templateId)
+    ?? TEMPLATES[0];
 }
 
 function buildRawNumericValues(
-  templateId: string,
+  recipe: LoadedMlRecipe | null,
   config: Record<string, unknown>,
 ) {
-  const template = getTemplateMetadata(templateId);
-  if (!template) return {};
+  if (!recipe) return {};
   return Object.fromEntries(
-    template.fields
+    recipe.fields
       .filter((field) => field.inputType === "number")
       .map((field) => [field.id, String(config[field.id] ?? "")]),
   );
@@ -79,33 +123,32 @@ function withCommittedConfig(
   inputConfig: Record<string, unknown>,
   correctionMessage = "",
 ): GeneratorState {
-  const config = normalizeTemplateConfig(
-    state.templateId,
+  if (!state.recipe) return state;
+  const config = normalizeRecipeConfig(
+    state.recipe,
     inputConfig,
     state.mode,
   ) as Record<string, unknown>;
   return {
     ...state,
     config,
-    rawNumericValues: buildRawNumericValues(state.templateId, config),
+    rawNumericValues: buildRawNumericValues(state.recipe, config),
     copyStatus: "idle",
     correctionMessage,
   };
 }
 
 function createInitialState(): GeneratorState {
-  const templateId = TEMPLATES[0]?.id ?? "";
-  const config = templateId
-    ? getDefaultConfig(templateId, "starter") as Record<string, unknown>
-    : {};
   return {
     mode: "starter",
-    templateId,
-    config,
-    rawNumericValues: buildRawNumericValues(templateId, config),
+    templateId: TEMPLATES[0]?.id ?? "",
+    recipe: null,
+    config: {},
+    rawNumericValues: {},
     activeInfoTab: "dependencies",
     copyStatus: "idle",
     correctionMessage: "",
+    reloadToken: 0,
   };
 }
 
@@ -113,20 +156,51 @@ function generatorReducer(
   state: GeneratorState,
   action: GeneratorAction,
 ): GeneratorState {
+  if (action.type === "recipe-loaded") {
+    if (action.recipe.id !== state.templateId) return state;
+    const baseConfig = Object.keys(state.config).length > 0
+      ? state.config
+      : getRecipeDefaultConfig(
+        action.recipe,
+        state.mode,
+      ) as Record<string, unknown>;
+    const config = normalizeRecipeConfig(
+      action.recipe,
+      baseConfig,
+      state.mode,
+    ) as Record<string, unknown>;
+    return {
+      ...state,
+      recipe: action.recipe,
+      config,
+      rawNumericValues: buildRawNumericValues(action.recipe, config),
+      correctionMessage: state.correctionMessage || "Recipe ready.",
+    };
+  }
+
   if (action.type === "set-mode") {
     if (action.mode === state.mode) return state;
-    const template = getTemplateMetadata(state.templateId);
-    const defaults = getDefaultConfig(
-      state.templateId,
+    if (!state.recipe) {
+      return {
+        ...state,
+        mode: action.mode,
+        correctionMessage: "The selected mode will apply when the recipe is ready.",
+      };
+    }
+    const defaults = getRecipeDefaultConfig(
+      state.recipe,
       action.mode,
     ) as Record<string, unknown>;
     const sharedValues = Object.fromEntries(
-      (template?.fields ?? [])
-        .filter((field) => field.modes.includes("starter") && field.modes.includes("production"))
+      state.recipe.fields
+        .filter((field) =>
+          field.modes.includes("starter")
+          && field.modes.includes("production")
+        )
         .map((field) => [field.id, state.config[field.id]]),
     );
-    const config = normalizeTemplateConfig(
-      state.templateId,
+    const config = normalizeRecipeConfig(
+      state.recipe,
       { ...defaults, ...sharedValues },
       action.mode,
     ) as Record<string, unknown>;
@@ -134,7 +208,7 @@ function generatorReducer(
       ...state,
       mode: action.mode,
       config,
-      rawNumericValues: buildRawNumericValues(state.templateId, config),
+      rawNumericValues: buildRawNumericValues(state.recipe, config),
       copyStatus: "idle",
       correctionMessage: action.mode === "production"
         ? "Production-oriented defaults loaded; shared choices were preserved."
@@ -143,18 +217,16 @@ function generatorReducer(
   }
 
   if (action.type === "set-template") {
-    const config = getDefaultConfig(
-      action.templateId,
-      state.mode,
-    ) as Record<string, unknown>;
+    if (action.templateId === state.templateId) return state;
     return {
       ...state,
       templateId: action.templateId,
-      config,
-      rawNumericValues: buildRawNumericValues(action.templateId, config),
+      recipe: null,
+      config: {},
+      rawNumericValues: {},
       activeInfoTab: "dependencies",
       copyStatus: "idle",
-      correctionMessage: "Template defaults loaded.",
+      correctionMessage: "Loading template configuration.",
     };
   }
 
@@ -177,20 +249,28 @@ function generatorReducer(
   }
 
   if (action.type === "commit-number") {
-    const template = getTemplateMetadata(state.templateId);
-    const field = template?.fields.find((item) => item.id === action.fieldId);
-    if (!field || field.inputType !== "number") return state;
+    const field = state.recipe?.fields.find(
+      (item) => item.id === action.fieldId,
+    );
+    if (!state.recipe || !field || field.inputType !== "number") return state;
 
     const rawValue = state.rawNumericValues[action.fieldId] ?? "";
     const previousValue = Number(state.config[action.fieldId]);
     const defaultValue = Number(
-      (getDefaultConfig(state.templateId, state.mode) as Record<string, unknown>)[field.id],
+      (
+        getRecipeDefaultConfig(
+          state.recipe,
+          state.mode,
+        ) as Record<string, unknown>
+      )[field.id],
     );
     let numericValue = Number(rawValue);
     let corrected = false;
 
     if (!rawValue.trim() || !Number.isFinite(numericValue)) {
-      numericValue = Number.isFinite(previousValue) ? previousValue : defaultValue;
+      numericValue = Number.isFinite(previousValue)
+        ? previousValue
+        : defaultValue;
       corrected = true;
     }
     if (typeof field.min === "number" && numericValue < field.min) {
@@ -219,6 +299,14 @@ function generatorReducer(
   if (action.type === "set-copy-status") {
     return { ...state, copyStatus: action.status };
   }
+  if (action.type === "retry-recipe") {
+    return {
+      ...state,
+      recipe: null,
+      reloadToken: state.reloadToken + 1,
+      correctionMessage: "Retrying recipe load.",
+    };
+  }
   if (action.type === "clear-correction") {
     return { ...state, correctionMessage: "" };
   }
@@ -226,38 +314,85 @@ function generatorReducer(
 }
 
 export default function AIScriptGeneratorPage() {
-  const [state, dispatch] = useReducer(generatorReducer, undefined, createInitialState);
+  const [state, dispatch] = useReducer(
+    generatorReducer,
+    undefined,
+    createInitialState,
+  );
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const result = useMemo(
-    () => buildMlGeneratorResult(state.templateId, state.config, state.mode),
-    [state.templateId, state.config, state.mode],
-  );
-  const validationErrors = result.validationErrors as Record<string, string>;
-  const template = getTemplateMetadata(state.templateId);
-  const visibleFields = useMemo(
-    () => getVisibleFields(
-      state.templateId,
-      state.config,
-      state.mode,
-    ) as FieldMetadata[],
-    [state.templateId, state.config, state.mode],
-  );
-  const primaryFields = visibleFields.filter((field) => field.modes.includes("starter"));
-  const advancedFields = visibleFields.filter((field) => !field.modes.includes("starter"));
-  const runtimeOptions = getFieldOptions(
+  const loaded = useMlGeneratorRecipe(
     state.templateId,
-    "environment",
     state.config,
     state.mode,
-  ) as Array<{ value: string; label: string }>;
-  const runtimeLabel = runtimeOptions.find(
-    (option) => option.value === state.config.environment,
-  )?.label ?? String(state.config.environment ?? "Not selected");
+    state.reloadToken,
+  );
+
+  useEffect(() => {
+    const defaultRecipeId = TEMPLATES[0]?.id;
+    if (defaultRecipeId) prefetchRecipe(defaultRecipeId);
+  }, []);
+
+  useEffect(() => {
+    if (
+      loaded.status === "ready"
+      && loaded.recipe.id === state.templateId
+      && state.recipe !== loaded.recipe
+    ) {
+      dispatch({ type: "recipe-loaded", recipe: loaded.recipe });
+    }
+  }, [loaded, state.recipe, state.templateId]);
 
   useEffect(() => () => {
     if (copyTimer.current) clearTimeout(copyTimer.current);
   }, []);
+
+  const template = getTemplateMetadata(state.templateId);
+  const recipeReady =
+    loaded.status === "ready"
+    && state.recipe?.id === state.templateId;
+  const displayStatus =
+    loaded.status === "error"
+      ? "error"
+      : recipeReady
+        ? "ready"
+        : loaded.status === "idle"
+          ? "idle"
+          : "loading";
+  const result = loaded.result ?? EMPTY_RESULT;
+  const validationErrors = result.validationErrors;
+
+  const visibleFields = useMemo(
+    () => state.recipe
+      ? getRecipeVisibleFields(
+        state.recipe,
+        state.config,
+        state.mode,
+      ) as FieldMetadata[]
+      : [],
+    [state.config, state.mode, state.recipe],
+  );
+  const primaryFields = visibleFields.filter((field) =>
+    field.modes.includes("starter")
+  );
+  const advancedFields = visibleFields.filter((field) =>
+    !field.modes.includes("starter")
+  );
+  const runtimeOptions = state.recipe
+    ? getRecipeFieldOptions(
+      state.recipe,
+      "environment",
+      state.config,
+      state.mode,
+    ) as Array<{ value: string; label: string }>
+    : [];
+  const runtimeLabel = runtimeOptions.find(
+    (option) => option.value === state.config.environment,
+  )?.label ?? String(state.config.environment ?? "Loading");
+  const sources = state.recipe
+    ? ML_SOURCES.filter((source: SourceMetadata) =>
+      state.recipe?.sourceRefs.includes(source.id)
+    ) as unknown as SourceMetadata[]
+    : [];
 
   const handleCopy = async () => {
     if (!result.code) return;
@@ -276,7 +411,10 @@ export default function AIScriptGeneratorPage() {
   if (!template) {
     return (
       <section className="section shell tool-page">
-        <SectionHeading eyebrow="Engineering utility" title="AI Script Generator" />
+        <SectionHeading
+          eyebrow="Engineering utility"
+          title="AI Script Generator"
+        />
         <p>No script templates are currently available.</p>
       </section>
     );
@@ -289,14 +427,19 @@ export default function AIScriptGeneratorPage() {
       field={field}
       value={state.config[field.id]}
       rawNumericValue={state.rawNumericValues[field.id]}
-      options={getFieldOptions(
-        state.templateId,
-        field.id,
-        state.config,
-        state.mode,
-      ) as Array<{ value: string; label: string; disabled?: boolean }>}
+      options={state.recipe
+        ? getRecipeFieldOptions(
+          state.recipe,
+          field.id,
+          state.config,
+          state.mode,
+        ) as Array<{ value: string; label: string; disabled?: boolean }>
+        : []}
       error={validationErrors[field.id]}
-      disabled={field.disabledWhen?.(state.config, state.mode) ?? false}
+      disabled={
+        displayStatus !== "ready"
+        || (field.disabledWhen?.(state.config, state.mode) ?? false)
+      }
       onValueChange={(fieldId, value) => dispatch({
         type: "set-field",
         fieldId,
@@ -307,7 +450,10 @@ export default function AIScriptGeneratorPage() {
         fieldId,
         value,
       })}
-      onNumericCommit={(fieldId) => dispatch({ type: "commit-number", fieldId })}
+      onNumericCommit={(fieldId) => dispatch({
+        type: "commit-number",
+        fieldId,
+      })}
     />
   );
 
@@ -317,20 +463,34 @@ export default function AIScriptGeneratorPage() {
         <Link href="/tools" className="text-link">
           <span aria-hidden="true">&larr;</span> Back to Tools
         </Link>
-        <SectionHeading eyebrow="Engineering utility" title="AI Script Generator" />
+        <SectionHeading
+          eyebrow="Engineering utility"
+          title="AI Script Generator"
+        />
         <p className="section-intro">
-          Configure complete Python workflows for YOLO, sensor intelligence, and edge AI without memorizing framework function syntax.
+          Configure complete Python workflows for YOLO, sensor intelligence,
+          and edge AI without memorizing framework function syntax.
         </p>
       </div>
 
       <div className="ml-generator-page ml-generator-grid">
-        <aside className="ml-generator-config-panel" aria-label="Script configuration">
+        <aside
+          className="ml-generator-config-panel"
+          aria-label="Script configuration"
+          aria-busy={displayStatus === "loading"}
+        >
           <div className="ml-generator-panel-heading">
-            <span className="ml-generator-panel-kicker">Configuration vector</span>
+            <span className="ml-generator-panel-kicker">
+              Configuration vector
+            </span>
             <p>{template.shortDescription}</p>
           </div>
 
-          <div className="ml-generator-mode" role="group" aria-label="Generator mode">
+          <div
+            className="ml-generator-mode"
+            role="group"
+            aria-label="Generator mode"
+          >
             <button
               type="button"
               className={state.mode === "starter" ? "is-active" : ""}
@@ -343,7 +503,10 @@ export default function AIScriptGeneratorPage() {
               type="button"
               className={state.mode === "production" ? "is-active" : ""}
               aria-pressed={state.mode === "production"}
-              onClick={() => dispatch({ type: "set-mode", mode: "production" })}
+              onClick={() => dispatch({
+                type: "set-mode",
+                mode: "production",
+              })}
             >
               Production-oriented
             </button>
@@ -362,25 +525,38 @@ export default function AIScriptGeneratorPage() {
             >
               {TEMPLATES.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.name}
+                  {item.title}
                 </option>
               ))}
             </select>
-            <p className="ml-generator-field-help">Choose the workflow family; compatible fields update immediately.</p>
+            <p className="ml-generator-field-help">
+              Choose the workflow family; its generator loads only when selected.
+            </p>
           </div>
 
-          <div className="ml-generator-field-stack">
-            {primaryFields.map(renderField)}
-          </div>
-
-          {state.mode === "production" && advancedFields.length > 0 ? (
-            <details className="ml-generator-advanced" open>
-              <summary>Advanced training and export controls</summary>
+          {state.recipe ? (
+            <>
               <div className="ml-generator-field-stack">
-                {advancedFields.map(renderField)}
+                {primaryFields.map(renderField)}
               </div>
-            </details>
-          ) : null}
+
+              {state.mode === "production" && advancedFields.length > 0 ? (
+                <details className="ml-generator-advanced" open>
+                  <summary>Advanced training and export controls</summary>
+                  <div className="ml-generator-field-stack">
+                    {advancedFields.map(renderField)}
+                  </div>
+                </details>
+              ) : null}
+            </>
+          ) : (
+            <div className="ml-generator-config-loading" role="status">
+              <span />
+              <span />
+              <span />
+              <p>Loading compatible configuration controls?</p>
+            </div>
+          )}
 
           <p className="ml-generator-correction" aria-live="polite">
             {state.correctionMessage}
@@ -393,33 +569,55 @@ export default function AIScriptGeneratorPage() {
           style={{ minWidth: 0 }}
         >
           <GeneratorCodePanel
+            status={displayStatus}
             filename={result.filename}
             code={result.code}
             validationErrors={validationErrors}
             warnings={result.warnings}
+            errorMessage={loaded.error?.message}
             copyStatus={state.copyStatus}
             onCopy={handleCopy}
+            onRetry={() => dispatch({ type: "retry-recipe" })}
           />
 
           <dl className="ml-generator-readiness" aria-label="Pipeline readiness">
-            <div><dt>Data shape</dt><dd>{result.dataset.title ?? "Dataset"}</dd></div>
-            <div><dt>Primary metric</dt><dd>{result.metrics[0] ?? "Configured"}</dd></div>
-            <div><dt>Compute target</dt><dd>{runtimeLabel}</dd></div>
-            <div><dt>Deployment</dt><dd>{result.deployment[0] ?? "Python artifact"}</dd></div>
+            <div>
+              <dt>Data shape</dt>
+              <dd>{result.dataset.title ?? "Loading recipe"}</dd>
+            </div>
+            <div>
+              <dt>Primary metric</dt>
+              <dd>{result.metrics[0] ?? "Loading"}</dd>
+            </div>
+            <div>
+              <dt>Compute target</dt>
+              <dd>{runtimeLabel}</dd>
+            </div>
+            <div>
+              <dt>Deployment</dt>
+              <dd>{result.deployment[0] ?? "Python artifact"}</dd>
+            </div>
           </dl>
 
-          <GeneratorInfoTabs
-            templateId={state.templateId}
-            activeTab={state.activeInfoTab}
-            dependencies={result.dependencies}
-            dataset={result.dataset}
-            hardware={result.hardware}
-            metrics={result.metrics}
-            deployment={result.deployment}
-            notes={result.notes}
-            warnings={result.warnings}
-            onTabChange={(tab) => dispatch({ type: "set-tab", tab })}
-          />
+          {recipeReady ? (
+            <GeneratorInfoTabs
+              templateId={state.templateId}
+              activeTab={state.activeInfoTab}
+              dependencies={result.dependencies}
+              dataset={result.dataset}
+              hardware={result.hardware}
+              metrics={result.metrics}
+              deployment={result.deployment}
+              notes={result.notes}
+              warnings={result.warnings}
+              sources={sources}
+              onTabChange={(tab) => dispatch({ type: "set-tab", tab })}
+            />
+          ) : (
+            <div className="ml-generator-info ml-generator-info-loading">
+              Recipe guidance will appear when loading completes.
+            </div>
+          )}
         </section>
       </div>
     </section>

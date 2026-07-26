@@ -2037,3 +2037,143 @@ body::before { border-width: 4px; }
     gap: 4px;
   }
 }
+
+/* --- AI Script Generator async recipe states --- */
+.ml-generator-config-loading {
+  display: grid;
+  min-height: 220px;
+  align-content: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.ml-generator-config-loading span {
+  display: block;
+  width: 100%;
+  height: 12px;
+  background: linear-gradient(90deg, #17203a 0%, #29365a 50%, #17203a 100%);
+  background-size: 200% 100%;
+  animation: ml-generator-scan 1.1s linear infinite;
+}
+
+.ml-generator-config-loading span:nth-child(2) {
+  width: 82%;
+}
+
+.ml-generator-config-loading span:nth-child(3) {
+  width: 64%;
+}
+
+.ml-generator-config-loading p,
+.ml-generator-info-loading {
+  color: #8995ba;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.ml-generator-code-loading > span {
+  color: var(--pixel-cyan);
+}
+
+.ml-generator-code-error > span {
+  color: #ef7f83;
+}
+
+.ml-generator-retry {
+  min-height: 44px;
+  padding: 10px 16px;
+  margin: 16px auto 0;
+  color: #061017;
+  background: var(--pixel-gold);
+  border: 1px solid #fff0ad;
+  box-shadow: 3px 3px 0 #02030a;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.ml-generator-info-loading {
+  display: grid;
+  min-height: 188px;
+  padding: 24px;
+  place-items: center;
+  text-align: center;
+}
+
+.ml-generator-resources {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ml-generator-resources li {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 14px;
+  background: #080c19;
+  border: 1px solid #2d3658;
+}
+
+.ml-generator-resources a {
+  width: fit-content;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--pixel-cyan);
+  font-family: var(--font-mono);
+  font-weight: 800;
+}
+
+.ml-generator-resources span {
+  color: #d9dff0;
+  font-size: 0.78rem;
+}
+
+.ml-generator-resources p,
+.ml-generator-resources small {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ml-generator-resources small {
+  color: #7f8bb0;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+@keyframes ml-generator-scan {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ml-generator-config-loading span {
+    animation: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .ml-generator-grid {
+    gap: 12px;
+  }
+
+  .ml-generator-config-panel {
+    padding: 14px;
+  }
+
+  .ml-generator-actions,
+  .ml-generator-tab-panel {
+    padding: 12px;
+  }
+
+  .ml-generator-code-empty {
+    min-height: 220px;
+    padding: 18px;
+  }
+}

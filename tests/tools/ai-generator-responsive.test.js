@@ -212,6 +212,7 @@ test(
     let client;
 
     const viewports = [
+      { width: 320, height: 700 },
       { width: 390, height: 844 },
       { width: 768, height: 1024 },
       { width: 900, height: 900 },
@@ -246,6 +247,13 @@ test(
           for (let attempt = 0; attempt < 60; attempt += 1) {
             if (document.querySelector('.ml-generator-config-panel select[name="templateId"]')) break;
             await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+          for (let attempt = 0; attempt < 60; attempt += 1) {
+            if (document.querySelector('.ml-generator-code-panel[data-load-state="ready"]')) break;
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+          if (!document.querySelector('.ml-generator-code-panel[data-load-state="ready"]')) {
+            throw new Error("Generator recipe did not reach the ready state.");
           }
 
           const choose = async (name, value) => {
@@ -316,13 +324,21 @@ test(
           page: Boolean(document.querySelector(".ml-generator-page")),
           config: Boolean(document.querySelector(".ml-generator-config-panel")),
           output: Boolean(document.querySelector(".ml-generator-output-panel")),
+          loadState: document.querySelector(".ml-generator-code-panel")
+            ?.getAttribute("data-load-state") ?? null,
           runtimeLabel: [...document.querySelectorAll("label")]
             .some((label) => label.textContent.includes("Runtime target"))
         })`,
       });
       assert.deepEqual(
         semanticsEvaluation.result.value,
-        { page: true, config: true, output: true, runtimeLabel: true },
+        {
+          page: true,
+          config: true,
+          output: true,
+          loadState: "ready",
+          runtimeLabel: true,
+        },
       );
 
       for (const viewport of viewports) {

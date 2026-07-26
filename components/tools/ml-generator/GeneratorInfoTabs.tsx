@@ -8,6 +8,7 @@ export type GeneratorInfoTab =
   | "hardware"
   | "metrics"
   | "deployment"
+  | "resources"
   | "notes";
 
 type Dependency = {
@@ -30,6 +31,18 @@ type HardwareMetadata = {
   edge?: string;
 };
 
+type SourceMetadata = {
+  id: string;
+  title: string;
+  owner: string;
+  url: string;
+  sourceType: string;
+  licenseStatus: string;
+  licenseName: string;
+  versionOrDate: string;
+  verifiedAt: string;
+};
+
 type GeneratorInfoTabsProps = {
   templateId: string;
   activeTab: GeneratorInfoTab;
@@ -40,6 +53,7 @@ type GeneratorInfoTabsProps = {
   deployment: string[];
   notes: string[];
   warnings: string[];
+  sources: SourceMetadata[];
   onTabChange: (tab: GeneratorInfoTab) => void;
 };
 
@@ -49,6 +63,7 @@ const TABS: Array<{ id: GeneratorInfoTab; label: string }> = [
   { id: "hardware", label: "Hardware" },
   { id: "metrics", label: "Metrics" },
   { id: "deployment", label: "Deployment" },
+  { id: "resources", label: "Resources" },
   { id: "notes", label: "Notes" },
 ];
 
@@ -62,6 +77,7 @@ export function GeneratorInfoTabs({
   deployment,
   notes,
   warnings,
+  sources,
   onTabChange,
 }: GeneratorInfoTabsProps) {
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -113,10 +129,14 @@ export function GeneratorInfoTabs({
         <strong>{dataset.title}</strong>
         <p>{dataset.summary}</p>
         {dataset.structure ? <pre>{dataset.structure}</pre> : null}
-        {dataset.labelFormat ? <p><b>Labels:</b> {dataset.labelFormat}</p> : null}
+        {dataset.labelFormat ? (
+          <p><b>Labels:</b> {dataset.labelFormat}</p>
+        ) : null}
         {dataset.examplePaths?.length ? (
           <ul>
-            {dataset.examplePaths.map((path) => <li key={path}><code>{path}</code></li>)}
+            {dataset.examplePaths.map((path) => (
+              <li key={path}><code>{path}</code></li>
+            ))}
           </ul>
         ) : null}
       </div>
@@ -126,8 +146,32 @@ export function GeneratorInfoTabs({
       <dl className="ml-generator-hardware-info">
         <div><dt>Minimum</dt><dd>{hardware.minimum}</dd></div>
         <div><dt>Recommended</dt><dd>{hardware.recommended}</dd></div>
-        {hardware.edge ? <div><dt>Edge target</dt><dd>{hardware.edge}</dd></div> : null}
+        {hardware.edge ? (
+          <div><dt>Edge target</dt><dd>{hardware.edge}</dd></div>
+        ) : null}
       </dl>
+    );
+  } else if (activeTab === "resources") {
+    panelContent = (
+      <ul className="ml-generator-resources">
+        {sources.map((source) => (
+          <li key={source.id}>
+            <a href={source.url} target="_blank" rel="noreferrer">
+              {source.title}
+            </a>
+            <span>{source.owner}</span>
+            <p>
+              {source.licenseStatus === "link-only-noncommercial-course"
+                ? "Link-only curriculum reference"
+                : source.licenseName}
+            </p>
+            <small>
+              {source.sourceType} ? {source.versionOrDate} ? Verified{" "}
+              {source.verifiedAt}
+            </small>
+          </li>
+        ))}
+      </ul>
     );
   } else {
     const entries = activeTab === "metrics"
@@ -147,7 +191,11 @@ export function GeneratorInfoTabs({
 
   return (
     <section className="ml-generator-info" aria-label="Generated script guidance">
-      <div className="ml-generator-tablist" role="tablist" aria-label="Script information">
+      <div
+        className="ml-generator-tablist"
+        role="tablist"
+        aria-label="Script information"
+      >
         {TABS.map((tab, index) => {
           const selected = tab.id === activeTab;
           const tabId = `ml-generator-${safeTemplateId}-tab-${tab.id}`;
@@ -167,7 +215,9 @@ export function GeneratorInfoTabs({
             >
               {tab.label}
               {tab.id === "notes" && warnings.length > 0 ? (
-                <span aria-label={`${warnings.length} warnings`}>{warnings.length}</span>
+                <span aria-label={`${warnings.length} warnings`}>
+                  {warnings.length}
+                </span>
               ) : null}
             </button>
           );
