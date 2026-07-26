@@ -1,4 +1,5 @@
 import { test } from "node:test";
+import { spawnSync } from "node:child_process";
 import assert from "node:assert/strict";
 import {
   ML_TEMPLATES,
@@ -134,4 +135,80 @@ test("sensor label column cannot also be a feature", () => {
     "starter",
   );
   assert.match(errors.featureColumns, /label column/i);
+});
+
+test("registry contains exactly the four approved templates", () => {
+  assert.deepEqual(
+    ML_TEMPLATES.map((template) => template.id),
+    [
+      "yolo-detection-training",
+      "yolo-segmentation-training",
+      "sensor-timeseries-classification",
+      "edge-image-classification",
+    ],
+  );
+});
+
+test("Coral forces INT8 TFLite export", () => {
+  const normalized = normalizeTemplateConfig(
+    "edge-image-classification",
+    {
+      ...getDefaultConfig("edge-image-classification", "production"),
+      environment: "coral",
+      exportFormat: "tflite-fp16",
+    },
+    "production",
+  );
+  assert.equal(normalized.exportFormat, "tflite-int8");
+});
+
+test("edge classifier changes the generated backbone", () => {
+  const code = generateMlScript(
+    "edge-image-classification",
+    {
+      ...getDefaultConfig("edge-image-classification", "production"),
+      model: "efficientnet-v2-b0",
+    },
+    "production",
+  );
+  assert.match(code, /EfficientNetV2B0/);
+});
+
+test("all registered default scripts parse as Python", () => {
+  for (const template of ML_TEMPLATES) {
+    for (const mode of ["starter", "production"]) {
+      const code = generateMlScript(
+        template.id,
+        getDefaultConfig(template.id, mode),
+        mode,
+      );
+      assert.ok(code.length > 0, `${template.id}/${mode} generated no code`);
+      const parsed = spawnSync(
+        "python",
+        ["-c", "import ast,sys; ast.parse(sys.stdin.read())"],
+        { input: code, encoding: "utf8" },
+      );
+      assert.equal(
+        parsed.status,
+        0,
+        `${template.id}/${mode}: ${parsed.stderr}`,
+      );
+    }
+  }
+});
+
+test("every template has complete metadata and valid defaults", () => {
+  for (const template of ML_TEMPLATES) {
+    assert.ok(template.dependencies.length > 0);
+    assert.ok(template.dataset.summary);
+    assert.ok(template.dataset.structure);
+    assert.ok(template.metrics.length > 0);
+    assert.ok(template.hardware.minimum);
+    assert.ok(template.hardware.recommended);
+    assert.ok(template.deployment.length > 0);
+    for (const mode of ["starter", "production"]) {
+      const config = getDefaultConfig(template.id, mode);
+      assert.deepEqual(validateTemplateConfig(template.id, config, mode), {});
+    }
+  }
 });
