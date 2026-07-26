@@ -124,6 +124,9 @@ The following decisions are already approved through the design conversation:
 15. Add Unsloth as an optional local-first fine-tuning and inference backend, with model-license and hardware warnings.
 16. Add industrial time-series recipes for fault detection, fault diagnosis, predictive maintenance, and remaining-useful-life estimation.
 17. Treat CS50 AI as a link-only curriculum reference unless a separate license review explicitly approves a broader use.
+18. Launch the configurator as a free public website with no account or paywall, using it as a portfolio centerpiece, marketing asset, and practical internal tool.
+19. Treat any future monetization as a later product decision based on real usage and feedback, not as an initial implementation requirement.
+20. Do not assume that public website access makes the source repository open source; repository publication and licensing remain a separate decision.
 
 ## 4. Goals
 
@@ -175,6 +178,7 @@ Learning is embedded in configuration rather than presented as a copied course:
 - Generating a multi-file repository in the first expansion. The downloadable artifact remains one `.py` file.
 - Allowing arbitrary incompatible pipeline blocks to be connected.
 - Training or running an LLM inside the website. LLM recipes generate local Python for the user to run in their own environment.
+- Subscriptions, payments, billing, pricing gates, or paid-only recipes in the initial public launch.
 
 ## 6. Source and attribution policy
 
@@ -270,11 +274,12 @@ Learning is embedded in configuration rather than presented as a copied course:
   - Learning
   - Neural networks
   - Language
-- Commercial-safety rule:
+- License and future-option rule:
   - Treat the course as an attributed link-only curriculum map.
   - Write all field explanations and generated code independently using permissive repositories, official framework documentation, and original papers.
   - Do not embed or transcribe videos, captions, notes, slides, assignments, solutions, images, or other course assets.
   - A separate legal/license review is required before adapting course material beyond titles, factual topic names, and links.
+  - Preserve this boundary during the free launch so future funding or monetization does not require removing adapted noncommercial material from the core product.
 
 ### 6.7 Additional sources
 
@@ -1538,6 +1543,8 @@ The full vision is delivered in reviewable waves so the route remains functional
 - Accessibility and responsive audit
 - Performance audit
 - Documentation and external-review closure
+- Confirm the public route works without sign-in, payment, or gated recipes
+- Add clear portfolio/product positioning and an accessible feedback path
 
 Each wave must leave all previously completed tests passing.
 
@@ -1553,6 +1560,9 @@ Each wave must leave all previously completed tests passing.
 - Starter mode is approachable.
 - Production-oriented mode exposes detailed configuration.
 - Every meaningful setting has explanation and trade-off guidance.
+- The initial public product is free to use without an account or paywall.
+- Core recipe discovery, configuration, explanations, and Python generation are not gated.
+- Future monetization is explicitly outside the initial implementation scope.
 
 ### Data
 
