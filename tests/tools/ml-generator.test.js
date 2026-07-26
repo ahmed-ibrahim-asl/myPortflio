@@ -73,3 +73,27 @@ test("every result is a Python script without notebook magic", () => {
   assert.equal(result.code.endsWith("\n"), true);
   assert.equal(result.code.endsWith("\n\n"), false);
 });
+
+test("segmentation uses segmentation weights", () => {
+  const config = {
+    ...getDefaultConfig("yolo-segmentation-training", "production"),
+    modelSize: "small",
+  };
+  const code = generateMlScript(
+    "yolo-segmentation-training",
+    config,
+    "production",
+  );
+  assert.match(code, /"model_weights": "yolov8s-seg\.pt"/);
+});
+
+test("YOLO templates reuse unique field definitions", () => {
+  for (const templateId of [
+    "yolo-detection-training",
+    "yolo-segmentation-training",
+  ]) {
+    const template = ML_TEMPLATES.find((item) => item.id === templateId);
+    const ids = template.fields.map((field) => field.id);
+    assert.equal(new Set(ids).size, ids.length);
+  }
+});
