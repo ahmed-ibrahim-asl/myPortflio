@@ -10,6 +10,8 @@ The generator serves students, computer-vision and robotics engineers, and embed
 
 The interface calls its advanced mode **Production-oriented**. Generated scripts can include reproducibility, validation, checkpointing, structured artifacts, defensive errors, and compatible exports. The tool does not claim to produce production-certified infrastructure, monitoring, CI/CD, governance, or hardware-specific optimization.
 
+Every generated artifact is a standard Python `.py` file. The UI label **Runtime target** describes where the user expects to run or deploy the script; it does not change the output format. The internal field ID remains `environment` because it controls compatible device and export options. Colab remains a runtime preset, but its output contains no notebook magics and never uses an `.ipynb` filename.
+
 The first release contains exactly four templates:
 
 | ID | Name | Category |
@@ -188,7 +190,7 @@ Coral forces INT8 TFLite, requires representative data, hides incompatible forma
 
 ## UI design
 
-The selected **Control room** direction uses a configuration rail beside a wide output panel on desktop. The mode selector and template chooser lead the configuration hierarchy. Registry-driven fields follow in logical groups. Production-only settings sit in an expandable advanced section.
+The selected **Control room** direction uses a configuration rail beside a wide output panel on desktop. The mode selector and template chooser lead the configuration hierarchy. The UI renders the registry's `environment` field as **Runtime target**. Registry-driven fields follow in logical groups. Production-only settings sit in an expandable advanced section.
 
 The output header shows the generated filename and copy action. A non-wrapping `<pre>` owns code scrolling. Below it, native button tabs expose Dependencies, Dataset, Hardware, Metrics, Deployment, and Notes. The tab row scrolls internally on narrow screens.
 
