@@ -97,3 +97,41 @@ test("YOLO templates reuse unique field definitions", () => {
     assert.equal(new Set(ids).size, ids.length);
   }
 });
+
+test("sensor defaults generate a complete CNN script", () => {
+  const result = buildMlGeneratorResult(
+    "sensor-timeseries-classification",
+    getDefaultConfig("sensor-timeseries-classification", "starter"),
+    "starter",
+  );
+  assert.deepEqual(result.validationErrors, {});
+  assert.match(result.code, /class CNN1D\(nn\.Module\):/);
+  assert.match(result.code, /macro_f1/);
+  assert.match(result.code, /torch\.onnx\.export|torch\.jit\.script/);
+});
+
+test("sensor split fractions cannot consume the dataset", () => {
+  const errors = validateTemplateConfig(
+    "sensor-timeseries-classification",
+    {
+      ...getDefaultConfig("sensor-timeseries-classification", "production"),
+      validationFraction: 0.4,
+      testFraction: 0.4,
+    },
+    "production",
+  );
+  assert.match(errors.validationFraction, /total less than 0\.8/i);
+});
+
+test("sensor label column cannot also be a feature", () => {
+  const errors = validateTemplateConfig(
+    "sensor-timeseries-classification",
+    {
+      ...getDefaultConfig("sensor-timeseries-classification", "starter"),
+      featureColumns: "ax,label",
+      labelColumn: "label",
+    },
+    "starter",
+  );
+  assert.match(errors.featureColumns, /label column/i);
+});
