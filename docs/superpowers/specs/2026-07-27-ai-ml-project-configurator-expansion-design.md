@@ -15,6 +15,10 @@ The product promise is:
 
 The tool should often provide roughly 60–70 percent of a typical first project implementation: data loading, inspection, cleaning, preprocessing, splitting, model construction, training, evaluation, checkpointing, prediction, and compatible export. This percentage is a product direction, not a guarantee. Real data quality, domain decisions, integration, security, monitoring, and deployment validation remain the user's responsibility.
 
+Mature recipes may target 80-90 percent of the standard code required for a first working experiment inside their declared scope. This is not a claim that the tool completes 90 percent of arbitrary research or production projects. Each recipe will expose a generated-coverage checklist for data, preprocessing, training, evaluation, persistence, inference, and deployment scaffolding, plus an explicit list of responsibilities left to the user.
+
+The remaining work commonly includes dataset meaning and rights, label quality, business success criteria, domain validation, custom integrations, security, production monitoring, and failure investigation.
+
 The information architecture is **task-first by default**, with two alternatives:
 
 1. Start with a task.
@@ -28,12 +32,16 @@ The existing four generators remain supported:
 - Sensor time-series classification
 - Edge image classification
 
-The catalog expands through two reviewed knowledge tracks:
+The catalog expands through a reviewed source registry rather than a copy of any one course:
 
 - Aurélien Géron's official `handson-ml3` companion repository for Scikit-Learn, TensorFlow, and Keras workflows.
 - Daniel Bourke's official `pytorch-deep-learning` repository and online curriculum for PyTorch workflows.
+- Aurélien Géron's newer `handson-mlp` repository for modern Scikit-Learn, PyTorch, Hugging Face, transformer, generative, and reinforcement-learning coverage.
+- Jay Alammar and Maarten Grootendorst's `Hands-On-Large-Language-Models` repository for embeddings, semantic search, RAG, multimodal work, and fine-tuning concepts.
+- Unsloth's official repository and documentation for local model inference, LoRA/QLoRA, full fine-tuning, quantization, and export workflows.
+- CS50's Introduction to Artificial Intelligence with Python as an attributed, link-only concept map for search, knowledge, uncertainty, optimization, learning, neural networks, and language.
 
-These sources guide coverage and configuration. The website will not reproduce book prose, mirror whole notebooks, or ship large third-party datasets.
+These sources guide coverage and configuration. The website will not reproduce book prose, course transcripts, slides, diagrams, exercise solutions, whole notebooks, or large third-party datasets.
 
 ## 2. Current implementation context
 
@@ -111,6 +119,11 @@ The following decisions are already approved through the design conversation:
 10. Explain what settings do, when to change them, and their speed/accuracy/memory trade-offs.
 11. Continue generating one runnable Python `.py` file.
 12. Preserve and expand the responsive behavior instead of replacing the current visual language.
+13. Make classical machine-learning models and their preprocessing, tuning, evaluation, and explainability controls a first-class recipe pack.
+14. Add LLM application recipes without making the website itself depend on an LLM or prompt interpretation.
+15. Add Unsloth as an optional local-first fine-tuning and inference backend, with model-license and hardware warnings.
+16. Add industrial time-series recipes for fault detection, fault diagnosis, predictive maintenance, and remaining-useful-life estimation.
+17. Treat CS50 AI as a link-only curriculum reference unless a separate license review explicitly approves a broader use.
 
 ## 4. Goals
 
@@ -152,6 +165,7 @@ Learning is embedded in configuration rather than presented as a copied course:
 - Copying or summarizing every paragraph of either learning resource.
 - Reproducing complete notebooks or exercise solutions in the UI.
 - Automatically understanding a natural-language project description.
+- Transcribing or embedding complete course videos, captions, lecture notes, slides, or assignments.
 - Executing model training inside the browser.
 - Uploading a user's private dataset to a remote service.
 - Mirroring third-party datasets into the website repository.
@@ -160,6 +174,7 @@ Learning is embedded in configuration rather than presented as a copied course:
 - Replacing framework documentation, source courses, or the user's engineering judgment.
 - Generating a multi-file repository in the first expansion. The downloadable artifact remains one `.py` file.
 - Allowing arbitrary incompatible pipeline blocks to be connected.
+- Training or running an LLM inside the website. LLM recipes generate local Python for the user to run in their own environment.
 
 ## 6. Source and attribution policy
 
@@ -194,7 +209,74 @@ Learning is embedded in configuration rather than presented as a copied course:
   - Course branding that implies endorsement
   - Binary dataset copies without verifying the dataset's own license
 
-### 6.3 Additional sources
+### 6.3 Hands-On Machine Learning with Scikit-Learn and PyTorch
+
+- Curriculum source: `https://github.com/ageron/handson-mlp`
+- Repository license: Apache License 2.0
+- Relationship to `handson-ml3`:
+  - `handson-mlp` is the primary modern source for Scikit-Learn, PyTorch, Hugging Face, transformers, generative models, quantization, and reinforcement learning.
+  - `handson-ml3` remains the TensorFlow/Keras-specific curriculum source.
+- Use:
+  - Modern classical-model and preprocessing coverage
+  - End-to-end project, evaluation, and model-selection concepts
+  - PyTorch, transformer, optimization, and deployment topic maps
+  - Links to the official repository and notebooks
+- Do not use:
+  - Whole notebook or exercise-solution copies
+  - Book prose, diagrams, or branding that implies endorsement
+
+### 6.4 Hands-On Large Language Models
+
+- Curriculum source: `https://github.com/HandsOnLLM/Hands-On-Large-Language-Models`
+- Repository license: Apache License 2.0
+- Use:
+  - Tokens and embeddings
+  - Text classification, clustering, and topic modeling
+  - Text generation and decoding controls
+  - Semantic search and retrieval-augmented generation
+  - Multimodal model workflows
+  - Embedding-model and generation-model fine-tuning
+- Product rule:
+  - Map concepts to original deterministic recipes and field explanations.
+  - Link to the corresponding official chapter resources.
+  - Do not reproduce the book's prose, figures, or complete notebooks.
+
+### 6.5 Unsloth
+
+- Framework source: `https://github.com/unslothai/unsloth`
+- Documentation: `https://docs.unsloth.ai/`
+- Component licenses verified 2026-07-27:
+  - `unsloth/*`, `tests/*`, and `scripts/*`: Apache License 2.0
+  - Optional `studio/*` and `unsloth_cli/*`: GNU AGPL v3
+- Initial use:
+  - Generate code that imports the Apache-licensed Unsloth Core package.
+  - Configure local inference, LoRA, QLoRA, full fine-tuning, quantization, dataset formatting, training, evaluation, adapter saving, and export.
+  - Do not copy Unsloth Studio or CLI implementation code into this website.
+- Required warnings:
+  - Every selected base model and dataset has its own license and access requirements.
+  - Hardware compatibility, expected VRAM, quantization support, and platform limitations must be shown before generation.
+  - Network downloads and authentication occur only when the user's generated script runs.
+
+### 6.6 CS50's Introduction to Artificial Intelligence with Python
+
+- Course source: `https://cs50.harvard.edu/ai/`
+- User-provided playlist: `https://www.youtube.com/playlist?list=PLhQjrBD2T381PopUTYtMSstgk-hsTGkVm`
+- Course-material license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+- Topics:
+  - Search
+  - Knowledge representation
+  - Uncertainty
+  - Optimization
+  - Learning
+  - Neural networks
+  - Language
+- Commercial-safety rule:
+  - Treat the course as an attributed link-only curriculum map.
+  - Write all field explanations and generated code independently using permissive repositories, official framework documentation, and original papers.
+  - Do not embed or transcribe videos, captions, notes, slides, assignments, solutions, images, or other course assets.
+  - A separate legal/license review is required before adapting course material beyond titles, factual topic names, and links.
+
+### 6.7 Additional sources
 
 External reviewers may propose official documentation, original papers, and permissively licensed repositories. Every accepted source record must include:
 
@@ -209,7 +291,7 @@ External reviewers may propose official documentation, original papers, and perm
 
 Third-party tutorials may inspire research but must not be the only authority for version-sensitive code. Framework behavior must be checked against current official documentation during implementation.
 
-### 6.4 Generated attribution
+### 6.8 Generated attribution
 
 The UI's Resources tab lists the relevant sources. Generated scripts may include concise comments such as:
 
@@ -296,16 +378,18 @@ Stable IDs are required because recipes, tests, saved configurations, and extern
 | --- | --- | --- |
 | `data-preparation` | Data Preparation | inspect, clean, transform, split, export-clean-data |
 | `tabular-ml` | Tabular ML | regression, binary classification, multiclass classification, multilabel classification |
-| `classical-ml` | Classical ML | linear models, SVM, trees, ensembles, dimensionality reduction |
+| `classical-ml` | Classical ML | linear and logistic models, k-nearest neighbors, naive Bayes, SVM, trees, gradient boosting, ensembles, dimensionality reduction |
+| `classical-ai` | Classical AI | graph search, adversarial search, knowledge representation, probabilistic inference, constraint optimization |
 | `unsupervised-ml` | Unsupervised ML | clustering, anomaly detection, density estimation, semi-supervised learning |
 | `computer-vision` | Computer Vision | image classification, object detection, segmentation, transfer learning, vision transformers |
 | `time-series` | Time Series | forecasting, sequence classification, anomaly detection, window preparation |
 | `nlp` | Text and NLP | text classification, sequence modeling, translation, attention, transformers |
+| `llm-applications` | LLM Applications | embeddings, semantic search, RAG, text generation, local inference, fine-tuning, multimodal workflows |
 | `audio` | Audio ML | classification, feature extraction, preparation |
 | `generative-ai` | Generative Models | autoencoders, variational autoencoders, GANs, diffusion |
 | `reinforcement-learning` | Reinforcement Learning | policy learning, value learning, environment evaluation |
 | `deployment` | Export and Deployment | model export, inference app, experiment tracking, distributed/runtime preparation |
-| `sensor-ai` | Sensor AI / Robotics | sensor classification, sensor anomaly detection, edge inference |
+| `sensor-ai` | Sensor AI / Robotics | fault detection, fault diagnosis, predictive maintenance, remaining useful life, sensor classification, anomaly detection, edge inference |
 
 The taxonomy is a product index, not a claim that every framework supports every task.
 
@@ -360,7 +444,122 @@ It does not mean reproducing all educational text.
 | 08. Paper Replicating | Vision Transformer recipe with patch/encoder configuration and paper reference |
 | 09. Model Deployment | Inference script/app configuration, preprocessing parity, model size/latency reporting |
 
-### 9.3 Existing applied recipes
+### 9.3 Hands-On Machine Learning with Scikit-Learn and PyTorch modernization
+
+The newer curriculum updates the existing coverage instead of creating duplicate recipes.
+
+| Chapters | Coverage in the configurator |
+| --- | --- |
+| 1-3. Landscape, end-to-end project, classification | Problem framing, data contracts, leakage-safe pipelines, classification metrics, threshold selection |
+| 4-8. Linear models through unsupervised learning | Linear/logistic models, trees, ensembles, dimensionality reduction, clustering, density estimation, and anomaly detection |
+| 9-13. Neural networks, PyTorch, CNNs, and sequences | PyTorch fundamentals, configurable deep training, computer vision, RNN, GRU, and LSTM workflows |
+| 14-17. NLP, transformers, multimodal models, and acceleration | Text preparation, attention, transformer tasks, multimodal recipes, mixed precision, quantization, and compilation guidance |
+| 18. Autoencoders, GANs, and diffusion | Generative-model recipe families and configuration explanations |
+| 19. Reinforcement learning | Policy/value learning starter recipes and environment evaluation |
+| Appendices | Autodiff, mixed precision, quantization, SVM, positional encoding, and state-space-model references |
+
+### 9.4 Hands-On Large Language Models coverage
+
+| Chapter | Coverage in the configurator |
+| --- | --- |
+| 1. Introduction to Language Models | Local-model selection, model-size/hardware guidance, task framing |
+| 2. Tokens and Embeddings | Tokenizer inspection, embedding generation, pooling, normalization, similarity |
+| 3. Looking Inside Transformer LLMs | Architecture and attention explanations, hidden-state/attention inspection option |
+| 4. Text Classification | Zero-shot, embedding-based, and fine-tuned classification recipes |
+| 5. Text Clustering and Topic Modeling | Embedding, dimensionality reduction, clustering, topic-labeling workflow |
+| 6. Prompt Engineering | Static prompt-template configuration inside generated scripts; no prompt interpretation by the website |
+| 7. Advanced Text Generation | Sampling, temperature, top-k, top-p, repetition penalty, stopping, batching |
+| 8. Semantic Search and RAG | Chunking, embeddings, vector index, retrieval, reranking, context assembly, evaluation |
+| 9. Multimodal LLMs | Image-text and supported audio/vision-language inference recipes |
+| 10. Creating Text Embedding Models | Pair/triplet data, loss selection, batch configuration, retrieval evaluation |
+| 11. Fine-tuning Representation Models | Classification and embedding fine-tuning, PEFT where compatible |
+| 12. Fine-tuning Generation Models | Supervised fine-tuning, LoRA/QLoRA, evaluation, adapter export |
+
+### 9.5 CS50 AI concept coverage
+
+CS50 topic names are used only as an attributed navigation map. Explanations and generators are original and verified against independent primary sources.
+
+| Unit | Original configurable coverage |
+| --- | --- |
+| Search | Breadth-first, depth-first, greedy best-first, A-star, minimax, and alpha-beta recipes |
+| Knowledge | Propositional rules, inference, resolution, and knowledge-base starter recipes |
+| Uncertainty | Probability, Bayesian-network, sampling, and Markov-model examples |
+| Optimization | Hill climbing, simulated annealing, linear optimization, and constraint-satisfaction recipes |
+| Learning | Cross-links to classical classification, regression, clustering, and reinforcement learning |
+| Neural Networks | MLP, CNN, RNN, GRU, and LSTM recipes with training explanations |
+| Language | N-grams, naive Bayes, embeddings, attention, transformers, and LLM application links |
+
+### 9.6 Unsloth configurable workflows
+
+Initial Unsloth recipes generate code for the Apache-licensed core package and remain local-first:
+
+- Local model inference
+- Supervised fine-tuning
+- LoRA and QLoRA fine-tuning
+- Full fine-tuning when hardware permits
+- Embedding-model fine-tuning
+- Compatible multimodal fine-tuning
+- Adapter, merged-weight, safetensors, and GGUF export where supported
+
+Configuration groups include:
+
+- **Model:** repository ID, pinned revision, model family, access requirements, maximum sequence length, trust-remote-code policy
+- **Hardware:** operating system, accelerator, VRAM class, compute dtype, attention implementation, gradient checkpointing
+- **Quantization:** none, 16-bit, 8-bit, 4-bit, and supported export quantization
+- **Dataset:** local/Hugging Face source, split names, text or message columns, chat template, sample limit, validation split
+- **PEFT:** rank, alpha, dropout, target modules, bias behavior, and adapter initialization
+- **Training:** batch size, gradient accumulation, epochs/steps, optimizer, learning rate, warmup, scheduler, weight decay, seed
+- **Evaluation:** evaluation interval, validation metric, sample generation, checkpoint policy, early stopping where supported
+- **Export:** adapter-only, merged model, precision, GGUF method, output directory, optional Hub push
+
+Validation must reject or warn about unsupported model/quantization/platform combinations, estimated VRAM overages, missing access tokens, absent validation data, unsafe remote code, and model/dataset license uncertainty.
+
+### 9.7 Industrial time-series and fault-diagnosis coverage
+
+LSTM means **long short-term memory**. It is useful when ordered sensor observations and longer temporal dependencies matter, but it is not automatically the best algorithm for every fault dataset.
+
+| User task | Initial algorithm choices |
+| --- | --- |
+| Fault detection: normal vs faulty | Logistic regression, SVM, random forest, gradient boosting, 1D CNN, GRU, LSTM |
+| Fault diagnosis: identify fault type | SVM, random forest, gradient boosting, 1D CNN, GRU, LSTM, transformer encoder |
+| Unsupervised anomaly detection | Isolation Forest, One-Class SVM, PCA reconstruction, autoencoder, LSTM autoencoder |
+| Remaining useful life | Linear/boosted regression, random forest regression, GRU, LSTM, temporal convolutional network |
+| Sensor sequence classification | 1D CNN, GRU, LSTM, CNN-LSTM hybrid, transformer encoder |
+
+Data and feature configuration includes:
+
+- Timestamp, machine/asset ID, sensor columns, target/fault label, operating-condition columns
+- Sampling frequency, resampling rule, interpolation limit, missing-value strategy
+- Window length, stride, prediction horizon, label-window rule, minimum sequence length
+- Raw signals, statistical window features, rolling features, frequency-domain FFT features, or combined features
+- Per-sensor scaling and clipping fitted only on training data
+- Group-aware, machine-aware, run-aware, or chronological splits; random row splitting is blocked when it would leak neighboring windows
+- Class weighting, over/under-sampling, and focal-loss options for rare faults
+
+LSTM/GRU configuration includes:
+
+- Cell type, hidden size, number of recurrent layers, bidirectional mode
+- Dropout, input projection, sequence pooling, state initialization
+- Packed/padded sequence behavior and variable-length masking
+- Batch size, learning rate, optimizer, gradient clipping, epochs, early stopping
+
+Evaluation includes:
+
+- Classification: macro F1, per-fault recall, precision, confusion matrix, false-alarm rate
+- Event detection: detection delay, missed events, false alarms per operating hour
+- Remaining useful life: MAE, RMSE, asymmetric/domain score when specified
+- Calibration and confidence reporting where supported
+
+Initial dataset references:
+
+- UCI AI4I 2020 Predictive Maintenance dataset, CC BY 4.0, for an approachable tabular fault-classification recipe
+- Case Western Reserve University Bearing Data Center for vibration and bearing-fault examples; link-only until dataset reuse terms are recorded
+- PHM Society Data Repository for fault diagnosis and remaining-useful-life challenges; each dataset requires its own license and format review
+- NASA prognostics datasets may be added after their current canonical source and reuse terms are verified
+
+Generated scripts must describe dataset assumptions and must not imply that a laboratory or synthetic benchmark proves production diagnostic reliability.
+
+### 9.8 Existing applied recipes
 
 Existing YOLO, sensor, and edge recipes stay visible under Applied AI and their normal domains. Their implementations migrate to the new engine without changing their stable IDs.
 
@@ -880,13 +1079,16 @@ lib/tools/ml-generator/
   recipes/
     applied/
     classical/
+    classical-ai/
     computer-vision/
     data-preparation/
     deep-learning/
     generative/
     nlp/
+    llm-applications/
     reinforcement-learning/
     time-series/
+    sensor-ai/
     deployment/
 ```
 
@@ -1271,7 +1473,7 @@ The full vision is delivered in reviewable waves so the route remains functional
 - Add standalone Inspect and Prepare Data recipes.
 - Add data report and leakage-prevention foundations.
 
-### Wave 2: Classical ML and end-to-end tabular recipes
+### Wave 2: Classical AI/ML and end-to-end tabular recipes
 
 - Regression and classification
 - Linear/logistic/polynomial models
@@ -1280,8 +1482,12 @@ The full vision is delivered in reviewable waves so the route remains functional
 - Dimensionality reduction
 - Clustering and anomaly detection
 - Model comparison and tuning
+- K-nearest neighbors, naive Bayes, gradient boosting, XGBoost, LightGBM, and CatBoost where license/version checks pass
+- Imbalanced-data, Optuna tuning, and SHAP-compatible explanation options
+- Graph/adversarial search, knowledge, uncertainty, and constraint-optimization starter recipes
+- Original concept explanations linked to primary sources and the CS50 topic map
 
-### Wave 3: PyTorch and computer vision
+### Wave 3: PyTorch, computer vision, and industrial sequences
 
 - PyTorch regression/classification workflow
 - Image classification
@@ -1291,6 +1497,11 @@ The full vision is delivered in reviewable waves so the route remains functional
 - Vision Transformer
 - Deployment/inference
 - Existing YOLO and edge recipes integrated with shared data tools
+- Fault detection and fault diagnosis
+- Remaining-useful-life estimation
+- LSTM, GRU, 1D CNN, autoencoder, and classical sensor baselines
+- Windowing, frequency features, machine/time-aware splitting, and rare-fault handling
+- Tiny synthetic fixtures plus license-verified external dataset links
 
 ### Wave 4: TensorFlow/Keras deep learning
 
@@ -1301,7 +1512,7 @@ The full vision is delivered in reviewable waves so the route remains functional
 - CNN/transfer learning
 - Sequence/time-series recipes
 
-### Wave 5: NLP, generative, reinforcement learning, and scale
+### Wave 5: NLP, LLM applications, generative models, reinforcement learning, and scale
 
 - Text preparation/classification
 - Sequence-to-sequence and attention
@@ -1311,6 +1522,13 @@ The full vision is delivered in reviewable waves so the route remains functional
 - Diffusion
 - Reinforcement learning
 - Deployment and distributed-training guidance
+- Embedding generation, semantic search, clustering, and topic modeling
+- Retrieval-augmented generation with configurable chunking, retrieval, reranking, and evaluation
+- Local text and compatible multimodal inference
+- Unsloth Core inference and fine-tuning recipes
+- LoRA, QLoRA, model/dataset formatting, hardware validation, and export controls
+- Model and dataset license/access warnings
+- No LLM is required to operate the configurator itself
 
 ### Wave 6: Coverage audit and product polish
 
@@ -1329,7 +1547,8 @@ Each wave must leave all previously completed tests passing.
 
 - Task-first is the default entry path.
 - Data-first and Prepare-data-only paths work.
-- No LLM, API key, or prompt processing is required.
+- No LLM, API key, or prompt processing is required to operate the website.
+- A generated LLM recipe may require local model weights or a user-selected provider credential only when that recipe explicitly declares it.
 - The user can reach a recipe through deterministic compatible choices.
 - Starter mode is approachable.
 - Production-oriented mode exposes detailed configuration.
@@ -1344,6 +1563,8 @@ Each wave must leave all previously completed tests passing.
 - Image, detection, text, time-series, audio, and video profiles expose domain-appropriate operations.
 - Learned preprocessing fits on training data only.
 - Generated scripts produce a data-readiness report where supported.
+- Sensor recipes use machine-aware, run-aware, group-aware, or chronological splitting when neighboring windows would otherwise leak.
+- Fault workflows expose task-appropriate class imbalance, false-alarm, detection-delay, and remaining-useful-life controls.
 
 ### Code
 
@@ -1358,7 +1579,12 @@ Each wave must leave all previously completed tests passing.
 - All 19 Hands-On ML chapters have explicit coverage records.
 - PyTorch curriculum sections 00–09 have explicit coverage records.
 - Sources and licenses are visible and auditable.
-- No copyrighted book prose or whole notebooks are bundled.
+- No copyrighted book prose, course transcript, slide deck, assignment solution, or whole notebook is bundled.
+- The modern `handson-mlp` curriculum has an explicit modernization map without duplicating recipes.
+- All 12 Hands-On Large Language Models chapters have explicit coverage records.
+- CS50 AI's seven topic units have link-only concept coverage records and no copied course assets.
+- Unsloth records distinguish Apache-licensed Core from AGPL-licensed Studio/CLI components.
+- Industrial fault detection, diagnosis, anomaly detection, sequence classification, and remaining-useful-life families have coverage records.
 
 ### UI and quality
 
@@ -1383,7 +1609,8 @@ Do not redesign it as an LLM prompt product. Do not propose copying books or com
 
 - Existing Next.js/React route and control-room UI
 - One generated `.py` file
-- No LLM or API required
+- No LLM or API is required to operate the configurator; generated LLM recipes explicitly declare any local model or provider requirement
+- Source coverage includes both Hands-On ML repositories, PyTorch Deep Learning, Hands-On LLMs, Unsloth, and a link-only CS50 AI topic map
 - Task-first default
 - Data-first and standalone data-preparation alternatives
 - Data handling before modeling
