@@ -290,6 +290,11 @@ test(
           return true;
         })()`,
       });
+      assert.equal(
+        configured.exceptionDetails,
+        undefined,
+        `configuration script should not throw: ${JSON.stringify(configured.exceptionDetails)}`,
+      );
       assert.equal(configured.result.value, true, "long-value configuration should apply");
 
       const semanticsEvaluation = await client.send("Runtime.evaluate", {
