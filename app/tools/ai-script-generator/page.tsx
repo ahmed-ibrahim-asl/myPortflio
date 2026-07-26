@@ -323,8 +323,8 @@ export default function AIScriptGeneratorPage() {
         </p>
       </div>
 
-      <div className="ml-generator-page tool-grid">
-        <aside className="ml-generator-config-panel tool-controls" aria-label="Script configuration">
+      <div className="ml-generator-page ml-generator-grid">
+        <aside className="ml-generator-config-panel" aria-label="Script configuration">
           <div className="ml-generator-panel-heading">
             <span className="ml-generator-panel-kicker">Configuration vector</span>
             <p>{template.shortDescription}</p>
@@ -388,7 +388,7 @@ export default function AIScriptGeneratorPage() {
         </aside>
 
         <section
-          className="ml-generator-output-panel tool-results"
+          className="ml-generator-output-panel"
           aria-label="Generated Python output"
           style={{ minWidth: 0 }}
         >

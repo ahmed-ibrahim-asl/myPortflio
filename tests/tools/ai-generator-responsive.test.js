@@ -156,8 +156,8 @@ async function createPageClient(debuggerPort, pageUrl) {
 }
 
 test(
-  "AI generator controls stay inside their panel at the reported scaled viewport size",
-  { timeout: 70_000 },
+  "AI generator remains contained and scrollable at all required viewports",
+  { timeout: 90_000 },
   async (t) => {
     const chromePath = chromeCandidates.find((candidate) => existsSync(candidate));
     if (!chromePath) {
@@ -211,6 +211,14 @@ test(
     let chrome;
     let client;
 
+    const viewports = [
+      { width: 390, height: 844 },
+      { width: 768, height: 1024 },
+      { width: 900, height: 900 },
+      { width: 1024, height: 768 },
+      { width: 1440, height: 900 },
+    ];
+
     try {
       if (app) await waitForServer(routeUrl, app);
       const chromeSession = await startChrome(chromePath, userDataDir);
@@ -219,15 +227,70 @@ test(
 
       await client.send("Page.enable");
       await client.send("Emulation.setDeviceMetricsOverride", {
-        width: 900,
-        height: 800,
+        width: 1440,
+        height: 900,
         deviceScaleFactor: 1,
         mobile: false,
       });
-
       const loaded = client.waitForEvent("Page.loadEventFired");
       await client.send("Page.navigate", { url: routeUrl });
       await loaded;
+
+      const configured = await client.send("Runtime.evaluate", {
+        awaitPromise: true,
+        returnByValue: true,
+        expression: `(async () => {
+          const pause = () => new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve))
+          );
+          for (let attempt = 0; attempt < 60; attempt += 1) {
+            if (document.querySelector('.ml-generator-config-panel select[name="templateId"]')) break;
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+
+          const choose = async (name, value) => {
+            const select = document.querySelector('.ml-generator-config-panel select[name="' + name + '"]');
+            if (!select) throw new Error("Missing select: " + name);
+            const option = [...select.options].find((item) => item.value === value);
+            if (!option) throw new Error("Missing option " + value + " for " + name);
+            select.value = value;
+            select.dispatchEvent(new Event("change", { bubbles: true }));
+            await pause();
+          };
+
+          const type = async (name, value) => {
+            const input = document.querySelector('.ml-generator-config-panel input[name="' + name + '"]');
+            if (!input) throw new Error("Missing input: " + name);
+            const setter = Object.getOwnPropertyDescriptor(
+              HTMLInputElement.prototype,
+              "value",
+            ).set;
+            setter.call(input, value);
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+            await pause();
+          };
+
+          await choose("templateId", "yolo-detection-training");
+          const productionButton = [...document.querySelectorAll(".ml-generator-mode button")]
+            .find((button) => button.textContent.trim() === "Production-oriented");
+          if (!productionButton) throw new Error("Missing Production-oriented mode button");
+          productionButton.click();
+          await pause();
+          await choose("task", "train-export");
+          await choose("modelSize", "extra-large");
+          await choose("environment", "raspberry-pi");
+          await choose("imageSize", "1280");
+          await choose("exportFormat", "openvino");
+          await type("runName", "extra_large_raspberry_pi_detection_export");
+          await type(
+            "projectDirectory",
+            "./artifacts/field_deployment/raspberry_pi/object_detection/production_runs",
+          );
+          return true;
+        })()`,
+      });
+      assert.equal(configured.result.value, true, "long-value configuration should apply");
 
       const semanticsEvaluation = await client.send("Runtime.evaluate", {
         returnByValue: true,
@@ -239,69 +302,94 @@ test(
             .some((label) => label.textContent.includes("Runtime target"))
         })`,
       });
-      const semantics = semanticsEvaluation.result.value;
-      assert.equal(semantics.page, true, "generator page landmark should render");
-      assert.equal(semantics.config, true, "generator configuration panel should render");
-      assert.equal(semantics.output, true, "generator output panel should render");
-      assert.equal(semantics.runtimeLabel, true, "runtime target label should render");
-
-      const evaluation = await client.send("Runtime.evaluate", {
-        awaitPromise: true,
-        returnByValue: true,
-        expression: `(async () => {
-          const choose = async (name, value) => {
-            const select = document.querySelector('select[name="' + name + '"]');
-            if (!select) throw new Error("Missing select: " + name);
-            select.value = value;
-            select.dispatchEvent(new Event("change", { bubbles: true }));
-            await new Promise((resolve) => setTimeout(resolve, 0));
-          };
-
-          for (let attempt = 0; attempt < 40; attempt += 1) {
-            const panelWidth = document
-              .querySelector(".tool-controls")
-              ?.getBoundingClientRect().width;
-            if (panelWidth > 0) break;
-            await new Promise((resolve) => setTimeout(resolve, 50));
-          }
-
-          await choose("task", "object_detection");
-          await choose("environment", "colab");
-          await new Promise((resolve) =>
-            requestAnimationFrame(() => requestAnimationFrame(resolve))
-          );
-
-          const controls = document.querySelector(".tool-controls")?.getBoundingClientRect();
-          const results = document.querySelector(".tool-grid > :nth-child(2)")?.getBoundingClientRect();
-          const selects = [...document.querySelectorAll(".tool-controls select")].map((select) => {
-            const rect = select.getBoundingClientRect();
-            return { left: rect.left, right: rect.right, width: rect.width };
-          });
-
-          return {
-            controls: controls && { left: controls.left, right: controls.right, width: controls.width },
-            results: results && { left: results.left, right: results.right, width: results.width },
-            selects,
-            viewportWidth: document.documentElement.clientWidth,
-            documentWidth: document.documentElement.scrollWidth
-          };
-        })()`,
-      });
-      const layout = evaluation.result.value;
-
-      assert.ok(layout.controls, "configuration panel should render");
-      assert.ok(layout.results, "result column should render");
-      assert.ok(layout.selects.length > 0, "configuration selects should render");
-      assert.equal(
-        layout.documentWidth,
-        layout.viewportWidth,
-        `page should not create horizontal overflow: ${JSON.stringify(layout)}`,
+      assert.deepEqual(
+        semanticsEvaluation.result.value,
+        { page: true, config: true, output: true, runtimeLabel: true },
       );
 
-      for (const select of layout.selects) {
+      for (const viewport of viewports) {
+        await client.send("Emulation.setDeviceMetricsOverride", {
+          ...viewport,
+          deviceScaleFactor: 1,
+          mobile: viewport.width < 600,
+        });
+
+        const evaluation = await client.send("Runtime.evaluate", {
+          awaitPromise: true,
+          returnByValue: true,
+          expression: `(async () => {
+            await new Promise((resolve) =>
+              requestAnimationFrame(() => requestAnimationFrame(resolve))
+            );
+            const panel = document.querySelector(".ml-generator-config-panel");
+            const output = document.querySelector(".ml-generator-output-panel");
+            const code = document.querySelector(".ml-generator-code");
+            const panelRect = panel?.getBoundingClientRect();
+            const outputRect = output?.getBoundingClientRect();
+            const controls = panel
+              ? [...panel.querySelectorAll("input, select, button")]
+                .filter((control) => control.getClientRects().length > 0)
+                .map((control) => {
+                  const rect = control.getBoundingClientRect();
+                  return {
+                    name: control.getAttribute("name") || control.textContent.trim(),
+                    left: rect.left,
+                    right: rect.right,
+                    width: rect.width,
+                  };
+                })
+              : [];
+            const codeStyle = code ? getComputedStyle(code) : null;
+            return {
+              panel: panelRect && {
+                left: panelRect.left,
+                right: panelRect.right,
+                width: panelRect.width,
+              },
+              output: outputRect && {
+                left: outputRect.left,
+                right: outputRect.right,
+                width: outputRect.width,
+              },
+              controls,
+              code: code && {
+                clientWidth: code.clientWidth,
+                scrollWidth: code.scrollWidth,
+                overflowX: codeStyle.overflowX,
+                whiteSpace: codeStyle.whiteSpace,
+              },
+              viewportWidth: document.documentElement.clientWidth,
+              documentWidth: document.documentElement.scrollWidth,
+            };
+          })()`,
+        });
+        const layout = evaluation.result.value;
+        const context = `${viewport.width}x${viewport.height}: ${JSON.stringify(layout)}`;
+
+        assert.ok(layout.panel, `configuration panel should render at ${context}`);
+        assert.ok(layout.output, `output panel should render at ${context}`);
+        assert.ok(layout.controls.length > 0, `configuration controls should render at ${context}`);
+        assert.equal(
+          layout.documentWidth,
+          layout.viewportWidth,
+          `page should not create horizontal overflow at ${context}`,
+        );
+        for (const control of layout.controls) {
+          assert.ok(
+            control.left >= layout.panel.left - 1 &&
+              control.right <= layout.panel.right + 1,
+            `control should remain inside the configuration panel at ${context}`,
+          );
+        }
+        assert.ok(layout.code, `generated code should render at ${context}`);
         assert.ok(
-          select.right <= layout.controls.right + 1,
-          `select should remain inside the configuration panel: ${JSON.stringify(layout)}`,
+          ["auto", "scroll"].includes(layout.code.overflowX),
+          `code should own horizontal scrolling at ${context}`,
+        );
+        assert.equal(layout.code.whiteSpace, "pre", `code should not wrap at ${context}`);
+        assert.ok(
+          layout.code.scrollWidth >= layout.code.clientWidth,
+          `code viewport should contain its long lines at ${context}`,
         );
       }
     } finally {
@@ -309,7 +397,12 @@ test(
       stopProcessTree(chrome);
       stopProcessTree(app);
       await delay(250);
-      rmSync(userDataDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+      rmSync(userDataDir, {
+        recursive: true,
+        force: true,
+        maxRetries: 5,
+        retryDelay: 100,
+      });
     }
   },
 );
