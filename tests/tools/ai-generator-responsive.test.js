@@ -173,6 +173,12 @@ test(
     const routeUrl = useExistingServer
       ? existingRouteUrl
       : `http://127.0.0.1:${port}/tools/ai-script-generator/`;
+    const testRouteUrl = new URL(routeUrl);
+    testRouteUrl.searchParams.set("recipeLoadDelay", "250");
+    testRouteUrl.searchParams.set(
+      "recipeLoadFailOnce",
+      "edge-image-classification",
+    );
     const appCommand =
       process.platform === "win32" ? process.env.ComSpec || "cmd.exe" : "npm";
     const appArguments =
@@ -224,7 +230,10 @@ test(
       if (app) await waitForServer(routeUrl, app);
       const chromeSession = await startChrome(chromePath, userDataDir);
       chrome = chromeSession.chrome;
-      client = await createPageClient(chromeSession.debuggerPort, routeUrl);
+      client = await createPageClient(
+        chromeSession.debuggerPort,
+        testRouteUrl.toString(),
+      );
 
       await client.send("Page.enable");
       await client.send("Emulation.setDeviceMetricsOverride", {
@@ -234,8 +243,30 @@ test(
         mobile: false,
       });
       const loaded = client.waitForEvent("Page.loadEventFired");
-      await client.send("Page.navigate", { url: routeUrl });
+      await client.send("Page.navigate", { url: testRouteUrl.toString() });
       await loaded;
+      const initialLoading = await client.send("Runtime.evaluate", {
+        awaitPromise: true,
+        returnByValue: true,
+        expression: `(async () => {
+          for (let attempt = 0; attempt < 60; attempt += 1) {
+            const panel = document.querySelector(".ml-generator-code-panel");
+            if (panel) {
+              return {
+                state: panel.getAttribute("data-load-state"),
+                busy: panel.getAttribute("aria-busy"),
+                copyDisabled: document.querySelector(".ml-generator-copy")?.disabled,
+              };
+            }
+            await new Promise((resolve) => setTimeout(resolve, 25));
+          }
+          throw new Error("Generator loading panel did not render.");
+        })()`,
+      });
+      assert.deepEqual(initialLoading.result.value, {
+        state: "loading", busy: "true", copyDisabled: true,
+      });
+
 
       const configured = await client.send("Runtime.evaluate", {
         awaitPromise: true,
@@ -296,7 +327,43 @@ test(
             throw new Error("Mode did not become active: " + label);
           };
 
+          const waitForLoadState = async (expected) => {
+            for (let attempt = 0; attempt < 80; attempt += 1) {
+              const panel = document.querySelector(".ml-generator-code-panel");
+              if (panel?.getAttribute("data-load-state") === expected) return panel;
+              await new Promise((resolve) => setTimeout(resolve, 50));
+            }
+            throw new Error("Generator did not reach load state: " + expected);
+          };
+
+          await choose("templateId", "sensor-timeseries-classification");
           await choose("templateId", "yolo-detection-training");
+          await waitForLoadState("ready");
+          if (
+            !document.querySelector(".ml-generator-file")?.textContent.includes("train_yolo_detection.py")
+          ) {
+            throw new Error("A stale rapid-switch result replaced the selected recipe.");
+          }
+
+          await choose("templateId", "edge-image-classification");
+          await waitForLoadState("error");
+          const errorText = document.querySelector(".ml-generator-code-error")?.textContent ?? "";
+          if (!errorText.includes("Edge Image Classification")) {
+            throw new Error("The load error did not identify the selected recipe.");
+          }
+          if (/ChunkLoadError|dynamic import|test failure/i.test(errorText)) {
+            throw new Error("The load error exposed an internal implementation detail.");
+          }
+          document.querySelector(".ml-generator-retry")?.click();
+          await waitForLoadState("ready");
+          if (
+            !document.querySelector(".ml-generator-file")?.textContent.includes("train_edge_image_classifier.py")
+          ) {
+            throw new Error("Retry did not recover the failed recipe.");
+          }
+
+          await choose("templateId", "yolo-detection-training");
+          await waitForLoadState("ready");
           await setMode("Production-oriented");
           await choose("task", "train-export");
           await choose("modelSize", "extra-large");

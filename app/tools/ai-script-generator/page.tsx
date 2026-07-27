@@ -554,7 +554,7 @@ export default function AIScriptGeneratorPage() {
               <span />
               <span />
               <span />
-              <p>Loading compatible configuration controls?</p>
+              <p>Loading compatible configuration controls...</p>
             </div>
           )}
 
@@ -574,7 +574,7 @@ export default function AIScriptGeneratorPage() {
             code={result.code}
             validationErrors={validationErrors}
             warnings={result.warnings}
-            errorMessage={loaded.error?.message}
+            errorMessage={`We couldn't load ${template.title}. Your configuration stayed local. Try again.`}
             copyStatus={state.copyStatus}
             onCopy={handleCopy}
             onRetry={() => dispatch({ type: "retry-recipe" })}

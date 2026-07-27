@@ -166,7 +166,7 @@ export function GeneratorInfoTabs({
                 : source.licenseName}
             </p>
             <small>
-              {source.sourceType} ? {source.versionOrDate} ? Verified{" "}
+              {source.sourceType} / {source.versionOrDate} / Verified{" "}
               {source.verifiedAt}
             </small>
           </li>

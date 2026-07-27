@@ -147,6 +147,38 @@ const INITIAL_STATE: LoadState = {
   recipe: null,
   error: null,
 };
+const failedOnceRecipeIds = new Set<string>();
+
+function loadRecipeForClient(recipeId: string) {
+  if (
+    process.env.NODE_ENV === "production"
+    || typeof window === "undefined"
+  ) {
+    return loadRecipe(recipeId);
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const configuredDelay = Number(params.get("recipeLoadDelay") ?? 0);
+  const delayMs =
+    Number.isFinite(configuredDelay) && configuredDelay > 0
+      ? Math.min(configuredDelay, 2_000)
+      : 0;
+  const failOnceRecipeId = params.get("recipeLoadFailOnce");
+
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, delayMs);
+  }).then(() => {
+    if (
+      failOnceRecipeId === recipeId
+      && !failedOnceRecipeIds.has(recipeId)
+    ) {
+      failedOnceRecipeIds.add(recipeId);
+      throw new Error("Simulated recipe load failure.");
+    }
+    return loadRecipe(recipeId);
+  });
+}
+
 
 export function useMlGeneratorRecipe(
   recipeId: string,
@@ -172,7 +204,7 @@ export function useMlGeneratorRecipe(
       error: null,
     });
 
-    loadRecipe(recipeId)
+    loadRecipeForClient(recipeId)
       .then((loadedRecipe: LoadedMlRecipe) => {
         if (requestIdRef.current !== requestId) return;
         setLoadState({
