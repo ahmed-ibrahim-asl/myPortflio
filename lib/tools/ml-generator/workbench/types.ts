@@ -35,8 +35,8 @@ export type MissionControlExplanation = {
   why: string;
   useWhen: string;
   codeEffect: string;
-  avoidWhen?: string;
-  tradeoff?: string;
+  avoidWhen: string;
+  tradeoff: string;
 };
 
 export type MissionControlRule = {
@@ -60,6 +60,7 @@ export type MissionControl = {
   label: string;
   controlType: string;
   defaultValue: ProjectConfigValue;
+  configKey?: string;
   shortHelp: string;
   explanation: MissionControlExplanation;
   visibleWhen?: MissionControlRule;
