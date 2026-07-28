@@ -60,6 +60,53 @@ test("neural output uses the same result contract", () => {
   assert.deepEqual(result.validationErrors, {});
 });
 
+test("neural adapter passes every project section into its complete contract", () => {
+  const result = generateSynchronousMissionResult({
+    ...createDefaultProjectConfig(),
+    taskId: "neural-network",
+    data: {
+      dataSource: "custom-csv",
+      dataPath: "data/patients.csv",
+      targetColumn: "diagnosis",
+    },
+    split: {
+      splitStrategy: "train-validation-test",
+      testRatio: 0.2,
+      validationRatio: 0.1,
+    },
+    preparation: { scaling: "robust" },
+    model: { framework: "pytorch", preset: "tabular-mlp" },
+    training: {
+      optimizer: "sgd",
+      scheduler: "cosine",
+      momentum: 0.8,
+      randomSeed: 7,
+    },
+    output: {
+      checkpointPath: "artifacts/patient_best.pt",
+      artifactPath: "artifacts/patient_network.pt",
+    },
+  });
+
+  assert.deepEqual(result.validationErrors, {});
+  assert.match(result.code, /data\/patients\.csv/);
+  assert.match(result.code, /artifacts\/patient_network\.pt/);
+  assert.match(result.code, /optimizer = torch\.optim\.SGD/);
+});
+
+test("neural adapter returns typed configuration errors by section", () => {
+  const result = generateSynchronousMissionResult({
+    ...createDefaultProjectConfig(),
+    taskId: "neural-network",
+    data: { dataPath: "../outside.csv" },
+    model: { framework: "keras", preset: "tabular-mlp" },
+  });
+
+  assert.equal(result.code, "");
+  assert.match(result.validationErrors.data, /relative/i);
+  assert.equal(result.validationErrors.architecture, undefined);
+});
+
 test("invalid neural architecture blocks generated code with a field error", () => {
   const result = generateSynchronousMissionResult({
     ...createDefaultProjectConfig(),
