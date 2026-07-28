@@ -1,12 +1,12 @@
 # Model Mission Unified Builder Design
 
-**Status:** Approved direction, awaiting written-spec review  
-**Date:** 2026-07-28  
+**Status:** Approved direction, awaiting written-spec review
+**Date:** 2026-07-28
 **Route:** `/tools/ai-script-generator/`
 
 ## Product definition
 
-**Name:** Model Mission  
+**Name:** Model Mission
 **Tagline:** From problem to Python, one decision at a time.
 
 Model Mission is one guided AI and machine-learning script builder. It replaces
