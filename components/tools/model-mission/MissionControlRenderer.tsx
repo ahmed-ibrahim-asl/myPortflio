@@ -13,11 +13,11 @@ import styles from "./ModelMission.module.css";
 type MissionControl = {
   id: string;
   configKey?: string;
-  section: "data" | "inspection" | "split" | "preparation" | "model" | "training";
+  section: "data" | "inspection" | "split" | "preparation" | "model" | "training" | "evaluation" | "output";
   level: string;
   label: string;
   controlType: string;
-  defaultValue: string | number | boolean | string[];
+  defaultValue: string | number | boolean | string[] | null;
   shortHelp: string;
   explanation: {
     what: string;
@@ -38,13 +38,19 @@ type Project = {
   preparation: Record<string, unknown>;
   model: Record<string, unknown>;
   training: Record<string, unknown>;
+  evaluation: Record<string, unknown>;
+  output: Record<string, unknown>;
 };
 
 type MissionControlRendererProps = {
   control: MissionControl;
   project: Project;
   dispatch: (action: { type: string; [key: string]: unknown }) => void;
-  recommendation: string | null;
+  recommendation: {
+    recommendedValue: string;
+    label: string;
+    reason: string;
+  } | null;
 };
 
 function selectOptions(control: MissionControl, taskId: string) {
@@ -57,6 +63,10 @@ function selectOptions(control: MissionControl, taskId: string) {
     return [
       { value: "train-validation-test", label: "Train + validation + test" },
       { value: "train-test", label: "Train + test" },
+      { value: "random", label: "Random train + test" },
+      { value: "group", label: "Group-aware train + test" },
+      { value: "time", label: "Chronological train + test" },
+      { value: "cross-validation", label: "Cross-validation + test" },
     ];
   }
   if (control.id === "numericImputer") {
@@ -71,9 +81,18 @@ function selectOptions(control: MissionControl, taskId: string) {
       label: value.replace("_", " "),
     }));
   }
-  if (control.id === "scaling") return ["none", "standard", "robust", "minmax"].map((value) => ({ value, label: value }));
+  if (control.id === "scaling") return ["none", "standard", "robust", "minmax", "maxabs", "power", "quantile"].map((value) => ({ value, label: value }));
   if (control.id === "encoding") return ["onehot", "ordinal"].map((value) => ({ value, label: value }));
   if (control.id === "balance") return ["none", "class-weight", "smote"].map((value) => ({ value, label: value }));
+  if (control.id === "searchStrategy") return [
+    { value: "none", label: "No parameter search" },
+    { value: "randomized", label: "Randomized search" },
+  ];
+  if (control.id === "calibration") return [
+    { value: "none", label: "No calibration" },
+    { value: "sigmoid", label: "Sigmoid calibration" },
+    { value: "isotonic", label: "Isotonic calibration" },
+  ];
   if (control.id === "framework") {
     return [
       { value: "keras", label: "Keras / TensorFlow" },
@@ -97,6 +116,8 @@ function numericBounds(id: string) {
     epochs: [1, 100000, 1],
     batchSize: [1, 65536, 1],
     neuralLearningRate: [0.0000001, 10, 0.0001],
+    cvFolds: [2, 10, 1],
+    decisionThreshold: [0.01, 0.99, 0.01],
   };
   return bounds[id];
 }
@@ -171,7 +192,7 @@ export function MissionControlRenderer({
 
   const fieldValue = control.id === "inputShape" && Array.isArray(value)
     ? value.join(", ")
-    : value as string | number | boolean;
+    : value === null ? "" : value as string | number | boolean;
   return (
     <div data-control-id={control.id} data-control-level={control.level}>
       <MissionField

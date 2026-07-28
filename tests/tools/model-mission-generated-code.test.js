@@ -65,3 +65,16 @@ test("every Model Mission task produces complete parseable Python", async () => 
     );
   }
 });
+
+test("mission generation surfaces known multiclass threshold errors before execution", () => {
+  const project = createProjectForTask("classification");
+  const result = generateSynchronousMissionResult({
+    ...project,
+    data: { ...project.data, dataset: "wine" },
+    evaluation: { ...project.evaluation, decisionThreshold: 0.65 },
+  });
+
+  assert.deepEqual(result.validationErrors, {
+    decisionThreshold: "Decision thresholds require a binary classification dataset.",
+  });
+});

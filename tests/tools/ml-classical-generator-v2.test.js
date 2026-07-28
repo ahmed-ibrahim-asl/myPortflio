@@ -199,6 +199,34 @@ test("cross-validation and randomized search are emitted only when selected", ()
   assert.doesNotMatch(randomSplit.code, /cross_validate|RandomizedSearchCV/);
 });
 
+test("randomized search uses Linear Regression parameters that the estimator accepts", () => {
+  const result = generateClassicalScript({
+    task: "regression",
+    dataset: "diabetes",
+    model: "linear-regression",
+    splitStrategy: "cross-validation",
+    searchStrategy: "randomized",
+  });
+
+  assert.match(result.code, /PARAMETER_DISTRIBUTIONS = \{"model__fit_intercept": \[True, False\]\}/);
+  assert.doesNotMatch(result.code, /"model__max_depth"/);
+  assert.deepEqual(result.validationErrors, {});
+});
+
+test("known multiclass datasets reject binary decision thresholds before training", () => {
+  const result = generateClassicalScript({
+    task: "classification",
+    dataset: "iris",
+    decisionThreshold: 0.7,
+  });
+
+  assert.equal(
+    result.validationErrors.decisionThreshold,
+    "Decision thresholds require a binary classification dataset.",
+  );
+  assert.match(result.code, /Decision thresholds require a binary classifier/);
+});
+
 test("calibration and binary thresholds only apply to compatible classification workflows", () => {
   const classification = generateClassicalScript({
     task: "classification",

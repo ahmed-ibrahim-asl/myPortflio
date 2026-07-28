@@ -1,7 +1,10 @@
 import styles from "./ModelMission.module.css";
 
 type MissionRecommendationProps = {
-  recommendation: string | null;
+  recommendation: {
+    label: string;
+    reason: string;
+  } | null;
 };
 
 export function MissionRecommendation({
@@ -11,7 +14,7 @@ export function MissionRecommendation({
 
   return (
     <p className={styles.recommendation}>
-      <strong>Recommended:</strong> {recommendation}
+      <strong>Recommended:</strong> {recommendation.label}. {recommendation.reason}
     </p>
   );
 }

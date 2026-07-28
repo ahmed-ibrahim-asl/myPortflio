@@ -8,6 +8,9 @@ import {
   getMissionControl,
   getMissionControls,
 } from "@/lib/tools/ml-generator/model-mission/control-registry";
+import {
+  getMissionRecommendation,
+} from "@/lib/tools/ml-generator/model-mission/recommendations";
 
 import { MissionControlRenderer } from "./MissionControlRenderer";
 import { MissionExplanation } from "./MissionExplanation";
@@ -58,17 +61,6 @@ const STEP_COPY: Record<string, { title: string; description: string }> = {
   evaluate: { title: "Choose evidence that matches the goal", description: "The generated script reports task-compatible metrics and keeps the test set separate." },
   generate: { title: "Review the mission", description: "Your complete Python script updates in the code workspace as every decision changes." },
 };
-
-function getMissionRecommendation(
-  control: { id: string; configKey?: string; section: keyof Project; defaultValue: unknown },
-  project: Project,
-) {
-  const value = project[control.section] as Record<string, unknown>;
-  const selected = value[control.configKey ?? control.id] ?? control.defaultValue;
-  return JSON.stringify(selected) === JSON.stringify(control.defaultValue)
-    ? "Safe default for this mission."
-    : null;
-}
 
 function lessonFor(stepId: string) {
   if (stepId === "inspect") return "Use the displayed controls to inspect the data before making model choices.";
@@ -155,7 +147,7 @@ export function MissionStepPanel({
               control={control}
               project={project}
               dispatch={dispatch}
-              recommendation={getMissionRecommendation(control, project)}
+              recommendation={getMissionRecommendation(control.id, project)}
             />
           ))}
         </div>
