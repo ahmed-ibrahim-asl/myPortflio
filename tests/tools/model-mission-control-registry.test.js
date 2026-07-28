@@ -88,3 +88,34 @@ test("control IDs identify their task-specific definitions and freeze nested val
   assert.throws(() => inputShape.defaultValue.push(99), TypeError);
   assert.throws(() => alpha.visibleWhen.in.push("ridge-plus"), TypeError);
 });
+
+test("YOLO learning-rate control follows the automatic optimizer rule", () => {
+  const project = createProjectForTask("object-detection");
+  const automaticControls = getMissionControls({
+    taskId: "object-detection",
+    stepId: "train",
+    learningLevel: "advanced",
+    project: {
+      ...project,
+      model: { ...project.model, optimizer: "auto" },
+    },
+  });
+  const explicitControls = getMissionControls({
+    taskId: "object-detection",
+    stepId: "train",
+    learningLevel: "advanced",
+    project: {
+      ...project,
+      model: { ...project.model, optimizer: "AdamW" },
+    },
+  });
+
+  assert.equal(
+    automaticControls.find(({ id }) => id === "learningRate")?.disabledReason,
+    "Automatic optimizer selection may choose its own learning rate.",
+  );
+  assert.equal(
+    explicitControls.find(({ id }) => id === "learningRate")?.disabledReason,
+    "",
+  );
+});

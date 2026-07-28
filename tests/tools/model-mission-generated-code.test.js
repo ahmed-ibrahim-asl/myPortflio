@@ -78,3 +78,24 @@ test("mission generation surfaces known multiclass threshold errors before execu
     decisionThreshold: "Decision thresholds require a binary classification dataset.",
   });
 });
+
+test("YOLO mission code keeps validation and prediction confidence separate", async () => {
+  const recipe = await loadRecipe("yolo-detection-training");
+  const result = buildRecipeResult(recipe, recipe.id, {
+    optimizer: "AdamW",
+    validationConfidence: 0.01,
+    predictionConfidence: 0.4,
+  }, "production");
+
+  assert.deepEqual(result.validationErrors, {});
+  assert.match(result.code, /"validation_confidence": 0\.01/);
+  assert.match(result.code, /"prediction_confidence": 0\.4/);
+  assert.match(result.code, /model\.val\([\s\S]*conf=float\(CONFIG\["validation_confidence"\]\)/);
+  assert.match(result.code, /model\.predict\([\s\S]*conf=float\(CONFIG\["prediction_confidence"\]\)/);
+  const parsed = spawnSync(
+    "python",
+    ["-c", "import ast,sys; ast.parse(sys.stdin.read())"],
+    { input: result.code, encoding: "utf8" },
+  );
+  assert.equal(parsed.status, 0, parsed.stderr);
+});

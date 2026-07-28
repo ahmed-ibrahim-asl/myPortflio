@@ -8,6 +8,9 @@ import {
   getModelMissionTask,
   getModelMissionTasksByLevel,
 } from "../../lib/tools/ml-generator/model-mission/catalog.js";
+import {
+  MISSION_CONTROL_DEFINITIONS,
+} from "../../lib/tools/ml-generator/model-mission/control-definitions.js";
 
 test("tasks are ordered from simplest to most advanced", () => {
   assert.deepEqual(
@@ -59,8 +62,16 @@ test("every legacy field belongs to exactly one workflow step", () => {
       "epochs",
       "batchSize",
       "device",
+      "optimizer",
       "learningRate",
-      "confidenceThreshold",
+      "weightDecay",
+      "momentum",
+      "warmupEpochs",
+      "freezeLayers",
+      "deterministic",
+      "validationConfidence",
+      "predictionConfidence",
+      "iouThreshold",
       "patience",
       "workers",
       "seed",
@@ -136,4 +147,21 @@ test("every legacy field belongs to exactly one workflow step", () => {
     getLegacyFieldsForStep("unknown-recipe", "model"),
     [],
   );
+});
+
+test("YOLO learning-rate control is disabled while automatic optimization is selected", () => {
+  const learningRateControl = MISSION_CONTROL_DEFINITIONS.find((control) =>
+    control.id === "learningRate" && control.taskIds.includes("object-detection")
+  );
+  const optimizerControl = MISSION_CONTROL_DEFINITIONS.find((control) =>
+    control.id === "optimizer" && control.taskIds.includes("object-detection")
+  );
+
+  assert.equal(optimizerControl?.level, "guided");
+  assert.deepEqual(learningRateControl?.enabledWhen, {
+    path: "model.optimizer",
+    operator: "not-equals",
+    value: "auto",
+    reason: "Automatic optimizer selection may choose its own learning rate.",
+  });
 });
