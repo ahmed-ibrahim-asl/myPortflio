@@ -159,7 +159,7 @@ test("YOLO learning-rate control is disabled while automatic optimization is sel
 
   assert.equal(optimizerControl?.level, "guided");
   assert.deepEqual(learningRateControl?.enabledWhen, {
-    path: "model.optimizer",
+    path: "training.optimizer",
     operator: "not-equals",
     value: "auto",
     reason: "Automatic optimizer selection may choose its own learning rate.",

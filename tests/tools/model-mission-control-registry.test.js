@@ -97,7 +97,7 @@ test("YOLO learning-rate control follows the automatic optimizer rule", () => {
     learningLevel: "advanced",
     project: {
       ...project,
-      model: { ...project.model, optimizer: "auto" },
+      training: { ...project.training, optimizer: "auto" },
     },
   });
   const explicitControls = getMissionControls({
@@ -106,7 +106,7 @@ test("YOLO learning-rate control follows the automatic optimizer rule", () => {
     learningLevel: "advanced",
     project: {
       ...project,
-      model: { ...project.model, optimizer: "AdamW" },
+      training: { ...project.training, optimizer: "AdamW" },
     },
   });
 
@@ -118,4 +118,28 @@ test("YOLO learning-rate control follows the automatic optimizer rule", () => {
     explicitControls.find(({ id }) => id === "learningRate")?.disabledReason,
     "",
   );
+});
+
+test("new YOLO controls explain why each setting matters", () => {
+  const expectedKeywords = {
+    optimizer: "optimizer",
+    learningRate: "learning rate",
+    validationConfidence: "validation",
+    predictionConfidence: "prediction",
+    weightDecay: "regularization",
+    momentum: "momentum",
+    warmupEpochs: "warmup",
+    freezeLayers: "frozen",
+    iouThreshold: "overlapping",
+    deterministic: "repeatable",
+  };
+
+  for (const [id, keyword] of Object.entries(expectedKeywords)) {
+    const control = MODEL_MISSION_CONTROLS.find((item) =>
+      item.id === id && item.taskIds.includes("object-detection")
+    );
+    assert.ok(control, `${id} must be defined for object detection`);
+    assert.match(control.explanation.why, new RegExp(keyword, "i"));
+    assert.doesNotMatch(control.explanation.why, /^Configure .*workflow\.$/i);
+  }
 });

@@ -148,3 +148,23 @@ test("YOLO validates advanced controls and separate confidence bounds", () => {
     iouThreshold: "IoU threshold must be between 0 and 1.",
   });
 });
+
+test("inference-only YOLO ignores its hidden validation confidence", () => {
+  const result = buildMlGeneratorResult("yolo-detection-training", {
+    task: "inference",
+    validationConfidence: -0.01,
+  }, "production");
+
+  assert.deepEqual(result.validationErrors, {});
+  assert.match(result.code, /conf=float\(CONFIG\["prediction_confidence"\]\)/);
+});
+
+test("validation-only YOLO ignores its hidden prediction confidence", () => {
+  const result = buildMlGeneratorResult("yolo-detection-training", {
+    task: "validate",
+    predictionConfidence: 1.01,
+  }, "production");
+
+  assert.deepEqual(result.validationErrors, {});
+  assert.match(result.code, /conf=float\(CONFIG\["validation_confidence"\]\)/);
+});
