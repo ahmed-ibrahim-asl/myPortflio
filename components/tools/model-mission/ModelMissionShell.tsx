@@ -76,6 +76,7 @@ export function ModelMissionShell() {
     <section
       className={styles.root}
       data-model-mission
+      data-learning-level={state.project.learningLevel}
       style={{
         "--panel": "#0c1023",
         "--panel-raised": "#121831",

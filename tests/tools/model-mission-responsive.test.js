@@ -269,6 +269,77 @@ test(
         hasRegressor: true,
       });
 
+      const progressiveControls = await client.send("Runtime.evaluate", {
+        awaitPromise: true,
+        returnByValue: true,
+        expression: `(async () => {
+          const pause = () => new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve))
+          );
+          const workflowButton = (label) => [...document.querySelectorAll(
+            "[data-mission-workflow] button"
+          )].find((button) => button.textContent.includes(label));
+          workflowButton("Train").click();
+          await pause();
+          const levelButton = (label) => [...document.querySelectorAll(
+            '[aria-label="Explanation level"] button'
+          )].find((button) => button.textContent.includes(label));
+          const visibleCount = () => [...document.querySelectorAll(
+            "[data-control-level]"
+          )].filter((element) => element.getClientRects().length > 0).length;
+
+          levelButton("Guided").click();
+          await pause();
+          const guidedCount = visibleCount();
+          levelButton("Customize").click();
+          await pause();
+          const customizeCount = visibleCount();
+          levelButton("Advanced").click();
+          await pause();
+          const advancedCount = visibleCount();
+          const advancedOnly = document.querySelector(
+            '[data-control-id="maxDepth"] input'
+          );
+          const setInputValue = Object.getOwnPropertyDescriptor(
+            HTMLInputElement.prototype,
+            "value",
+          ).set;
+          setInputValue.call(advancedOnly, "12");
+          advancedOnly.dispatchEvent(new Event("input", { bubbles: true }));
+          advancedOnly.dispatchEvent(new Event("change", { bubbles: true }));
+          await pause();
+          levelButton("Guided").click();
+          await pause();
+          levelButton("Advanced").click();
+          await pause();
+          const advancedOnlyValue = document.querySelector(
+            '[data-control-id="maxDepth"] input'
+          )?.value;
+          workflowButton("Model").click();
+          await pause();
+
+          return {
+            guidedCount,
+            customizeCount,
+            advancedCount,
+            advancedOnlyValue,
+          };
+        })()`,
+      });
+      assert.equal(
+        progressiveControls.exceptionDetails,
+        undefined,
+        JSON.stringify(progressiveControls.exceptionDetails),
+      );
+      const {
+        guidedCount,
+        customizeCount,
+        advancedCount,
+        advancedOnlyValue,
+      } = progressiveControls.result.value;
+      assert.ok(customizeCount > guidedCount);
+      assert.ok(advancedCount > customizeCount);
+      assert.equal(advancedOnlyValue, "12");
       for (const viewport of [
         { width: 320, height: 700 },
         { width: 360, height: 760 },

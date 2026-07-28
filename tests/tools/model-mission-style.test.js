@@ -16,6 +16,9 @@ test("Model Mission uses the portfolio flat token system safely", async () => {
     /linear-gradient|radial-gradient|backdrop-filter/,
   );
   assert.doesNotMatch(css, /overflow:\s*(hidden|clip)/);
+  assert.match(css, /\.explanation/);
+  assert.match(css, /\.recommendation/);
+  assert.match(css, /overflow-wrap:\s*anywhere/);
   for (const token of [
     "--night",
     "--panel",

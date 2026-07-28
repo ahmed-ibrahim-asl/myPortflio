@@ -1,5 +1,20 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+test("Model Mission sources use progressive controls and accessible explanations", async () => {
+  const [stepPanelSource, fieldSource, shellSource] = await Promise.all([
+    readFile(new URL("../../components/tools/model-mission/MissionStepPanel.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../../components/tools/model-mission/MissionField.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../../components/tools/model-mission/ModelMissionShell.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(stepPanelSource, /getMissionControls/);
+  assert.match(stepPanelSource, /MissionControlRenderer/);
+  assert.match(fieldSource, /Learn this choice/);
+  assert.match(fieldSource, /aria-expanded/);
+  assert.match(shellSource, /data-learning-level/);
+});
 
 test("the public AI generator route renders one Model Mission builder", async (t) => {
   const routeUrl =

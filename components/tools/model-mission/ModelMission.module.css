@@ -921,3 +921,88 @@
     scroll-behavior: auto;
   }
 }
+
+.fieldGrid > [data-control-id],
+.fieldGrid > :global(.ml-generator-field),
+.explanation,
+.recommendation {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.fieldHeading,
+.controlMeta {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+}
+
+.fieldHeading label,
+.controlMeta > span:first-child {
+  color: var(--pixel-cyan);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fieldHeading > span:not(.recommendedBadge) {
+  color: var(--muted);
+  font-size: 0.58rem;
+  overflow-wrap: anywhere;
+}
+
+.recommendedBadge {
+  padding: 3px 5px;
+  color: var(--night);
+  background: var(--pixel-gold);
+  font-size: 0.54rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fieldError {
+  margin: 0;
+  color: #f49aab;
+  font-size: 0.64rem;
+}
+
+.explanation,
+.recommendation {
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.explanation button {
+  min-height: 34px;
+  padding: 6px 8px;
+  color: var(--pixel-cyan);
+  background: var(--panel-raised);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.explanationBody {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.explanationBody p,
+.recommendation {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.65rem;
+  line-height: 1.5;
+}
+
+.explanationBody strong,
+.recommendation strong {
+  color: var(--pixel-green);
+}
