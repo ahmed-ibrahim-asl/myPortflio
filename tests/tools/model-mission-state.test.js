@@ -6,6 +6,9 @@ import {
   createProjectForTask,
   modelMissionReducer,
 } from "../../lib/tools/ml-generator/model-mission/state.js";
+import {
+  generateSynchronousMissionResult,
+} from "../../lib/tools/ml-generator/model-mission/adapters.js";
 
 test("initial state starts with the simplest guided task", () => {
   const state = createModelMissionState();
@@ -93,6 +96,51 @@ test("neural defaults are stored in normal project sections", () => {
   assert.equal(project.model.preset, "tabular-mlp");
   assert.equal(project.training.epochs, 20);
   assert.equal(project.training.batchSize, 32);
+});
+
+test("neural primary-control changes refresh dependent defaults without overwriting custom values", () => {
+  let state = {
+    ...createModelMissionState(),
+    project: createProjectForTask("neural-network"),
+  };
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "model",
+    patch: { framework: "pytorch" },
+  });
+
+  assert.equal(state.project.output.checkpointPath, "artifacts/best_neural_network.pt");
+  assert.equal(state.project.output.artifactPath, "artifacts/neural_network.pt");
+  assert.deepEqual(
+    generateSynchronousMissionResult(state.project).validationErrors,
+    {},
+  );
+
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "model",
+    patch: { preset: "image-cnn" },
+  });
+  assert.equal(state.project.data.dataSource, "image-folder");
+  assert.equal(state.project.data.dataPath, "data/images");
+  assert.deepEqual(
+    generateSynchronousMissionResult(state.project).validationErrors,
+    {},
+  );
+
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "output",
+    patch: { artifactPath: "artifacts/custom_image.pt" },
+  });
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "model",
+    patch: { framework: "keras" },
+  });
+
+  assert.equal(state.project.output.artifactPath, "artifacts/custom_image.pt");
+  assert.equal(state.project.output.checkpointPath, "artifacts/best_neural_network.keras");
 });
 
 test("retry increments a token without changing the project", () => {

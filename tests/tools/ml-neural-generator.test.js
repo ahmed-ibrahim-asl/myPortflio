@@ -112,6 +112,23 @@ test("neural contracts reject unsafe paths and invalid split totals with typed e
   );
 });
 
+test("neural contracts reject Windows traversal and UNC paths before normalizing them", () => {
+  const cases = [
+    { dataPath: "data\\..\\secret.csv", section: "data" },
+    { checkpointPath: "artifacts\\..\\best_neural_network.keras", section: "architecture" },
+    { artifactPath: "artifacts\\..\\neural_network.keras", section: "architecture" },
+    { dataPath: "\\\\server\\share\\dataset.csv", section: "data" },
+  ];
+
+  for (const item of cases) {
+    assert.throws(
+      () => normalizeNeuralConfig(item),
+      (error) => error instanceof NeuralConfigurationError
+        && error.section === item.section,
+    );
+  }
+});
+
 test("neural contracts reject incompatible preset, data, and output combinations", () => {
   assert.throws(
     () => normalizeNeuralConfig({
