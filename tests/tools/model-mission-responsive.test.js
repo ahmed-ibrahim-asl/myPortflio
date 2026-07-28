@@ -571,6 +571,67 @@ test(
         friendlyError: true,
         recovered: true,
       });
+
+      const neuralInputShape = await client.send("Runtime.evaluate", {
+        awaitPromise: true,
+        returnByValue: true,
+        expression: `(async () => {
+          const pause = () => new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve))
+          );
+          const setValue = (element, value) => {
+            const setter = Object.getOwnPropertyDescriptor(
+              element instanceof HTMLSelectElement
+                ? HTMLSelectElement.prototype
+                : HTMLInputElement.prototype,
+              "value",
+            ).set;
+            setter.call(element, value);
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+            element.dispatchEvent(new Event("change", { bubbles: true }));
+          };
+          const workflowButton = (label) => [...document.querySelectorAll(
+            "[data-mission-workflow] button"
+          )].find((button) => button.textContent.includes(label));
+          workflowButton("Goal").click();
+          await pause();
+          document.querySelector('[data-mission-task="neural-network"]').click();
+          await pause();
+          workflowButton("Prepare").click();
+          await pause();
+          setValue(
+            document.querySelector('[data-control-id="preset"] select'),
+            "sequence-conv1d",
+          );
+          await pause();
+          workflowButton("Data").click();
+          await pause();
+          setValue(
+            document.querySelector('[data-control-id="inputShape"] input'),
+            "24, 6",
+          );
+          for (let attempt = 0; attempt < 100; attempt += 1) {
+            const code = document.querySelector("[data-mission-code-panel] pre")?.textContent;
+            if (code?.includes("INPUT_SHAPE = (24, 6)")) {
+              return { inputShape: [24, 6], code };
+            }
+            await new Promise((resolve) => setTimeout(resolve, 35));
+          }
+          return {
+            inputShape: document.querySelector(
+              '[data-control-id="inputShape"] input'
+            )?.value,
+            code: document.querySelector("[data-mission-code-panel] pre")?.textContent,
+          };
+        })()`,
+      });
+      assert.equal(
+        neuralInputShape.exceptionDetails,
+        undefined,
+        JSON.stringify(neuralInputShape.exceptionDetails),
+      );
+      assert.deepEqual(neuralInputShape.result.value.inputShape, [24, 6]);
+      assert.match(neuralInputShape.result.value.code, /INPUT_SHAPE = \(24, 6\)/);
     } finally {
       client?.socket.close();
       stopProcessTree(chrome);

@@ -102,7 +102,7 @@ export function useModelMission() {
     return getRecipeVisibleFields(
       legacy.recipe,
       legacyConfig,
-      mode,
+      "production",
     ).filter((field: { id: string }) => stepFields.has(field.id));
   }, [
     legacy,

@@ -99,22 +99,23 @@ export function MissionStepPanel({
     if (!legacyRecipe) {
       return <div className={styles.loadingBox} role="status">Loading the configuration for {task.technicalTerm}…</div>;
     }
-    const controlIds = new Set(controls.map(({ id }) => id));
-    const fields = visibleLegacyFields.filter((field) => {
-      const control = getMissionControl(field.id);
-      return !control || controlIds.has(field.id);
-    });
+    const controlsById = new Map(
+      controls.map((control) => [control.id, control]),
+    );
+    const fields = visibleLegacyFields.filter((field) =>
+      controlsById.has(field.id),
+    );
     if (fields.length === 0) return <div className={styles.lessonBox}><strong>No syntax choices are required here.</strong><p>{lessonFor(stepId)}</p></div>;
 
     return (
       <div className={styles.fieldGrid} data-learning-level={project.learningLevel}>
         {fields.map((field) => {
-          const control = getMissionControl(field.id);
+          const control = controlsById.get(field.id)!;
           return (
             <div
               key={field.id}
               data-control-id={field.id}
-              data-control-level={control?.level ?? "guided"}
+              data-control-level={control.level}
             >
               <ConfigurationField
                 templateId={legacyRecipe.id}
@@ -126,7 +127,7 @@ export function MissionStepPanel({
                 onRawNumericChange={(fieldId, value) => patchLegacyField(fieldId, value === "" ? 0 : Number(value))}
                 onNumericCommit={() => {}}
               />
-              {control ? <MissionExplanation id={field.id} explanation={control.explanation} /> : null}
+              <MissionExplanation id={field.id} explanation={control.explanation} />
             </div>
           );
         })}

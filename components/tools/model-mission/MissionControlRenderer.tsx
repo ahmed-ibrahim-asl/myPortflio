@@ -195,7 +195,13 @@ export function MissionControlRenderer({
               .split(",")
               .map((item) => Number(item.trim()))
               .filter((item) => Number.isFinite(item) && item > 0);
-            if (inputShape.length > 0) patch(inputShape.join(","));
+            if (inputShape.length > 0) {
+              dispatch({
+                type: "patch-section",
+                section: "model",
+                patch: { inputShape },
+              });
+            }
             return;
           }
           if (control.id === "preset") {
