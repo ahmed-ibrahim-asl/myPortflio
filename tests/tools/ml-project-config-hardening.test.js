@@ -6,6 +6,22 @@ import {
   parseProjectConfig,
   serializeProjectConfig,
 } from "../../lib/tools/ml-generator/workbench/project-config.js";
+import {
+  migrateProjectConfig,
+} from "../../lib/tools/ml-generator/workbench/project-config-migrations.js";
+
+test("version one projects migrate to version two without losing sections", () => {
+  const migrated = migrateProjectConfig({
+    schemaVersion: 1,
+    taskId: "classification",
+    learningLevel: "advanced",
+    preparation: { scaling: "robust" },
+  });
+
+  assert.equal(migrated.schemaVersion, 2);
+  assert.equal(migrated.preparation.scaling, "robust");
+  assert.equal(migrated.output.projectName, "model-mission-project");
+});
 
 test("ProjectConfig rejects invalid roots and schema versions", () => {
   assert.throws(
