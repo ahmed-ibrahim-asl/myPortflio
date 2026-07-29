@@ -7,11 +7,11 @@ Revised score: **8.7/10**
 
 ## Executive result
 
-The reviewed Model Mission route passes the full JavaScript/TypeScript/build and live responsive verification available in this repository. All eight requested representative configurations generate parseable Python and deterministic eight-file project archives through the current production APIs.
+The reviewed Model Mission route passes every repository verification command executed by this audit. All eight requested representative configurations generate parseable Python and deterministic eight-file project archives through the current production APIs.
 
 This is not a claim of universal no-code coverage. The tool generates editable training projects for its registered workflows; users still provide task-appropriate data, install the declared environment, interpret metrics, and own deployment validation.
 
-The local audit machine does not have scikit-learn, pandas, joblib, TensorFlow/Keras, PyTorch, torchvision, or Ultralytics. Therefore no training runtime is reported as passed. Dependency-free project smoke tests passed, while AST/static compilation is kept distinct from runtime execution.
+Current runtime evidence records 3 unavailable, 5 not-applicable. Missing local modules recorded by the project outcomes: `joblib`, `keras`, `pandas`, `sklearn`, `tensorflow`, `torch`. The environment probe found 2 available declared-runtime import(s). Dependency-free structural smoke checks remain distinct from training execution.
 
 ## Verification
 
@@ -19,12 +19,14 @@ The local audit machine does not have scikit-learn, pandas, joblib, TensorFlow/K
 | --- | --- | --- |
 | npm run test:ml | exit 0 (passed) | 120/120 pass |
 | node --test tests/tools/ml-classical-generator-v2.test.js tests/tools/ml-neural-generator.test.js tests/tools/ml-project-config.test.js | exit 0 (passed) | 47/47 pass |
+| node --test tests/tools/ml-generator-baseline-contract.test.js tests/tools/ml-generator-parity.test.js | exit 0 (passed) | 10/10 pass |
 | npx tsc --noEmit | exit 0 (passed) | no command output |
-| npm run build | exit 0 (passed) | 0/16 static pages |
+| npm run build | exit 0 (passed) | 16/16 static pages |
 | npm run test:ml:responsive | exit 0 (passed) | 2/2 pass |
-| git diff --check | exit 0 (passed) | no command output |
+| git diff --check -- scripts/build_model_mission_audit_artifacts.py tests/tools/model-mission-responsive.test.js tests/tools/test_model_mission_audit_builder.py | exit 0 (passed) | no command output |
+| git diff --check -- docs/reports/2026-07-29-model-mission-learning-engine-audit.md docs/reports/2026-07-29-model-mission-learning-engine-evidence.json | exit 0 (passed) | no command output |
 
-The Node tests emit a non-failing `MODULE_TYPELESS_PACKAGE_JSON` warning because this package contains ES-module syntax without declaring `"type": "module"`. It is classified as tooling noise, not a product failure.
+Normalized verification warnings: `ml-suite`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `focused-generators`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `yolo-baseline-parity`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `diff-check`: warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `diff-check`: warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-audit.md', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-evidence.json', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning).
 
 ## Eight representative projects
 
@@ -49,7 +51,7 @@ Runtime meanings:
 
 ## Live student and expert audit
 
-The existing responsive harness started a scoped local Next.js process, connected a real headless Chromium/Edge session, and passed at **320, 360, 390, 768, 900, 1024, and 1440 px**. Its observed assertions cover page containment, control/panel containment, non-intersection, Configure/Code state preservation, hidden advanced-value restoration, explanation containment, Advanced-vs-Customize disclosure, project/Python download interactions, and the absence of computed gradients in Model Mission backgrounds.
+The scoped local Next.js/Chromium harness passed its structured audit at **320, 360, 390, 768, 900, 1024, 1440 px**. Every width recorded passing layout and neural-editor outcomes. The emitted passing contracts were `advancedExceedsCustomize`, `downloadsAreLocalAndComplete`, `explanationsContained`, `hiddenValuesPreserved`, `mobileTabsPreserveState`, `noComputedGradients`.
 
 The UI presents nine ordered steps: Goal, Data, Inspect, Split, Prepare, Model, Train, Evaluate, and Generate. Each registered control has all six required educational metadata fields. This supports a guided walkthrough, but an automated browser audit cannot establish that a student can explain all nine steps after one project; that claim requires a real comprehension study.
 
@@ -67,7 +69,47 @@ Customize adds practical choices and Advanced adds specialist controls for every
 | instance-segmentation | 12 | 20 | 28 |
 | neural-network | 10 | 19 | 29 |
 
-The live harness also verifies that a selected advanced neural optimizer and layer initializer survive level changes. YOLO automatic optimization omits a manual learning rate and explains that the framework chooses it; explicit AdamW emits `lr0`; validation and prediction confidence values flow to separate `val` and `predict` calls. Keras projects contain active loading, training, validation, final-test, saving, and inference code. PyTorch projects contain active loaders, training/validation loops, best-checkpoint restoration, final testing, saving, and inference.
+## Per-project generated-code contracts
+
+| Project | Contract | Outcome | Generated-code evidence |
+| --- | --- | --- | --- |
+| guided-logistic-standard | trainingOnlyPreprocessing | passed | `Split before fitting imputers, encoders, scalers, or samplers`<br>`pipeline.fit(X_train, y_train)` |
+| guided-logistic-standard | finalTestSeparated | passed | `X_test`<br>`"Final test"`<br>`pipeline.predict(X_test.iloc[[0]])` |
+| advanced-regression-group-power | trainingOnlyPreprocessing | passed | `Split before fitting imputers, encoders, scalers, or samplers`<br>`pipeline.fit(X_train, y_train)` |
+| advanced-regression-group-power | finalTestSeparated | passed | `X_test`<br>`"Final test"`<br>`pipeline.predict(X_test.iloc[[0]])` |
+| customized-yolo-detection-adamw | optimizerLearningRateTruthful | passed | `if str(CONFIG["optimizer"]) != "auto":`<br>`optimizer=str(CONFIG["optimizer"])`<br>`"optimizer": "AdamW"`<br>`"learning_rate":`<br>`lr0=float(CONFIG["learning_rate"])` |
+| customized-yolo-detection-adamw | validationConfidenceRouted | passed | `model.val(`<br>`conf=float(CONFIG["validation_confidence"])` |
+| customized-yolo-detection-adamw | predictionConfidenceRouted | passed | `model.predict(`<br>`conf=float(CONFIG["prediction_confidence"])` |
+| advanced-yolo-segmentation-confidence | optimizerLearningRateTruthful | passed | `if str(CONFIG["optimizer"]) != "auto":`<br>`optimizer=str(CONFIG["optimizer"])`<br>`"optimizer": "auto"`<br>`CONFIG omits learning_rate for automatic optimization` |
+| advanced-yolo-segmentation-confidence | validationConfidenceRouted | passed | `model.val(`<br>`conf=float(CONFIG["validation_confidence"])` |
+| advanced-yolo-segmentation-confidence | predictionConfidenceRouted | passed | `model.predict(`<br>`conf=float(CONFIG["prediction_confidence"])` |
+| guided-keras-tabular | activeTrainingLifecycle | passed | `train_data, validation_data, test_data = load_data()`<br>`history = train_model(`<br>`test_metrics = evaluate_model(model, test_data)`<br>`model.save(ARTIFACT_PATH)`<br>`sample_prediction = predict_sample(model, test_data)` |
+| guided-keras-tabular | trainingOnlyPreprocessing | passed | `X_train = preprocessor.fit_transform(X_train)`<br>`X_validation = preprocessor.transform(X_validation)`<br>`X_test = preprocessor.transform(X_test)` |
+| guided-keras-tabular | finalTestSeparated | passed | `validation_data`<br>`test_data`<br>`test_metrics = evaluate_model(model, test_data)`<br>`print("Final test metrics:", test_metrics)` |
+| advanced-keras-image | activeTrainingLifecycle | passed | `train_data, validation_data, test_data = load_data()`<br>`history = train_model(`<br>`test_metrics = evaluate_model(model, test_data)`<br>`model.save(ARTIFACT_PATH)`<br>`sample_prediction = predict_sample(model, test_data)` |
+| advanced-keras-image | finalTestSeparated | passed | `validation_data`<br>`test_data`<br>`test_metrics = evaluate_model(model, test_data)`<br>`print("Final test metrics:", test_metrics)` |
+| customized-pytorch-sequence-lstm | activeTrainingLifecycle | passed | `DataLoader(`<br>`history, amp_enabled = train_model(`<br>`checkpoint = torch.load(CHECKPOINT_PATH`<br>`model.load_state_dict(checkpoint["model_state"])`<br>`test_metrics = evaluate(`<br>`torch.save(checkpoint, ARTIFACT_PATH)`<br>`sample_prediction = predict_sample(` |
+| customized-pytorch-sequence-lstm | trainingOnlyPreprocessing | passed | `scaler.fit_transform(`<br>`scaler.transform(` |
+| customized-pytorch-sequence-lstm | finalTestSeparated | passed | `train_loader, validation_loader, test_loader`<br>`checkpoint = torch.load(CHECKPOINT_PATH`<br>`model, test_loader, criterion`<br>`print("Final test metrics:", test_metrics)` |
+| advanced-pytorch-tabular | activeTrainingLifecycle | passed | `DataLoader(`<br>`history, amp_enabled = train_model(`<br>`checkpoint = torch.load(CHECKPOINT_PATH`<br>`model.load_state_dict(checkpoint["model_state"])`<br>`test_metrics = evaluate(`<br>`torch.save(checkpoint, ARTIFACT_PATH)`<br>`sample_prediction = predict_sample(` |
+| advanced-pytorch-tabular | trainingOnlyPreprocessing | passed | `X_train = preprocessor.fit_transform(X_train)`<br>`X_validation = preprocessor.transform(X_validation)`<br>`X_test = preprocessor.transform(X_test)` |
+| advanced-pytorch-tabular | finalTestSeparated | passed | `train_loader, validation_loader, test_loader`<br>`checkpoint = torch.load(CHECKPOINT_PATH`<br>`model, test_loader, criterion`<br>`print("Final test metrics:", test_metrics)` |
+
+The contract outcomes above come from the current generated Python for each representative project; their source-test provenance is recorded in the JSON evidence.
+
+## Task 4 YOLO baseline and parity
+
+The dedicated baseline/parity command passed 10/10 tests. It ties the seven YOLO fixtures below to baseline `23ef28c` and to the reviewed optimizer, learning-rate, validation-confidence, and prediction-confidence contracts.
+
+| Fixture | SHA-256 |
+| --- | --- |
+| yolo-detection-training/manifest | `ee9f74c1c003caeaa8827c036b09282928678940586be661b49bc4a2ff78e95f` |
+| yolo-detection-training/starter/contract | `436f7b20489d1e573ce600d6dfdb05696fdaf1194d450d408024bc82fabbfbf0` |
+| yolo-detection-training/production/contract | `db3e86a83c004b030aa1d9a46ad58f46239a5780cd984eee9bde5853050844b9` |
+| yolo-segmentation-training/manifest | `3d754f05f63d151c8c369deba3d24394349ead3c82ca5cf77cc03f4197a0755c` |
+| yolo-segmentation-training/starter/contract | `237b8cdffcd89e400fdbac6b447b33070818a3ac66d76473b83aa0fb7bd0994e` |
+| yolo-segmentation-training/production/contract | `610526859d58469aa52fe89e8bd15e6ccd8efaf727bfa6c2216b2f5b27bfe8e8` |
+| scenario/detection-jetson | `7ab6721692b3dedb3ff1fe1ab9ad232533568642b421104f4a05a814ea3b39b8` |
 
 Every project archive explains environment setup, data shape/source, training/evaluation, prediction, expected artifacts, warnings, and a dependency-free smoke test.
 
@@ -88,10 +130,10 @@ The score measures the evidence available in this audit, not theoretical framewo
 ## Verified strengths
 
 - Deterministic, parseable project generation with a fixed eight-file archive contract.
-- Training-only learned preprocessing and an untouched final-test split in reviewed classical/neural contracts.
+- Training-only learned preprocessing and a separated final test in every reviewed project where both contracts apply.
 - Meaningfully different Guided, Customize, and Advanced disclosure counts for all seven tasks.
-- Truthful YOLO automatic-optimizer behavior and distinct validation/prediction confidence controls.
-- Active Keras and PyTorch training workflows rather than commented training skeletons.
+- Truthful YOLO optimizer and distinct validation/prediction confidence behavior, tied to seven Task 4 hashes.
+- Active Keras and PyTorch lifecycle and separated final-test contracts rather than commented training skeletons.
 - Flat responsive layout with viewport containment and real state-preserving interactions.
 
 ## Remaining gaps and deferred observations

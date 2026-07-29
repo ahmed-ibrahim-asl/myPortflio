@@ -19,9 +19,9 @@
       "lib/tools/ml-generator/model-mission/stored-zip.js": "30ee2303ee4ae2eb6550036bccd74b32c8ee9055e31eec9ab5273adc604214ad",
       "lib/tools/ml-generator/workbench/classical-generator.js": "96eb447140068909df88925e459eeba1354e92e8c95666d409a3b706f5a5b674",
       "lib/tools/ml-generator/workbench/neural-generator.js": "1f8fa12f691692813f86161e6ed77f832cacf17101a732084c4c61de5e69b79f",
-      "tests/tools/model-mission-responsive.test.js": "bb977e47e805af12079532009b063cb2508b9b3d31ff0a13c82cf29bd6869066"
+      "tests/tools/model-mission-responsive.test.js": "7340dbb2706d746911f3a99150b72403fa436a108f4864fd3e5737d79612af60"
     },
-    "repository": "D:\\work\\portflioWebsite\\myPortfolio",
+    "repository": ".",
     "title": "Model Mission Learning Engine Audit"
   },
   "deferredLedger": [
@@ -349,18 +349,16 @@
   "liveBrowserAudit": {
     "allRequiredWidthsCovered": true,
     "command": "npm run test:ml:responsive",
+    "contracts": {
+      "advancedExceedsCustomize": true,
+      "downloadsAreLocalAndComplete": true,
+      "explanationsContained": true,
+      "hiddenValuesPreserved": true,
+      "mobileTabsPreserveState": true,
+      "noComputedGradients": true
+    },
     "harness": "tests/tools/model-mission-responsive.test.js",
-    "observableContracts": [
-      "no page overflow",
-      "no intersecting controls or panels",
-      "Configure/Code state preservation",
-      "hidden advanced values survive level changes",
-      "explanations remain inside field/layer cards",
-      "Advanced exposes more controls than Customize",
-      "no computed Model Mission background gradient",
-      "Python and project ZIP downloads are real local blobs"
-    ],
-    "observedWidthsFromHarness": [
+    "observedWidths": [
       320,
       360,
       390,
@@ -370,6 +368,7 @@
       1440
     ],
     "outcome": "passed",
+    "passed": true,
     "requiredWidths": [
       320,
       360,
@@ -378,6 +377,134 @@
       900,
       1024,
       1440
+    ],
+    "widthOutcomes": [
+      {
+        "height": 700,
+        "layout": {
+          "codeOwnsHorizontalScroll": true,
+          "controlsContained": true,
+          "correctPanelCount": true,
+          "noPageOverflow": true,
+          "panelsDoNotOverlap": true,
+          "passed": true,
+          "railDoesNotOverlap": true
+        },
+        "neuralEditor": {
+          "controlsContained": true,
+          "noPageOverflow": true,
+          "passed": true
+        },
+        "width": 320
+      },
+      {
+        "height": 760,
+        "layout": {
+          "codeOwnsHorizontalScroll": true,
+          "controlsContained": true,
+          "correctPanelCount": true,
+          "noPageOverflow": true,
+          "panelsDoNotOverlap": true,
+          "passed": true,
+          "railDoesNotOverlap": true
+        },
+        "neuralEditor": {
+          "controlsContained": true,
+          "noPageOverflow": true,
+          "passed": true
+        },
+        "width": 360
+      },
+      {
+        "height": 844,
+        "layout": {
+          "codeOwnsHorizontalScroll": true,
+          "controlsContained": true,
+          "correctPanelCount": true,
+          "noPageOverflow": true,
+          "panelsDoNotOverlap": true,
+          "passed": true,
+          "railDoesNotOverlap": true
+        },
+        "neuralEditor": {
+          "controlsContained": true,
+          "noPageOverflow": true,
+          "passed": true
+        },
+        "width": 390
+      },
+      {
+        "height": 1024,
+        "layout": {
+          "codeOwnsHorizontalScroll": true,
+          "controlsContained": true,
+          "correctPanelCount": true,
+          "noPageOverflow": true,
+          "panelsDoNotOverlap": true,
+          "passed": true,
+          "railDoesNotOverlap": true
+        },
+        "neuralEditor": {
+          "controlsContained": true,
+          "noPageOverflow": true,
+          "passed": true
+        },
+        "width": 768
+      },
+      {
+        "height": 900,
+        "layout": {
+          "codeOwnsHorizontalScroll": true,
+          "controlsContained": true,
+          "correctPanelCount": true,
+          "noPageOverflow": true,
+          "panelsDoNotOverlap": true,
+          "passed": true,
+          "railDoesNotOverlap": true
+        },
+        "neuralEditor": {
+          "controlsContained": true,
+          "noPageOverflow": true,
+          "passed": true
+        },
+        "width": 900
+      },
+      {
+        "height": 768,
+        "layout": {
+          "codeOwnsHorizontalScroll": true,
+          "controlsContained": true,
+          "correctPanelCount": true,
+          "noPageOverflow": true,
+          "panelsDoNotOverlap": true,
+          "passed": true,
+          "railDoesNotOverlap": true
+        },
+        "neuralEditor": {
+          "controlsContained": true,
+          "noPageOverflow": true,
+          "passed": true
+        },
+        "width": 1024
+      },
+      {
+        "height": 900,
+        "layout": {
+          "codeOwnsHorizontalScroll": true,
+          "controlsContained": true,
+          "correctPanelCount": true,
+          "noPageOverflow": true,
+          "panelsDoNotOverlap": true,
+          "passed": true,
+          "railDoesNotOverlap": true
+        },
+        "neuralEditor": {
+          "controlsContained": true,
+          "noPageOverflow": true,
+          "passed": true
+        },
+        "width": 1440
+      }
     ]
   },
   "projects": [
@@ -494,6 +621,29 @@
         "reason": "Required local Python modules are unavailable.",
         "scope": "built-in scikit-learn breast-cancer data",
         "status": "unavailable"
+      },
+      "staticContracts": {
+        "finalTestSeparated": {
+          "evidence": [
+            "X_test",
+            "\"Final test\"",
+            "pipeline.predict(X_test.iloc[[0]])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-classical-generator-v2.test.js"
+          ]
+        },
+        "trainingOnlyPreprocessing": {
+          "evidence": [
+            "Split before fitting imputers, encoders, scalers, or samplers",
+            "pipeline.fit(X_train, y_train)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-classical-generator-v2.test.js"
+          ]
+        }
       },
       "structuralSmoke": {
         "command": "python tests/test_generated_project.py",
@@ -631,6 +781,29 @@
         "scope": "custom grouped CSV is not bundled",
         "status": "not-applicable"
       },
+      "staticContracts": {
+        "finalTestSeparated": {
+          "evidence": [
+            "X_test",
+            "\"Final test\"",
+            "pipeline.predict(X_test.iloc[[0]])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-classical-generator-v2.test.js"
+          ]
+        },
+        "trainingOnlyPreprocessing": {
+          "evidence": [
+            "Split before fitting imputers, encoders, scalers, or samplers",
+            "pipeline.fit(X_train, y_train)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-classical-generator-v2.test.js"
+          ]
+        }
+      },
       "structuralSmoke": {
         "command": "python tests/test_generated_project.py",
         "exitCode": 0,
@@ -762,6 +935,44 @@
         "reason": "The requested configuration needs user-supplied data or an external/heavyweight workflow.",
         "scope": "external YOLO data/weights and heavyweight runtime",
         "status": "not-applicable"
+      },
+      "staticContracts": {
+        "optimizerLearningRateTruthful": {
+          "evidence": [
+            "if str(CONFIG[\"optimizer\"]) != \"auto\":",
+            "optimizer=str(CONFIG[\"optimizer\"])",
+            "\"optimizer\": \"AdamW\"",
+            "\"learning_rate\":",
+            "lr0=float(CONFIG[\"learning_rate\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "predictionConfidenceRouted": {
+          "evidence": [
+            "model.predict(",
+            "conf=float(CONFIG[\"prediction_confidence\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "validationConfidenceRouted": {
+          "evidence": [
+            "model.val(",
+            "conf=float(CONFIG[\"validation_confidence\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        }
       },
       "structuralSmoke": {
         "command": "python tests/test_generated_project.py",
@@ -897,6 +1108,43 @@
         "reason": "The requested configuration needs user-supplied data or an external/heavyweight workflow.",
         "scope": "external YOLO data/weights and heavyweight runtime",
         "status": "not-applicable"
+      },
+      "staticContracts": {
+        "optimizerLearningRateTruthful": {
+          "evidence": [
+            "if str(CONFIG[\"optimizer\"]) != \"auto\":",
+            "optimizer=str(CONFIG[\"optimizer\"])",
+            "\"optimizer\": \"auto\"",
+            "CONFIG omits learning_rate for automatic optimization"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "predictionConfidenceRouted": {
+          "evidence": [
+            "model.predict(",
+            "conf=float(CONFIG[\"prediction_confidence\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "validationConfidenceRouted": {
+          "evidence": [
+            "model.val(",
+            "conf=float(CONFIG[\"validation_confidence\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        }
       },
       "structuralSmoke": {
         "command": "python tests/test_generated_project.py",
@@ -1035,6 +1283,45 @@
         "scope": "built-in scikit-learn breast-cancer data",
         "status": "unavailable"
       },
+      "staticContracts": {
+        "activeTrainingLifecycle": {
+          "evidence": [
+            "train_data, validation_data, test_data = load_data()",
+            "history = train_model(",
+            "test_metrics = evaluate_model(model, test_data)",
+            "model.save(ARTIFACT_PATH)",
+            "sample_prediction = predict_sample(model, test_data)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "finalTestSeparated": {
+          "evidence": [
+            "validation_data",
+            "test_data",
+            "test_metrics = evaluate_model(model, test_data)",
+            "print(\"Final test metrics:\", test_metrics)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js"
+          ]
+        },
+        "trainingOnlyPreprocessing": {
+          "evidence": [
+            "X_train = preprocessor.fit_transform(X_train)",
+            "X_validation = preprocessor.transform(X_validation)",
+            "X_test = preprocessor.transform(X_test)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js"
+          ]
+        }
+      },
       "structuralSmoke": {
         "command": "python tests/test_generated_project.py",
         "exitCode": 0,
@@ -1160,6 +1447,34 @@
         "scope": "image-folder data is not bundled",
         "status": "not-applicable"
       },
+      "staticContracts": {
+        "activeTrainingLifecycle": {
+          "evidence": [
+            "train_data, validation_data, test_data = load_data()",
+            "history = train_model(",
+            "test_metrics = evaluate_model(model, test_data)",
+            "model.save(ARTIFACT_PATH)",
+            "sample_prediction = predict_sample(model, test_data)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "finalTestSeparated": {
+          "evidence": [
+            "validation_data",
+            "test_data",
+            "test_metrics = evaluate_model(model, test_data)",
+            "print(\"Final test metrics:\", test_metrics)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js"
+          ]
+        }
+      },
       "structuralSmoke": {
         "command": "python tests/test_generated_project.py",
         "exitCode": 0,
@@ -1283,6 +1598,46 @@
         "reason": "The requested configuration needs user-supplied data or an external/heavyweight workflow.",
         "scope": "sequence NPZ data is not bundled",
         "status": "not-applicable"
+      },
+      "staticContracts": {
+        "activeTrainingLifecycle": {
+          "evidence": [
+            "DataLoader(",
+            "history, amp_enabled = train_model(",
+            "checkpoint = torch.load(CHECKPOINT_PATH",
+            "model.load_state_dict(checkpoint[\"model_state\"])",
+            "test_metrics = evaluate(",
+            "torch.save(checkpoint, ARTIFACT_PATH)",
+            "sample_prediction = predict_sample("
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "finalTestSeparated": {
+          "evidence": [
+            "train_loader, validation_loader, test_loader",
+            "checkpoint = torch.load(CHECKPOINT_PATH",
+            "model, test_loader, criterion",
+            "print(\"Final test metrics:\", test_metrics)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js"
+          ]
+        },
+        "trainingOnlyPreprocessing": {
+          "evidence": [
+            "scaler.fit_transform(",
+            "scaler.transform("
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js"
+          ]
+        }
       },
       "structuralSmoke": {
         "command": "python tests/test_generated_project.py",
@@ -1414,6 +1769,47 @@
         "scope": "built-in scikit-learn breast-cancer data",
         "status": "unavailable"
       },
+      "staticContracts": {
+        "activeTrainingLifecycle": {
+          "evidence": [
+            "DataLoader(",
+            "history, amp_enabled = train_model(",
+            "checkpoint = torch.load(CHECKPOINT_PATH",
+            "model.load_state_dict(checkpoint[\"model_state\"])",
+            "test_metrics = evaluate(",
+            "torch.save(checkpoint, ARTIFACT_PATH)",
+            "sample_prediction = predict_sample("
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "finalTestSeparated": {
+          "evidence": [
+            "train_loader, validation_loader, test_loader",
+            "checkpoint = torch.load(CHECKPOINT_PATH",
+            "model, test_loader, criterion",
+            "print(\"Final test metrics:\", test_metrics)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js"
+          ]
+        },
+        "trainingOnlyPreprocessing": {
+          "evidence": [
+            "X_train = preprocessor.fit_transform(X_train)",
+            "X_validation = preprocessor.transform(X_validation)",
+            "X_test = preprocessor.transform(X_test)"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-neural-generator.test.js"
+          ]
+        }
+      },
       "structuralSmoke": {
         "command": "python tests/test_generated_project.py",
         "exitCode": 0,
@@ -1489,6 +1885,109 @@
     "overall": 8.7,
     "scale": 10
   },
+  "task4Parity": {
+    "baselineCommit": "23ef28c",
+    "command": "node --test tests/tools/ml-generator-baseline-contract.test.js tests/tools/ml-generator-parity.test.js",
+    "commandOutcome": "passed",
+    "counts": {
+      "fail": 0,
+      "pass": 10,
+      "skipped": 0,
+      "tests": 10
+    },
+    "fixtureHashes": {
+      "scenario/detection-jetson": "7ab6721692b3dedb3ff1fe1ab9ad232533568642b421104f4a05a814ea3b39b8",
+      "yolo-detection-training/manifest": "ee9f74c1c003caeaa8827c036b09282928678940586be661b49bc4a2ff78e95f",
+      "yolo-detection-training/production/contract": "db3e86a83c004b030aa1d9a46ad58f46239a5780cd984eee9bde5853050844b9",
+      "yolo-detection-training/starter/contract": "436f7b20489d1e573ce600d6dfdb05696fdaf1194d450d408024bc82fabbfbf0",
+      "yolo-segmentation-training/manifest": "3d754f05f63d151c8c369deba3d24394349ead3c82ca5cf77cc03f4197a0755c",
+      "yolo-segmentation-training/production/contract": "610526859d58469aa52fe89e8bd15e6ccd8efaf727bfa6c2216b2f5b27bfe8e8",
+      "yolo-segmentation-training/starter/contract": "237b8cdffcd89e400fdbac6b447b33070818a3ac66d76473b83aa0fb7bd0994e"
+    },
+    "passed": true,
+    "provenance": [
+      "tests/tools/ml-generator-baseline-contract.test.js",
+      "tests/tools/ml-generator-parity.test.js",
+      "tests/tools/model-mission-generated-code.test.js"
+    ],
+    "semanticContracts": {
+      "advanced-yolo-segmentation-confidence": {
+        "optimizerLearningRateTruthful": {
+          "evidence": [
+            "if str(CONFIG[\"optimizer\"]) != \"auto\":",
+            "optimizer=str(CONFIG[\"optimizer\"])",
+            "\"optimizer\": \"auto\"",
+            "CONFIG omits learning_rate for automatic optimization"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "predictionConfidenceRouted": {
+          "evidence": [
+            "model.predict(",
+            "conf=float(CONFIG[\"prediction_confidence\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "validationConfidenceRouted": {
+          "evidence": [
+            "model.val(",
+            "conf=float(CONFIG[\"validation_confidence\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        }
+      },
+      "customized-yolo-detection-adamw": {
+        "optimizerLearningRateTruthful": {
+          "evidence": [
+            "if str(CONFIG[\"optimizer\"]) != \"auto\":",
+            "optimizer=str(CONFIG[\"optimizer\"])",
+            "\"optimizer\": \"AdamW\"",
+            "\"learning_rate\":",
+            "lr0=float(CONFIG[\"learning_rate\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "predictionConfidenceRouted": {
+          "evidence": [
+            "model.predict(",
+            "conf=float(CONFIG[\"prediction_confidence\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        },
+        "validationConfidenceRouted": {
+          "evidence": [
+            "model.val(",
+            "conf=float(CONFIG[\"validation_confidence\"])"
+          ],
+          "passed": true,
+          "provenance": [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js"
+          ]
+        }
+      }
+    }
+  },
   "verification": [
     {
       "command": "npm run test:ml",
@@ -1500,6 +1999,28 @@
       },
       "exitCode": 0,
       "id": "ml-suite",
+      "outputTail": [
+        "✔ stored ZIP encodes an empty archive (<duration>)",
+        "✔ stored ZIP bytes are deterministic regardless of input key order (<duration>)",
+        "✔ stored ZIP encodes UTF-8 filenames and empty or binary payloads (<duration>)",
+        "✔ stored ZIP writes known CRC32 values (<duration>)",
+        "✔ stored ZIP does not mutate or alias input values (<duration>)",
+        "✔ stored ZIP rejects unsafe or ambiguous entry paths (<duration>)",
+        "✔ stored ZIP rejects unsupported values and ZIP32 limits (<duration>)",
+        "(node:<pid>) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///<repo>/tests/tools/model-mission-style.test.js is not specified and it doesn't parse as CommonJS.",
+        "Reparsing as ES module because module syntax was detected. This incurs a performance overhead.",
+        "To eliminate this warning, add \"type\": \"module\" to <repo>\\package.json.",
+        "(Use `node --trace-warnings ...` to show where the warning was created)",
+        "✔ Model Mission uses the portfolio flat token system safely (<duration>)",
+        "ℹ tests 120",
+        "ℹ suites 0",
+        "ℹ pass 120",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms <normalized>"
+      ],
       "status": "passed",
       "warnings": [
         {
@@ -1508,7 +2029,8 @@
           "kind": "node-module-type",
           "message": "Node reparsed ES-module syntax because package.json does not declare a module type."
         }
-      ]
+      ],
+      "warningsOmitted": 0
     },
     {
       "command": "node --test tests/tools/ml-classical-generator-v2.test.js tests/tools/ml-neural-generator.test.js tests/tools/ml-project-config.test.js",
@@ -1520,6 +2042,28 @@
       },
       "exitCode": 0,
       "id": "focused-generators",
+      "outputTail": [
+        "✔ PyTorch optimizer, scheduler, determinism, and checkpoint mappings are complete (<duration>)",
+        "✔ invalid neural architecture refuses to generate code (<duration>)",
+        "(node:<pid>) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///<repo>/tests/tools/ml-project-config.test.js is not specified and it doesn't parse as CommonJS.",
+        "Reparsing as ES module because module syntax was detected. This incurs a performance overhead.",
+        "To eliminate this warning, add \"type\": \"module\" to <repo>\\package.json.",
+        "(Use `node --trace-warnings ...` to show where the warning was created)",
+        "✔ ProjectConfig defaults are deterministic and independently mutable (<duration>)",
+        "✔ normalization allowlists root fields and deeply clones sections (<duration>)",
+        "✔ serialization is stable and round-trips through normalization (<duration>)",
+        "✔ version zero configurations migrate through version two (<duration>)",
+        "✔ future ProjectConfig versions are rejected (<duration>)",
+        "✔ cloneProjectConfig creates a deep canonical clone (<duration>)",
+        "ℹ tests 47",
+        "ℹ suites 0",
+        "ℹ pass 47",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms <normalized>"
+      ],
       "status": "passed",
       "warnings": [
         {
@@ -1528,26 +2072,95 @@
           "kind": "node-module-type",
           "message": "Node reparsed ES-module syntax because package.json does not declare a module type."
         }
-      ]
+      ],
+      "warningsOmitted": 0
+    },
+    {
+      "command": "node --test tests/tools/ml-generator-baseline-contract.test.js tests/tools/ml-generator-parity.test.js",
+      "counts": {
+        "fail": 0,
+        "pass": 10,
+        "skipped": 0,
+        "tests": 10
+      },
+      "exitCode": 0,
+      "id": "yolo-baseline-parity",
+      "outputTail": [
+        "(node:<pid>) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///<repo>/tests/tools/ml-generator-parity.test.js is not specified and it doesn't parse as CommonJS.",
+        "Reparsing as ES module because module syntax was detected. This incurs a performance overhead.",
+        "To eliminate this warning, add \"type\": \"module\" to <repo>\\package.json.",
+        "(Use `node --trace-warnings ...` to show where the warning was created)",
+        "✔ extracted YOLO recipes preserve compatibility output and metadata (<duration>)",
+        "✔ automatic YOLO optimizer does not apply a manual learning rate (<duration>)",
+        "✔ explicit YOLO optimizer applies its selected learning rate (<duration>)",
+        "✔ YOLO migration preserves a saved confidence threshold for prediction (<duration>)",
+        "✔ YOLO advanced controls map to Ultralytics training and inference arguments (<duration>)",
+        "✔ YOLO validates advanced controls and separate confidence bounds (<duration>)",
+        "✔ inference-only YOLO ignores its hidden validation confidence (<duration>)",
+        "✔ validation-only YOLO ignores its hidden prediction confidence (<duration>)",
+        "ℹ tests 10",
+        "ℹ suites 0",
+        "ℹ pass 10",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms <normalized>"
+      ],
+      "status": "passed",
+      "warnings": [
+        {
+          "classification": "non-failing tooling warning",
+          "count": 2,
+          "kind": "node-module-type",
+          "message": "Node reparsed ES-module syntax because package.json does not declare a module type."
+        }
+      ],
+      "warningsOmitted": 0
     },
     {
       "command": "npx tsc --noEmit",
       "exitCode": 0,
       "id": "typescript",
+      "outputTail": [],
       "status": "passed",
-      "warnings": []
+      "warnings": [],
+      "warningsOmitted": 0
     },
     {
       "command": "npm run build",
       "compiledSuccessfully": true,
       "exitCode": 0,
       "id": "production-build",
+      "outputTail": [
+        "Finalizing page optimization ...",
+        "Route (app)",
+        "┌ ○ /",
+        "├ ○ /_not-found",
+        "├ ○ /about",
+        "├ ○ /contact",
+        "├ ○ /icon.svg",
+        "├ ○ /robots.txt",
+        "├ ○ /sitemap.xml",
+        "├ ○ /tools",
+        "├ ○ /tools/ai-script-generator",
+        "├ ○ /tools/battery-estimator",
+        "├ ○ /tools/pid-simulator",
+        "├ ○ /tools/sensor-code-generator",
+        "├ ○ /work",
+        "├ ○ /writing",
+        "└ ● /writing/[slug]",
+        "└ /writing/welcome-to-field-notes",
+        "○  (Static)  prerendered as static content",
+        "●  (SSG)     prerendered as static HTML (uses generateStaticParams)"
+      ],
       "staticPages": {
-        "generated": 0,
+        "generated": 16,
         "total": 16
       },
       "status": "passed",
-      "warnings": []
+      "warnings": [],
+      "warningsOmitted": 0
     },
     {
       "command": "npm run test:ml:responsive",
@@ -1559,15 +2172,209 @@
       },
       "exitCode": 0,
       "id": "responsive-browser",
+      "outputTail": [
+        "> ahmed-asl-portfolio@2.0.0 test:ml:responsive",
+        "> node --no-warnings --test tests/tools/model-mission-responsive.test.js",
+        "✔ archive path assertion rejects an unexpected eighth entry (<duration>)",
+        "MODEL_MISSION_AUDIT_EVIDENCE=<structured-json>",
+        "✔ Model Mission stays contained and preserves one project across responsive tabs (<duration>)",
+        "ℹ tests 2",
+        "ℹ suites 0",
+        "ℹ pass 2",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms <normalized>"
+      ],
       "status": "passed",
-      "warnings": []
+      "structuredEvidence": {
+        "contracts": {
+          "advancedExceedsCustomize": true,
+          "downloadsAreLocalAndComplete": true,
+          "explanationsContained": true,
+          "hiddenValuesPreserved": true,
+          "mobileTabsPreserveState": true,
+          "noComputedGradients": true
+        },
+        "schemaVersion": 1,
+        "widths": [
+          {
+            "height": 700,
+            "layout": {
+              "codeOwnsHorizontalScroll": true,
+              "controlsContained": true,
+              "correctPanelCount": true,
+              "noPageOverflow": true,
+              "panelsDoNotOverlap": true,
+              "passed": true,
+              "railDoesNotOverlap": true
+            },
+            "neuralEditor": {
+              "controlsContained": true,
+              "noPageOverflow": true,
+              "passed": true
+            },
+            "width": 320
+          },
+          {
+            "height": 760,
+            "layout": {
+              "codeOwnsHorizontalScroll": true,
+              "controlsContained": true,
+              "correctPanelCount": true,
+              "noPageOverflow": true,
+              "panelsDoNotOverlap": true,
+              "passed": true,
+              "railDoesNotOverlap": true
+            },
+            "neuralEditor": {
+              "controlsContained": true,
+              "noPageOverflow": true,
+              "passed": true
+            },
+            "width": 360
+          },
+          {
+            "height": 844,
+            "layout": {
+              "codeOwnsHorizontalScroll": true,
+              "controlsContained": true,
+              "correctPanelCount": true,
+              "noPageOverflow": true,
+              "panelsDoNotOverlap": true,
+              "passed": true,
+              "railDoesNotOverlap": true
+            },
+            "neuralEditor": {
+              "controlsContained": true,
+              "noPageOverflow": true,
+              "passed": true
+            },
+            "width": 390
+          },
+          {
+            "height": 1024,
+            "layout": {
+              "codeOwnsHorizontalScroll": true,
+              "controlsContained": true,
+              "correctPanelCount": true,
+              "noPageOverflow": true,
+              "panelsDoNotOverlap": true,
+              "passed": true,
+              "railDoesNotOverlap": true
+            },
+            "neuralEditor": {
+              "controlsContained": true,
+              "noPageOverflow": true,
+              "passed": true
+            },
+            "width": 768
+          },
+          {
+            "height": 900,
+            "layout": {
+              "codeOwnsHorizontalScroll": true,
+              "controlsContained": true,
+              "correctPanelCount": true,
+              "noPageOverflow": true,
+              "panelsDoNotOverlap": true,
+              "passed": true,
+              "railDoesNotOverlap": true
+            },
+            "neuralEditor": {
+              "controlsContained": true,
+              "noPageOverflow": true,
+              "passed": true
+            },
+            "width": 900
+          },
+          {
+            "height": 768,
+            "layout": {
+              "codeOwnsHorizontalScroll": true,
+              "controlsContained": true,
+              "correctPanelCount": true,
+              "noPageOverflow": true,
+              "panelsDoNotOverlap": true,
+              "passed": true,
+              "railDoesNotOverlap": true
+            },
+            "neuralEditor": {
+              "controlsContained": true,
+              "noPageOverflow": true,
+              "passed": true
+            },
+            "width": 1024
+          },
+          {
+            "height": 900,
+            "layout": {
+              "codeOwnsHorizontalScroll": true,
+              "controlsContained": true,
+              "correctPanelCount": true,
+              "noPageOverflow": true,
+              "panelsDoNotOverlap": true,
+              "passed": true,
+              "railDoesNotOverlap": true
+            },
+            "neuralEditor": {
+              "controlsContained": true,
+              "noPageOverflow": true,
+              "passed": true
+            },
+            "width": 1440
+          }
+        ]
+      },
+      "warnings": [],
+      "warningsOmitted": 0
     },
     {
-      "command": "git diff --check",
+      "command": "git diff --check -- scripts/build_model_mission_audit_artifacts.py tests/tools/model-mission-responsive.test.js tests/tools/test_model_mission_audit_builder.py",
       "exitCode": 0,
       "id": "diff-check",
+      "outputTail": [
+        "warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it"
+      ],
       "status": "passed",
-      "warnings": []
+      "warnings": [
+        {
+          "classification": "non-failing tooling warning",
+          "kind": "git-line-ending",
+          "message": "warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it"
+        },
+        {
+          "classification": "non-failing tooling warning",
+          "kind": "git-line-ending",
+          "message": "warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it"
+        }
+      ],
+      "warningsOmitted": 0
+    },
+    {
+      "command": "git diff --check -- docs/reports/2026-07-29-model-mission-learning-engine-audit.md docs/reports/2026-07-29-model-mission-learning-engine-evidence.json",
+      "exitCode": 0,
+      "id": "final-artifact-diff-check",
+      "outputTail": [
+        "warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-audit.md', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-evidence.json', LF will be replaced by CRLF the next time Git touches it"
+      ],
+      "status": "passed",
+      "warnings": [
+        {
+          "classification": "non-failing tooling warning",
+          "kind": "git-line-ending",
+          "message": "warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-audit.md', LF will be replaced by CRLF the next time Git touches it"
+        },
+        {
+          "classification": "non-failing tooling warning",
+          "kind": "git-line-ending",
+          "message": "warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-evidence.json', LF will be replaced by CRLF the next time Git touches it"
+        }
+      ],
+      "warningsOmitted": 0
     }
   ]
 }

@@ -37,6 +37,15 @@ EVIDENCE_PATH = (
 REPORT_PATH = (
     REPORT_DIR / "2026-07-29-model-mission-learning-engine-audit.md"
 )
+AUDIT_IMPLEMENTATION_PATHS = [
+    "scripts/build_model_mission_audit_artifacts.py",
+    "tests/tools/model-mission-responsive.test.js",
+    "tests/tools/test_model_mission_audit_builder.py",
+]
+FINAL_ARTIFACT_PATHS = [
+    "docs/reports/2026-07-29-model-mission-learning-engine-audit.md",
+    "docs/reports/2026-07-29-model-mission-learning-engine-evidence.json",
+]
 AUDIT_DATE = "2026-07-29"
 BASE_COMMIT = "64f30754acf71b5d7422d5d9cc5f488f942a2516"
 
@@ -133,6 +142,15 @@ VERIFICATION_COMMANDS = [
         "kind": "node-test",
     },
     {
+        "id": "yolo-baseline-parity",
+        "command": (
+            "node --test "
+            "tests/tools/ml-generator-baseline-contract.test.js "
+            "tests/tools/ml-generator-parity.test.js"
+        ),
+        "kind": "node-test",
+    },
+    {
         "id": "typescript",
         "command": "npx tsc --noEmit",
         "kind": "exit",
@@ -146,10 +164,14 @@ VERIFICATION_COMMANDS = [
         "id": "responsive-browser",
         "command": "npm run test:ml:responsive",
         "kind": "node-test",
+        "env": {"MODEL_MISSION_AUDIT_EVIDENCE": "1"},
     },
     {
         "id": "diff-check",
-        "command": "git diff --check",
+        "command": (
+            "git diff --check -- "
+            + " ".join(AUDIT_IMPLEMENTATION_PATHS)
+        ),
         "kind": "exit",
     },
 ]
@@ -528,8 +550,49 @@ def node_test_counts(output: str) -> dict[str, int | None]:
     }
 
 
+def normalize_output_line(raw_line: str) -> str:
+    repository_paths = {
+        str(REPO_ROOT),
+        str(REPO_ROOT).replace("\\", "/"),
+    }
+    line = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", raw_line).strip()
+    if line.startswith("MODEL_MISSION_AUDIT_EVIDENCE="):
+        line = "MODEL_MISSION_AUDIT_EVIDENCE=<structured-json>"
+    line = re.sub(r"\(node:\d+\)", "(node:<pid>)", line)
+    line = re.sub(
+        r"\(\d+(?:\.\d+)?ms\)",
+        "(<duration>)",
+        line,
+    )
+    line = re.sub(
+        r"(?i)\bduration_ms:?\s*\d+(?:\.\d+)?",
+        "duration_ms <normalized>",
+        line,
+    )
+    line = re.sub(
+        r"(?i)\b(?:compiled successfully|finished) in "
+        r"\d+(?:\.\d+)?(?:ms|s)\b",
+        lambda match: match.group(0).split(" in ")[0]
+        + " in <normalized-duration>",
+        line,
+    )
+    for repository_path in repository_paths:
+        line = line.replace(repository_path, "<repo>")
+    return line
+
+
+def normalized_output_tail(output: str, limit: int = 20) -> list[str]:
+    normalized_lines = []
+    for raw_line in output.splitlines():
+        line = normalize_output_line(raw_line)
+        if not line:
+            continue
+        normalized_lines.append(line)
+    return normalized_lines[-limit:]
+
+
 def normalize_command_result(
-    spec: dict[str, str],
+    spec: dict[str, Any],
     completed: subprocess.CompletedProcess[str],
 ) -> dict[str, Any]:
     output = completed.stdout + completed.stderr
@@ -538,37 +601,135 @@ def normalize_command_result(
         "command": spec["command"],
         "exitCode": completed.returncode,
         "status": "passed" if completed.returncode == 0 else "failed",
+        "outputTail": normalized_output_tail(output),
     }
     if spec["kind"] == "node-test":
         result["counts"] = node_test_counts(output)
+    if spec["id"] == "responsive-browser":
+        structured_match = re.search(
+            r"MODEL_MISSION_AUDIT_EVIDENCE=(\{[^\r\n]+\})",
+            output,
+        )
+        result["structuredEvidence"] = (
+            json.loads(structured_match.group(1))
+            if structured_match
+            else None
+        )
+        if result["structuredEvidence"] is None:
+            result["status"] = "failed"
     if spec["kind"] == "next-build":
-        page_match = re.search(
+        page_matches = re.findall(
             r"Generating static pages.*\((\d+)/(\d+)\)",
             output,
+        )
+        page_progress = [
+            (int(generated), int(total))
+            for generated, total in page_matches
+        ]
+        final_progress = (
+            max(
+                page_progress,
+                key=lambda value: (
+                    value[0] / value[1] if value[1] else -1,
+                    value[0],
+                    value[1],
+                ),
+            )
+            if page_progress
+            else None
         )
         result["compiledSuccessfully"] = "Compiled successfully" in output
         result["staticPages"] = (
             {
-                "generated": int(page_match.group(1)),
-                "total": int(page_match.group(2)),
+                "generated": final_progress[0],
+                "total": final_progress[1],
             }
-            if page_match
+            if final_progress
             else None
         )
-    warnings: list[dict[str, Any]] = []
+    warning_records: dict[
+        tuple[str, str, str],
+        dict[str, Any],
+    ] = {}
+
+    def add_warning(
+        *,
+        kind: str,
+        classification: str,
+        message: str,
+        count: int = 1,
+    ) -> None:
+        key = (kind, classification, message)
+        if key in warning_records:
+            warning_records[key]["_count"] += count
+            return
+        warning_records[key] = {
+            "kind": kind,
+            "classification": classification,
+            "message": message,
+            "_count": count,
+        }
+
     module_warnings = output.count("[MODULE_TYPELESS_PACKAGE_JSON]")
     if module_warnings:
-        warnings.append(
-            {
-                "kind": "node-module-type",
-                "count": module_warnings,
-                "classification": "non-failing tooling warning",
-                "message": (
-                    "Node reparsed ES-module syntax because package.json "
-                    "does not declare a module type."
-                ),
-            }
+        add_warning(
+            kind="node-module-type",
+            count=module_warnings,
+            classification="non-failing tooling warning",
+            message=(
+                "Node reparsed ES-module syntax because package.json "
+                "does not declare a module type."
+            ),
         )
+    for line in output.splitlines():
+        raw_message = line.strip()
+        if (
+            not re.search(
+                r"\bwarning:",
+                raw_message,
+                flags=re.IGNORECASE,
+            )
+            or "[MODULE_TYPELESS_PACKAGE_JSON]" in raw_message
+        ):
+            continue
+        message = normalize_output_line(raw_message)
+        is_git_line_ending = (
+            message.startswith("warning:")
+            and "LF will be replaced by CRLF" in message
+        )
+        add_warning(
+            kind=(
+                "git-line-ending"
+                if is_git_line_ending
+                else "command-warning"
+            ),
+            classification=(
+                "non-failing tooling warning"
+                if is_git_line_ending
+                else "unclassified command warning"
+            ),
+            message=message,
+        )
+    warnings = []
+    for warning in warning_records.values():
+        normalized_warning = {
+            key: value
+            for key, value in warning.items()
+            if key != "_count"
+        }
+        if warning["_count"] > 1:
+            normalized_warning["count"] = warning["_count"]
+        warnings.append(normalized_warning)
+    warnings.sort(
+        key=lambda warning: (
+            warning["kind"],
+            warning["classification"],
+            warning["message"],
+        )
+    )
+    warning_limit = 20
+    result["warningsOmitted"] = max(0, len(warnings) - warning_limit)
+    warnings = warnings[:warning_limit]
     result["warnings"] = warnings
     return result
 
@@ -576,7 +737,15 @@ def normalize_command_result(
 def run_verification_commands() -> list[dict[str, Any]]:
     outcomes = []
     for spec in VERIFICATION_COMMANDS:
-        completed = run_process(spec["command"])
+        command_env = (
+            {**os.environ, **spec["env"]}
+            if spec.get("env")
+            else None
+        )
+        completed = run_process(
+            spec["command"],
+            env=command_env,
+        )
         outcomes.append(normalize_command_result(spec, completed))
     return outcomes
 
@@ -609,11 +778,78 @@ def dependency_availability() -> dict[str, bool]:
     }
 
 
+def validate_bundle_key(root: Path, relative_path: str) -> Path:
+    if (
+        not isinstance(relative_path, str)
+        or relative_path == ""
+        or "\\" in relative_path
+        or re.search(r"[\x00-\x1f\x7f]", relative_path)
+        or relative_path.startswith("/")
+        or re.match(r"^[A-Za-z]:/", relative_path)
+    ):
+        raise ValueError(
+            f"Unsafe generated bundle path: {relative_path!r}"
+        )
+    segments = relative_path.split("/")
+    reserved_windows_name = re.compile(
+        r"^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?$",
+        flags=re.IGNORECASE,
+    )
+    if any(
+        segment in {"", ".", ".."}
+        or ":" in segment
+        or segment.endswith((".", " "))
+        or reserved_windows_name.fullmatch(segment)
+        for segment in segments
+    ):
+        raise ValueError(
+            f"Unsafe generated bundle path: {relative_path!r}"
+        )
+    resolved_root = root.resolve(strict=False)
+    destination = resolved_root.joinpath(*segments).resolve(strict=False)
+    try:
+        destination.relative_to(resolved_root)
+    except ValueError as error:
+        raise ValueError(
+            f"Generated bundle path escapes its root: {relative_path!r}"
+        ) from error
+    return destination
+
+
 def write_bundle(root: Path, files: dict[str, str]) -> None:
-    for relative_path, content in files.items():
-        destination = root.joinpath(*relative_path.split("/"))
+    destinations = [
+        (validate_bundle_key(root, relative_path), content)
+        for relative_path, content in files.items()
+    ]
+    for destination, content in destinations:
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(content, encoding="utf-8", newline="\n")
+
+
+def repository_identifier() -> str:
+    return "."
+
+
+def validate_final_artifacts() -> dict[str, Any]:
+    command = "git diff --check -- " + " ".join(FINAL_ARTIFACT_PATHS)
+    completed = run_process(command)
+    result = normalize_command_result(
+        {
+            "id": "final-artifact-diff-check",
+            "command": command,
+            "kind": "exit",
+        },
+        completed,
+    )
+    if completed.returncode != 0:
+        tail = "\n".join(
+            result["outputTail"]
+        )
+        raise RuntimeError(
+            "Final generated artifacts failed whitespace validation"
+            + (f":\n{tail}" if tail else ".")
+        )
+    return result
 
 
 def required_imports(dependencies: list[dict[str, str]]) -> list[str]:
@@ -626,6 +862,205 @@ def required_imports(dependencies: list[dict[str, str]]) -> list[str]:
             for dependency in dependencies
         }
     )
+
+
+def static_contract(
+    passed: bool,
+    evidence: list[str],
+    provenance: list[str],
+) -> dict[str, Any]:
+    return {
+        "passed": passed,
+        "evidence": evidence,
+        "provenance": provenance,
+    }
+
+
+def has_all(source: str, snippets: list[str]) -> bool:
+    return all(snippet in source for snippet in snippets)
+
+
+def evaluate_static_contracts(
+    payload: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    project_id = payload["id"]
+    code = payload["result"]["code"]
+    contracts: dict[str, dict[str, Any]] = {}
+
+    if project_id in {
+        "guided-logistic-standard",
+        "advanced-regression-group-power",
+    }:
+        training_evidence = [
+            "Split before fitting imputers, encoders, scalers, or samplers",
+            "pipeline.fit(X_train, y_train)",
+        ]
+        test_evidence = [
+            "X_test",
+            '"Final test"',
+            "pipeline.predict(X_test.iloc[[0]])",
+        ]
+        contracts["trainingOnlyPreprocessing"] = static_contract(
+            has_all(code, training_evidence),
+            training_evidence,
+            ["tests/tools/ml-classical-generator-v2.test.js"],
+        )
+        contracts["finalTestSeparated"] = static_contract(
+            has_all(code, test_evidence),
+            test_evidence,
+            ["tests/tools/ml-classical-generator-v2.test.js"],
+        )
+        return contracts
+
+    if project_id in {
+        "customized-yolo-detection-adamw",
+        "advanced-yolo-segmentation-confidence",
+    }:
+        optimizer = payload["project"]["training"]["optimizer"]
+        config_match = re.search(
+            r"CONFIG:.*?=\s*\{(?P<body>.*?)^\}",
+            code,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+        config_body = config_match.group("body") if config_match else ""
+        optimizer_evidence = [
+            'if str(CONFIG["optimizer"]) != "auto":',
+            'optimizer=str(CONFIG["optimizer"])',
+        ]
+        if optimizer == "auto":
+            optimizer_evidence.extend(
+                [
+                    '"optimizer": "auto"',
+                    "CONFIG omits learning_rate for automatic optimization",
+                ]
+            )
+            optimizer_passed = (
+                has_all(code, optimizer_evidence[:3])
+                and '"learning_rate":' not in config_body
+            )
+        else:
+            optimizer_evidence.extend(
+                [
+                    f'"optimizer": "{optimizer}"',
+                    '"learning_rate":',
+                    'lr0=float(CONFIG["learning_rate"])',
+                ]
+            )
+            optimizer_passed = has_all(code, optimizer_evidence)
+        validation_evidence = [
+            "model.val(",
+            'conf=float(CONFIG["validation_confidence"])',
+        ]
+        prediction_evidence = [
+            "model.predict(",
+            'conf=float(CONFIG["prediction_confidence"])',
+        ]
+        provenance = [
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js",
+        ]
+        contracts["optimizerLearningRateTruthful"] = static_contract(
+            optimizer_passed,
+            optimizer_evidence,
+            provenance,
+        )
+        contracts["validationConfidenceRouted"] = static_contract(
+            has_all(code, validation_evidence),
+            validation_evidence,
+            provenance,
+        )
+        contracts["predictionConfidenceRouted"] = static_contract(
+            has_all(code, prediction_evidence),
+            prediction_evidence,
+            provenance,
+        )
+        return contracts
+
+    framework = payload["project"]["model"]["framework"]
+    if framework == "keras":
+        lifecycle_evidence = [
+            "train_data, validation_data, test_data = load_data()",
+            "history = train_model(",
+            "test_metrics = evaluate_model(model, test_data)",
+            "model.save(ARTIFACT_PATH)",
+            "sample_prediction = predict_sample(model, test_data)",
+        ]
+        final_test_evidence = [
+            "validation_data",
+            "test_data",
+            "test_metrics = evaluate_model(model, test_data)",
+            'print("Final test metrics:", test_metrics)',
+        ]
+        contracts["activeTrainingLifecycle"] = static_contract(
+            has_all(code, lifecycle_evidence),
+            lifecycle_evidence,
+            [
+                "tests/tools/ml-neural-generator.test.js",
+                "tests/tools/model-mission-generated-code.test.js",
+            ],
+        )
+        if project_id == "guided-keras-tabular":
+            preprocessing_evidence = [
+                "X_train = preprocessor.fit_transform(X_train)",
+                "X_validation = preprocessor.transform(X_validation)",
+                "X_test = preprocessor.transform(X_test)",
+            ]
+            contracts["trainingOnlyPreprocessing"] = static_contract(
+                has_all(code, preprocessing_evidence),
+                preprocessing_evidence,
+                ["tests/tools/ml-neural-generator.test.js"],
+            )
+        contracts["finalTestSeparated"] = static_contract(
+            has_all(code, final_test_evidence),
+            final_test_evidence,
+            ["tests/tools/ml-neural-generator.test.js"],
+        )
+        return contracts
+
+    lifecycle_evidence = [
+        "DataLoader(",
+        "history, amp_enabled = train_model(",
+        "checkpoint = torch.load(CHECKPOINT_PATH",
+        'model.load_state_dict(checkpoint["model_state"])',
+        "test_metrics = evaluate(",
+        "torch.save(checkpoint, ARTIFACT_PATH)",
+        "sample_prediction = predict_sample(",
+    ]
+    preprocessing_evidence = [
+        "scaler.fit_transform(",
+        "scaler.transform(",
+    ]
+    if project_id == "advanced-pytorch-tabular":
+        preprocessing_evidence = [
+            "X_train = preprocessor.fit_transform(X_train)",
+            "X_validation = preprocessor.transform(X_validation)",
+            "X_test = preprocessor.transform(X_test)",
+        ]
+    final_test_evidence = [
+        "train_loader, validation_loader, test_loader",
+        "checkpoint = torch.load(CHECKPOINT_PATH",
+        "model, test_loader, criterion",
+        'print("Final test metrics:", test_metrics)',
+    ]
+    contracts["activeTrainingLifecycle"] = static_contract(
+        has_all(code, lifecycle_evidence),
+        lifecycle_evidence,
+        [
+            "tests/tools/ml-neural-generator.test.js",
+            "tests/tools/model-mission-generated-code.test.js",
+        ],
+    )
+    contracts["trainingOnlyPreprocessing"] = static_contract(
+        has_all(code, preprocessing_evidence),
+        preprocessing_evidence,
+        ["tests/tools/ml-neural-generator.test.js"],
+    )
+    contracts["finalTestSeparated"] = static_contract(
+        has_all(code, final_test_evidence),
+        final_test_evidence,
+        ["tests/tools/ml-neural-generator.test.js"],
+    )
+    return contracts
 
 
 def audit_project(
@@ -792,22 +1227,141 @@ def audit_project(
             "runtimeOutcome": "see runtime",
         },
         "structuralSmoke": structural_smoke,
+        "staticContracts": evaluate_static_contracts(payload),
         "runtime": runtime,
     }
 
 
-def find_responsive_widths() -> list[int]:
-    source = (
-        REPO_ROOT / "tests/tools/model-mission-responsive.test.js"
-    ).read_text(encoding="utf-8")
-    widths = {
-        int(value)
-        for value in re.findall(r"\{\s*width:\s*(\d+),\s*height:", source)
-    }
-    return sorted(
-        width for width in widths
-        if width in {320, 360, 390, 768, 900, 1024, 1440}
+REQUIRED_RESPONSIVE_WIDTHS = [320, 360, 390, 768, 900, 1024, 1440]
+REQUIRED_BROWSER_CONTRACTS = {
+    "advancedExceedsCustomize",
+    "downloadsAreLocalAndComplete",
+    "explanationsContained",
+    "hiddenValuesPreserved",
+    "mobileTabsPreserveState",
+    "noComputedGradients",
+}
+TASK4_HASH_KEYS = [
+    "yolo-detection-training/manifest",
+    "yolo-detection-training/starter/contract",
+    "yolo-detection-training/production/contract",
+    "yolo-segmentation-training/manifest",
+    "yolo-segmentation-training/starter/contract",
+    "yolo-segmentation-training/production/contract",
+    "scenario/detection-jetson",
+]
+
+
+def build_live_browser_audit(
+    command_result: dict[str, Any],
+) -> dict[str, Any]:
+    structured = command_result.get("structuredEvidence")
+    widths = structured.get("widths", []) if structured else []
+    contracts = structured.get("contracts", {}) if structured else {}
+    observed_widths = [row.get("width") for row in widths]
+    width_contracts_passed = (
+        len(widths) == len(REQUIRED_RESPONSIVE_WIDTHS)
+        and all(
+            row.get("layout", {}).get("passed") is True
+            and row.get("neuralEditor", {}).get("passed") is True
+            for row in widths
+        )
     )
+    named_contracts_passed = (
+        set(contracts) == REQUIRED_BROWSER_CONTRACTS
+        and all(value is True for value in contracts.values())
+    )
+    passed = (
+        command_result.get("status") == "passed"
+        and structured is not None
+        and structured.get("schemaVersion") == 1
+        and observed_widths == REQUIRED_RESPONSIVE_WIDTHS
+        and width_contracts_passed
+        and named_contracts_passed
+    )
+    return {
+        "command": command_result["command"],
+        "harness": "tests/tools/model-mission-responsive.test.js",
+        "requiredWidths": REQUIRED_RESPONSIVE_WIDTHS,
+        "observedWidths": observed_widths,
+        "allRequiredWidthsCovered": (
+            observed_widths == REQUIRED_RESPONSIVE_WIDTHS
+        ),
+        "widthOutcomes": widths,
+        "contracts": contracts,
+        "outcome": command_result.get("status"),
+        "passed": passed,
+    }
+
+
+def read_task4_hash_fixtures() -> tuple[str, dict[str, str]]:
+    source = (
+        REPO_ROOT / "tests/tools/ml-generator-baseline-contract.test.js"
+    ).read_text(encoding="utf-8")
+    baseline_match = re.search(
+        r'const BASELINE_COMMIT = "([^"]+)";',
+        source,
+    )
+    if baseline_match is None:
+        raise ValueError("The Task 4 baseline commit is not declared.")
+    fixture_hashes = {}
+    for key in TASK4_HASH_KEYS:
+        match = re.search(
+            rf'"{re.escape(key)}":\s*"([0-9a-f]{{64}})"',
+            source,
+        )
+        if match is None:
+            raise ValueError(f"Missing Task 4 baseline hash: {key}")
+        fixture_hashes[key] = match.group(1)
+    return baseline_match.group(1), fixture_hashes
+
+
+def build_task4_parity(
+    command_result: dict[str, Any],
+    projects: list[dict[str, Any]],
+) -> dict[str, Any]:
+    baseline_commit, fixture_hashes = read_task4_hash_fixtures()
+    yolo_projects = [
+        project
+        for project in projects
+        if project["id"] in {
+            "customized-yolo-detection-adamw",
+            "advanced-yolo-segmentation-confidence",
+        }
+    ]
+    semantic_contracts = {
+        project["id"]: project["staticContracts"]
+        for project in yolo_projects
+    }
+    counts = command_result.get("counts", {})
+    command_passed = (
+        command_result.get("status") == "passed"
+        and counts.get("tests") is not None
+        and counts.get("tests") == counts.get("pass")
+        and counts.get("fail") == 0
+    )
+    semantic_passed = (
+        len(semantic_contracts) == 2
+        and all(
+            contract["passed"]
+            for contracts in semantic_contracts.values()
+            for contract in contracts.values()
+        )
+    )
+    return {
+        "command": command_result["command"],
+        "commandOutcome": command_result.get("status"),
+        "counts": counts,
+        "baselineCommit": baseline_commit,
+        "fixtureHashes": fixture_hashes,
+        "semanticContracts": semantic_contracts,
+        "provenance": [
+            "tests/tools/ml-generator-baseline-contract.test.js",
+            "tests/tools/ml-generator-parity.test.js",
+            "tests/tools/model-mission-generated-code.test.js",
+        ],
+        "passed": command_passed and semantic_passed,
+    }
 
 
 def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
@@ -825,10 +1379,32 @@ def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         row["guided"] < row["customize"] < row["advanced"]
         for row in evidence["education"]["controlCounts"]
     )
-    responsive = next(
-        item for item in evidence["verification"]
-        if item["id"] == "responsive-browser"
-    )["status"] == "passed"
+    browser_contracts = evidence["liveBrowserAudit"].get(
+        "contracts",
+        {},
+    )
+    disclosure = (
+        disclosure
+        and browser_contracts.get("advancedExceedsCustomize") is True
+        and browser_contracts.get("hiddenValuesPreserved") is True
+    )
+    responsive = evidence["liveBrowserAudit"].get("passed") is True
+    truthfulness = (
+        evidence["task4Parity"].get("passed") is True
+        and all(
+            contract["passed"]
+            for project in evidence["projects"]
+            for contract in project["staticContracts"].values()
+        )
+    )
+    learning = (
+        len(evidence["education"]["steps"]) == 9
+        and evidence["education"]["registryErrors"] == []
+    )
+    scope_honest = (
+        evidence["limitations"]["universalNoCodeCoverageClaimed"] is False
+        and evidence["limitations"]["staticCompileIsRuntime"] is False
+    )
     return [
         {
             "dimension": "Static generation and project integrity",
@@ -839,13 +1415,13 @@ def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         {
             "dimension": "Local runtime assurance",
             "maximum": 1.5,
-            "score": 0.5,
+            "score": 0.5 if all_static else 0.0,
             "method": "Dependency-free smoke coverage earns 0.5; training execution requires locally available declared runtimes.",
         },
         {
             "dimension": "Learning workflow",
             "maximum": 1.5,
-            "score": 1.2,
+            "score": 1.2 if learning else 0.0,
             "method": "Nine-step structure and complete metadata are present; no student comprehension study was performed and scaler options lack per-option lessons.",
         },
         {
@@ -857,7 +1433,7 @@ def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         {
             "dimension": "Generated behavior truthfulness",
             "maximum": 1.5,
-            "score": 1.5,
+            "score": 1.5 if truthfulness else 0.0,
             "method": "YOLO optimizer/confidence and active Keras/PyTorch training contracts are checked in generation and parity suites.",
         },
         {
@@ -869,15 +1445,80 @@ def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         {
             "dimension": "Scope honesty and handoff",
             "maximum": 0.5,
-            "score": 0.5,
+            "score": 0.5 if scope_honest else 0.0,
             "method": "Unavailable runtimes, user-supplied data, and no universal no-code claim are stated explicitly.",
         },
     ]
 
 
+def runtime_narrative(
+    projects: list[dict[str, Any]],
+    environment: dict[str, Any],
+) -> str:
+    statuses: dict[str, int] = {}
+    missing_modules: set[str] = set()
+    for project in projects:
+        runtime = project["runtime"]
+        status = runtime["status"]
+        statuses[status] = statuses.get(status, 0) + 1
+        missing_modules.update(runtime.get("missingModules", []))
+    ordered_statuses = [
+        "passed",
+        "failed",
+        "unavailable",
+        "not-applicable",
+    ]
+    summary = ", ".join(
+        f"{statuses.get(status, 0)} {status}"
+        for status in ordered_statuses
+        if statuses.get(status, 0)
+    )
+    details = (
+        " Missing local modules recorded by the project outcomes: "
+        + ", ".join(f"`{name}`" for name in sorted(missing_modules))
+        + "."
+        if missing_modules
+        else ""
+    )
+    available_count = sum(
+        value is True
+        for value in environment.get(
+            "availablePythonModules",
+            {},
+        ).values()
+    )
+    return (
+        f"Current runtime evidence records {summary or 'no outcomes'}."
+        f"{details} The environment probe found {available_count} "
+        "available declared-runtime import(s). Dependency-free structural "
+        "smoke checks remain distinct from training execution."
+    )
+
+
+def warning_narrative(
+    verification: list[dict[str, Any]],
+) -> str:
+    warnings = [
+        (item["id"], warning)
+        for item in verification
+        for warning in item.get("warnings", [])
+    ]
+    if not warnings:
+        return "No verification command emitted a normalized warning."
+    rows = [
+        (
+            f"`{command_id}`: {warning['message']} "
+            f"({warning['classification']})"
+        )
+        for command_id, warning in warnings
+    ]
+    return "Normalized verification warnings: " + "; ".join(rows) + "."
+
+
 def build_report(evidence: dict[str, Any]) -> str:
     score = evidence["score"]["overall"]
     project_rows = []
+    semantic_rows = []
     for project in evidence["projects"]:
         runtime = project["runtime"]
         project_rows.append(
@@ -894,6 +1535,19 @@ def build_report(evidence: dict[str, Any]) -> str:
                 warnings=len(project["generation"]["warnings"]),
             )
         )
+        for name, contract in project["staticContracts"].items():
+            snippets = "<br>".join(
+                "`{}`".format(snippet.replace("|", "&#124;"))
+                for snippet in contract["evidence"]
+            )
+            semantic_rows.append(
+                "| {project} | {contract} | {outcome} | {evidence} |".format(
+                    project=project["id"],
+                    contract=name,
+                    outcome="passed" if contract["passed"] else "failed",
+                    evidence=snippets,
+                )
+            )
 
     count_rows = [
         f"| {row['taskId']} | {row['guided']} | {row['customize']} | {row['advanced']} |"
@@ -923,6 +1577,135 @@ def build_report(evidence: dict[str, Any]) -> str:
         for row in evidence["score"]["dimensions"]
     ]
 
+    runtime_text = runtime_narrative(
+        evidence["projects"],
+        evidence["environment"],
+    )
+    warning_text = warning_narrative(evidence["verification"])
+    all_verification_passed = all(
+        item["status"] == "passed"
+        for item in evidence["verification"]
+    )
+    browser = evidence["liveBrowserAudit"]
+    browser_contract_names = ", ".join(
+        f"`{name}`"
+        for name, passed in browser["contracts"].items()
+        if passed is True
+    )
+    browser_text = (
+        "The scoped local Next.js/Chromium harness passed its structured "
+        f"audit at **{', '.join(map(str, browser['observedWidths']))} px**. "
+        "Every width recorded passing layout and neural-editor outcomes. "
+        f"The emitted passing contracts were {browser_contract_names}."
+        if browser["passed"]
+        else (
+            "The scoped live-browser evidence did not satisfy every required "
+            "width and named contract, so this audit does not award the "
+            "responsive dimension."
+        )
+    )
+    task4 = evidence["task4Parity"]
+    parity_counts = task4["counts"]
+    task4_text = (
+        "The dedicated baseline/parity command passed "
+        f"{parity_counts['pass']}/{parity_counts['tests']} tests. It ties "
+        f"the seven YOLO fixtures below to baseline `{task4['baselineCommit']}` "
+        "and to the reviewed optimizer, learning-rate, validation-confidence, "
+        "and prediction-confidence contracts."
+        if task4["passed"]
+        else (
+            "The dedicated baseline/parity command or reviewed YOLO semantic "
+            "contracts did not pass, so no Task 4 parity claim is made."
+        )
+    )
+    task4_hash_rows = [
+        f"| {key} | `{value}` |"
+        for key, value in task4["fixtureHashes"].items()
+    ]
+    score_by_dimension = {
+        row["dimension"]: row["score"]
+        for row in evidence["score"]["dimensions"]
+    }
+    project_by_id = {
+        project["id"]: project
+        for project in evidence["projects"]
+    }
+
+    def project_contracts_pass(
+        project_ids: list[str],
+        contract_names: set[str],
+    ) -> bool:
+        return all(
+            all(
+                project_by_id[project_id]["staticContracts"][name]["passed"]
+                for name in contract_names
+                if name in project_by_id[project_id]["staticContracts"]
+            )
+            and contract_names.intersection(
+                project_by_id[project_id]["staticContracts"]
+            )
+            for project_id in project_ids
+        )
+
+    strengths = []
+    if all(
+        project["generation"]["astParse"] == "passed"
+        and project["zip"]["exactBaseContract"]
+        for project in evidence["projects"]
+    ):
+        strengths.append(
+            "Deterministic, parseable project generation with a fixed "
+            "eight-file archive contract."
+        )
+    if project_contracts_pass(
+        [
+            "guided-logistic-standard",
+            "advanced-regression-group-power",
+            "guided-keras-tabular",
+            "customized-pytorch-sequence-lstm",
+            "advanced-pytorch-tabular",
+        ],
+        {"trainingOnlyPreprocessing", "finalTestSeparated"},
+    ):
+        strengths.append(
+            "Training-only learned preprocessing and a separated final test "
+            "in every reviewed project where both contracts apply."
+        )
+    if score_by_dimension["Progressive disclosure"] > 0:
+        strengths.append(
+            "Meaningfully different Guided, Customize, and Advanced "
+            "disclosure counts for all seven tasks."
+        )
+    if task4["passed"]:
+        strengths.append(
+            "Truthful YOLO optimizer and distinct validation/prediction "
+            "confidence behavior, tied to seven Task 4 hashes."
+        )
+    if project_contracts_pass(
+        [
+            "guided-keras-tabular",
+            "advanced-keras-image",
+            "customized-pytorch-sequence-lstm",
+            "advanced-pytorch-tabular",
+        ],
+        {"activeTrainingLifecycle", "finalTestSeparated"},
+    ):
+        strengths.append(
+            "Active Keras and PyTorch lifecycle and separated final-test "
+            "contracts rather than commented training skeletons."
+        )
+    if browser["passed"]:
+        strengths.append(
+            "Flat responsive layout with viewport containment and real "
+            "state-preserving interactions."
+        )
+    strengths_text = "\n".join(f"- {strength}" for strength in strengths)
+    executive_result = (
+        "passes every repository verification command executed by this audit"
+        if all_verification_passed
+        else "does not pass every repository verification command"
+    )
+
     return f"""# Model Mission Learning Engine Audit
 
 Audit date: {AUDIT_DATE}
@@ -932,11 +1715,11 @@ Revised score: **{score:.1f}/10**
 
 ## Executive result
 
-The reviewed Model Mission route passes the full JavaScript/TypeScript/build and live responsive verification available in this repository. All eight requested representative configurations generate parseable Python and deterministic eight-file project archives through the current production APIs.
+The reviewed Model Mission route {executive_result}. All eight requested representative configurations generate parseable Python and deterministic eight-file project archives through the current production APIs.
 
 This is not a claim of universal no-code coverage. The tool generates editable training projects for its registered workflows; users still provide task-appropriate data, install the declared environment, interpret metrics, and own deployment validation.
 
-The local audit machine does not have scikit-learn, pandas, joblib, TensorFlow/Keras, PyTorch, torchvision, or Ultralytics. Therefore no training runtime is reported as passed. Dependency-free project smoke tests passed, while AST/static compilation is kept distinct from runtime execution.
+{runtime_text}
 
 ## Verification
 
@@ -944,7 +1727,7 @@ The local audit machine does not have scikit-learn, pandas, joblib, TensorFlow/K
 | --- | --- | --- |
 {chr(10).join(verification_rows)}
 
-The Node tests emit a non-failing `MODULE_TYPELESS_PACKAGE_JSON` warning because this package contains ES-module syntax without declaring `"type": "module"`. It is classified as tooling noise, not a product failure.
+{warning_text}
 
 ## Eight representative projects
 
@@ -962,7 +1745,7 @@ Runtime meanings:
 
 ## Live student and expert audit
 
-The existing responsive harness started a scoped local Next.js process, connected a real headless Chromium/Edge session, and passed at **320, 360, 390, 768, 900, 1024, and 1440 px**. Its observed assertions cover page containment, control/panel containment, non-intersection, Configure/Code state preservation, hidden advanced-value restoration, explanation containment, Advanced-vs-Customize disclosure, project/Python download interactions, and the absence of computed gradients in Model Mission backgrounds.
+{browser_text}
 
 The UI presents nine ordered steps: Goal, Data, Inspect, Split, Prepare, Model, Train, Evaluate, and Generate. Each registered control has all six required educational metadata fields. This supports a guided walkthrough, but an automated browser audit cannot establish that a student can explain all nine steps after one project; that claim requires a real comprehension study.
 
@@ -974,7 +1757,21 @@ Customize adds practical choices and Advanced adds specialist controls for every
 | --- | ---: | ---: | ---: |
 {chr(10).join(count_rows)}
 
-The live harness also verifies that a selected advanced neural optimizer and layer initializer survive level changes. YOLO automatic optimization omits a manual learning rate and explains that the framework chooses it; explicit AdamW emits `lr0`; validation and prediction confidence values flow to separate `val` and `predict` calls. Keras projects contain active loading, training, validation, final-test, saving, and inference code. PyTorch projects contain active loaders, training/validation loops, best-checkpoint restoration, final testing, saving, and inference.
+## Per-project generated-code contracts
+
+| Project | Contract | Outcome | Generated-code evidence |
+| --- | --- | --- | --- |
+{chr(10).join(semantic_rows)}
+
+The contract outcomes above come from the current generated Python for each representative project; their source-test provenance is recorded in the JSON evidence.
+
+## Task 4 YOLO baseline and parity
+
+{task4_text}
+
+| Fixture | SHA-256 |
+| --- | --- |
+{chr(10).join(task4_hash_rows)}
 
 Every project archive explains environment setup, data shape/source, training/evaluation, prediction, expected artifacts, warnings, and a dependency-free smoke test.
 
@@ -988,12 +1785,7 @@ The score measures the evidence available in this audit, not theoretical framewo
 
 ## Verified strengths
 
-- Deterministic, parseable project generation with a fixed eight-file archive contract.
-- Training-only learned preprocessing and an untouched final-test split in reviewed classical/neural contracts.
-- Meaningfully different Guided, Customize, and Advanced disclosure counts for all seven tasks.
-- Truthful YOLO automatic-optimizer behavior and distinct validation/prediction confidence controls.
-- Active Keras and PyTorch training workflows rather than commented training skeletons.
-- Flat responsive layout with viewport containment and real state-preserving interactions.
+{strengths_text}
 
 ## Remaining gaps and deferred observations
 
@@ -1014,6 +1806,19 @@ Within its registered workflows, Model Mission is a strong learning-oriented pro
 """
 
 
+def write_audit_artifacts(evidence: dict[str, Any]) -> None:
+    EVIDENCE_PATH.write_text(
+        stable_json(evidence),
+        encoding="utf-8",
+        newline="\n",
+    )
+    REPORT_PATH.write_text(
+        build_report(evidence),
+        encoding="utf-8",
+        newline="\n",
+    )
+
+
 def main() -> None:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -1024,14 +1829,24 @@ def main() -> None:
         for payload in probe["projects"]
     ]
     verification = run_verification_commands()
-    widths = find_responsive_widths()
+    verification_by_id = {
+        item["id"]: item
+        for item in verification
+    }
+    live_browser_audit = build_live_browser_audit(
+        verification_by_id["responsive-browser"]
+    )
+    task4_parity = build_task4_parity(
+        verification_by_id["yolo-baseline-parity"],
+        projects,
+    )
 
     evidence: dict[str, Any] = {
         "schemaVersion": 1,
         "audit": {
             "title": "Model Mission Learning Engine Audit",
             "date": AUDIT_DATE,
-            "repository": str(REPO_ROOT),
+            "repository": repository_identifier(),
             "branch": "feature/model-mission-learning-engine",
             "baseCommit": BASE_COMMIT,
             "deterministicBuilder": (
@@ -1049,29 +1864,8 @@ def main() -> None:
         "verification": verification,
         "projects": projects,
         "education": probe["education"],
-        "liveBrowserAudit": {
-            "command": "npm run test:ml:responsive",
-            "harness": "tests/tools/model-mission-responsive.test.js",
-            "requiredWidths": [320, 360, 390, 768, 900, 1024, 1440],
-            "observedWidthsFromHarness": widths,
-            "allRequiredWidthsCovered": (
-                widths == [320, 360, 390, 768, 900, 1024, 1440]
-            ),
-            "outcome": next(
-                item["status"] for item in verification
-                if item["id"] == "responsive-browser"
-            ),
-            "observableContracts": [
-                "no page overflow",
-                "no intersecting controls or panels",
-                "Configure/Code state preservation",
-                "hidden advanced values survive level changes",
-                "explanations remain inside field/layer cards",
-                "Advanced exposes more controls than Customize",
-                "no computed Model Mission background gradient",
-                "Python and project ZIP downloads are real local blobs",
-            ],
-        },
+        "liveBrowserAudit": live_browser_audit,
+        "task4Parity": task4_parity,
         "limitations": {
             "universalNoCodeCoverageClaimed": False,
             "studentComprehensionEstablished": False,
@@ -1100,16 +1894,19 @@ def main() -> None:
         "dimensions": dimensions,
     }
 
-    EVIDENCE_PATH.write_text(
-        stable_json(evidence),
-        encoding="utf-8",
-        newline="\n",
-    )
-    REPORT_PATH.write_text(
-        build_report(evidence),
-        encoding="utf-8",
-        newline="\n",
-    )
+    write_audit_artifacts(evidence)
+    verification.append(validate_final_artifacts())
+    dimensions = scorecard(evidence)
+    evidence["score"] = {
+        "scale": 10,
+        "overall": round(
+            sum(item["score"] for item in dimensions),
+            1,
+        ),
+        "dimensions": dimensions,
+    }
+    write_audit_artifacts(evidence)
+    validate_final_artifacts()
     print(f"Wrote {EVIDENCE_PATH.relative_to(REPO_ROOT)}")
     print(f"Wrote {REPORT_PATH.relative_to(REPO_ROOT)}")
     print(

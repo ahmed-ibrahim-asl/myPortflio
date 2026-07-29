@@ -16,6 +16,8 @@ const EXPECTED_MISSION_PROJECT_PATHS = [
   "src/train.py",
   "tests/test_generated_project.py",
 ];
+const AUDIT_EVIDENCE_ENABLED =
+  process.env.MODEL_MISSION_AUDIT_EVIDENCE === "1";
 
 function assertExactMissionProjectPaths(entries) {
   assert.deepEqual(
@@ -224,6 +226,18 @@ test(
     );
     let chrome;
     let client;
+    const auditEvidence = {
+      schemaVersion: 1,
+      widths: [],
+      contracts: {
+        advancedExceedsCustomize: false,
+        downloadsAreLocalAndComplete: false,
+        explanationsContained: false,
+        hiddenValuesPreserved: false,
+        mobileTabsPreserveState: false,
+        noComputedGradients: false,
+      },
+    };
 
     try {
       if (app) await waitForServer(routeUrl, app);
@@ -453,6 +467,7 @@ test(
           .text,
         downloadResult.python,
       );
+      auditEvidence.contracts.downloadsAreLocalAndComplete = true;
 
       const progressiveControls = await client.send("Runtime.evaluate", {
         awaitPromise: true,
@@ -525,6 +540,7 @@ test(
       assert.ok(customizeCount > guidedCount);
       assert.ok(advancedCount > customizeCount);
       assert.equal(advancedOnlyValue, "12");
+      auditEvidence.contracts.advancedExceedsCustomize = true;
       for (const viewport of [
         { width: 320, height: 700 },
         { width: 360, height: 760 },
@@ -637,6 +653,39 @@ test(
           { overflowX: "auto", whiteSpace: "pre" },
           `code owns horizontal scrolling at ${context}`,
         );
+        auditEvidence.widths.push({
+          width: viewport.width,
+          height: viewport.height,
+          layout: {
+            passed:
+              layout.documentWidth === layout.viewportWidth
+              && layout.visiblePanels === (
+                viewport.width <= 960 ? 1 : 2
+              )
+              && layout.panelOverlap === false
+              && layout.shellRailOverlap === false
+              && layout.controlsInside === true
+              && layout.code?.overflowX === "auto"
+              && layout.code?.whiteSpace === "pre",
+            noPageOverflow:
+              layout.documentWidth === layout.viewportWidth,
+            correctPanelCount:
+              layout.visiblePanels === (
+                viewport.width <= 960 ? 1 : 2
+              ),
+            panelsDoNotOverlap: layout.panelOverlap === false,
+            railDoesNotOverlap: layout.shellRailOverlap === false,
+            controlsContained: layout.controlsInside === true,
+            codeOwnsHorizontalScroll:
+              layout.code?.overflowX === "auto"
+              && layout.code?.whiteSpace === "pre",
+          },
+          neuralEditor: {
+            passed: false,
+            noPageOverflow: false,
+            controlsContained: false,
+          },
+        });
       }
 
       await client.send("Emulation.setDeviceMetricsOverride", {
@@ -680,6 +729,7 @@ test(
         model: "random-forest",
         hasRegressor: true,
       });
+      auditEvidence.contracts.mobileTabsPreserveState = true;
 
       await client.send("Emulation.setDeviceMetricsOverride", {
         width: 1024,
@@ -1063,6 +1113,48 @@ test(
         },
       );
       assert.equal(neuralControlResult.invalidDownloadBlocked, true);
+      auditEvidence.contracts.hiddenValuesPreserved =
+        advancedOnlyValue === "12"
+        && neuralControlResult.optimizerRestored === "adamw"
+        && neuralControlResult.restoredInitializer === "orthogonal";
+
+      const computedPresentation = await client.send("Runtime.evaluate", {
+        returnByValue: true,
+        expression: `(() => {
+          const root = document.querySelector("[data-model-mission]");
+          const explanation = document.querySelector(
+            '[data-layer-explanation="initializer"] [id$="-explanation"]'
+          );
+          const card = explanation?.closest("article");
+          const explanationRect = explanation?.getBoundingClientRect();
+          const cardRect = card?.getBoundingClientRect();
+          const explanationContained = Boolean(
+            explanationRect
+            && cardRect
+            && explanationRect.left >= cardRect.left - 1
+            && explanationRect.right <= cardRect.right + 1
+            && explanationRect.top >= cardRect.top - 1
+            && explanationRect.bottom <= cardRect.bottom + 1
+          );
+          const gradientElements = root
+            ? [root, ...root.querySelectorAll("*")]
+              .filter((element) =>
+                getComputedStyle(element).backgroundImage.includes("gradient")
+              )
+              .map((element) => element.tagName)
+            : [];
+          return {
+            explanationContained,
+            gradientElements,
+          };
+        })()`,
+      });
+      assert.deepEqual(computedPresentation.result.value, {
+        explanationContained: true,
+        gradientElements: [],
+      });
+      auditEvidence.contracts.explanationsContained = true;
+      auditEvidence.contracts.noComputedGradients = true;
 
       for (const viewport of [
         { width: 320, height: 700 },
@@ -1119,6 +1211,24 @@ test(
           layout.controlsInside,
           true,
           `neural controls stay contained at ${viewport.width}px`,
+        );
+        const widthEvidence = auditEvidence.widths.find(
+          (row) => row.width === viewport.width,
+        );
+        assert.ok(widthEvidence, `audit width ${viewport.width}px exists`);
+        widthEvidence.neuralEditor = {
+          passed:
+            layout.documentWidth === layout.viewportWidth
+            && layout.controlsInside === true,
+          noPageOverflow:
+            layout.documentWidth === layout.viewportWidth,
+          controlsContained: layout.controlsInside === true,
+        };
+      }
+      if (AUDIT_EVIDENCE_ENABLED) {
+        console.log(
+          "MODEL_MISSION_AUDIT_EVIDENCE="
+            + JSON.stringify(auditEvidence),
         );
       }
     } finally {
