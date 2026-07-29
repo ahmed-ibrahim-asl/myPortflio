@@ -533,6 +533,224 @@ test("PyTorch generator emits a sequence LSTM and training skeleton", () => {
   assert.match(result.code, /learning_rate = 0\.0005/);
 });
 
+test("PyTorch generator emits executable loaders and training loops", () => {
+  const result = generateNeuralScript({
+    framework: "pytorch",
+    preset: "sequence-lstm",
+    task: "sequence-classification",
+    dataSource: "custom-npz",
+    dataPath: "data/sequences.npz",
+    epochs: 4,
+    batchSize: 16,
+    optimizer: "adamw",
+    scheduler: "reduce-on-plateau",
+    patience: 2,
+    gradientClip: 1,
+    mixedPrecision: true,
+  });
+
+  assert.match(result.code, /class ArrayDataset\(Dataset\)/);
+  assert.match(result.code, /train_loader = DataLoader/);
+  assert.match(result.code, /def train_epoch/);
+  assert.match(result.code, /def evaluate/);
+  assert.doesNotMatch(result.code, /# for epoch in range/);
+  assert.match(result.code, /clip_grad_norm_/);
+  assert.match(result.code, /autocast/);
+  assert.match(result.code, /torch\.save\(/);
+  assert.match(result.code, /model\.load_state_dict/);
+  assert.match(result.code, /test_metrics = evaluate/);
+  assert.match(result.code, /if __name__ == "__main__":/);
+});
+
+test("PyTorch tabular and image loaders preserve split and channel contracts", () => {
+  const tabular = generateNeuralScript({
+    framework: "pytorch",
+    preset: "tabular-mlp",
+    dataSource: "custom-csv",
+    dataPath: "data/churn.csv",
+    targetColumn: "churned",
+    scaling: "robust",
+    workers: 3,
+    batchSize: 12,
+  });
+  const image = generateNeuralScript({
+    framework: "pytorch",
+    preset: "image-cnn",
+    dataSource: "image-folder",
+    dataPath: "datasets/animals",
+    inputShape: [48, 48, 4],
+    numClasses: 4,
+    workers: 2,
+  });
+
+  assert.match(tabular.code, /pd\.read_csv\(DATA_PATH\)/);
+  assert.ok(
+    tabular.code.indexOf("train_test_split(")
+      < tabular.code.indexOf("preprocessor.fit_transform(X_train)"),
+  );
+  assert.match(tabular.code, /preprocessor\.transform\(X_validation\)/);
+  assert.match(tabular.code, /preprocessor\.transform\(X_test\)/);
+  assert.doesNotMatch(
+    tabular.code,
+    /fit_transform\(X_validation\)|fit_transform\(X_test\)/,
+  );
+  assert.match(tabular.code, /RobustScaler\(\)/);
+  assert.match(tabular.code, /BATCH_SIZE = 12/);
+  assert.match(tabular.code, /WORKERS = 3/);
+  assert.deepEqual(tabular.dependencies, [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "torch",
+  ]);
+
+  assert.match(image.code, /ImageFolder\(train_directory, transform=image_transform\)/);
+  assert.equal(image.code.match(/ImageFolder\(/g)?.length, 3);
+  assert.match(image.code, /image\.convert\("RGBA"\)/);
+  assert.match(image.code, /transforms\.Resize\(INPUT_SHAPE\[:2\]\)/);
+  assert.match(image.code, /validation_base\.class_to_idx != expected_classes/);
+  assert.match(image.code, /test_base\.class_to_idx != expected_classes/);
+  assert.doesNotMatch(image.code, /x = x\.permute\(0, 3, 1, 2\)/);
+  assert.deepEqual(image.dependencies, ["numpy", "torch", "torchvision"]);
+});
+
+test("PyTorch array target preparation produces loss-compatible dtypes and shapes", () => {
+  const harness = String.raw`
+import ast
+import json
+import sys
+
+import numpy as np
+
+payload = json.load(sys.stdin)
+tree = ast.parse(payload["code"])
+selected = []
+for node in tree.body:
+    if isinstance(node, ast.Assign):
+        names = {target.id for target in node.targets if isinstance(target, ast.Name)}
+        if names & {"IS_REGRESSION", "IS_BINARY"}:
+            selected.append(node)
+    elif isinstance(node, ast.FunctionDef) and node.name == "_prepare_array_targets":
+        selected.append(node)
+namespace = {"np": np}
+exec(compile(ast.Module(body=selected, type_ignores=[]), "<target-seam>", "exec"), namespace)
+prepared = namespace["_prepare_array_targets"](payload["targets"])
+assert prepared.dtype.name == payload["dtype"], prepared.dtype
+assert list(prepared.shape) == payload["shape"], prepared.shape
+print("target-seam-ok")
+`;
+  const cases = [
+    {
+      config: {
+        framework: "pytorch",
+        preset: "tabular-mlp",
+        numClasses: 2,
+      },
+      targets: [0, 1, 0],
+      dtype: "float32",
+      shape: [3, 1],
+    },
+    {
+      config: {
+        framework: "pytorch",
+        preset: "sequence-conv1d",
+        numClasses: 3,
+      },
+      targets: [0, 2, 1],
+      dtype: "int64",
+      shape: [3],
+    },
+    {
+      config: {
+        framework: "pytorch",
+        preset: "tabular-regression-mlp",
+        dataSource: "diabetes",
+      },
+      targets: [1.25, -0.5, 3],
+      dtype: "float32",
+      shape: [3, 1],
+    },
+  ];
+
+  for (const item of cases) {
+    const code = generateNeuralScript(item.config).code;
+    const executed = spawnSync(
+      "python",
+      ["-c", harness],
+      {
+        input: JSON.stringify({
+          code,
+          targets: item.targets,
+          dtype: item.dtype,
+          shape: item.shape,
+        }),
+        encoding: "utf8",
+      },
+    );
+    assert.equal(executed.status, 0, executed.stderr);
+    assert.match(executed.stdout, /target-seam-ok/);
+  }
+});
+
+test("PyTorch optimizer, scheduler, determinism, and checkpoint mappings are complete", () => {
+  const optimizers = {
+    adam: /torch\.optim\.Adam\(model\.parameters\(\), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY\)/,
+    adamw: /torch\.optim\.AdamW\(model\.parameters\(\), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY\)/,
+    sgd: /torch\.optim\.SGD\(model\.parameters\(\), lr=LEARNING_RATE, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY\)/,
+    rmsprop: /torch\.optim\.RMSprop\(model\.parameters\(\), lr=LEARNING_RATE, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY\)/,
+  };
+  for (const [optimizer, pattern] of Object.entries(optimizers)) {
+    const code = generateNeuralScript({
+      framework: "pytorch",
+      preset: "tabular-mlp",
+      optimizer,
+    }).code;
+    assert.match(code, pattern, optimizer);
+  }
+
+  const plateau = generateNeuralScript({
+    framework: "pytorch",
+    preset: "sequence-lstm",
+    scheduler: "reduce-on-plateau",
+    gradientClip: 0.75,
+    mixedPrecision: true,
+    device: "auto",
+  }).code;
+  const cosine = generateNeuralScript({
+    framework: "pytorch",
+    preset: "sequence-lstm",
+    scheduler: "cosine",
+  }).code;
+
+  assert.match(plateau, /torch\.optim\.lr_scheduler\.ReduceLROnPlateau/);
+  assert.match(plateau, /scheduler\.step\(validation_metrics\["loss"\]\)/);
+  assert.match(cosine, /torch\.optim\.lr_scheduler\.CosineAnnealingLR/);
+  assert.match(cosine, /scheduler\.step\(\)/);
+  assert.match(plateau, /def seed_worker\(worker_id\):/);
+  assert.match(plateau, /torch\.initial_seed\(\) % 2\*\*32/);
+  assert.match(plateau, /worker_init_fn=seed_worker/);
+  assert.match(plateau, /generator=_loader_generator\(\)/);
+  assert.equal(plateau.match(/shuffle=True/g)?.length, 1);
+  assert.equal(plateau.match(/shuffle=False/g)?.length, 2);
+  assert.match(plateau, /device\.type == "cuda"/);
+  assert.match(plateau, /torch\.amp\.GradScaler\("cuda"\)/);
+  assert.match(plateau, /torch\.amp\.autocast\("cuda"\)/);
+  assert.match(plateau, /clip_grad_norm_\(model\.parameters\(\), GRADIENT_CLIP\)/);
+  assert.match(plateau, /"model_state": model\.state_dict\(\)/);
+  assert.match(plateau, /"input_shape": INPUT_SHAPE/);
+  assert.match(plateau, /"num_classes": NUM_CLASSES/);
+  assert.match(plateau, /"task": TASK/);
+  assert.equal(plateau.match(/test_metrics = evaluate\(/g)?.length, 1);
+  assert.ok(
+    plateau.indexOf("model.load_state_dict")
+      < plateau.indexOf("test_metrics = evaluate"),
+  );
+  assert.ok(
+    plateau.indexOf("model.load_state_dict")
+      < plateau.indexOf("sample_prediction = predict_sample"),
+  );
+});
+
 test("invalid neural architecture refuses to generate code", () => {
   assert.throws(
     () => generateNeuralScript({

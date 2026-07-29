@@ -142,6 +142,60 @@ test("representative Keras workflows compile without executing training", () => 
   }
 });
 
+test("representative PyTorch workflows compile without executing training", () => {
+  const cases = [
+    {
+      framework: "pytorch",
+      preset: "tabular-mlp",
+      dataSource: "custom-csv",
+      numClasses: 2,
+    },
+    {
+      framework: "pytorch",
+      preset: "image-cnn",
+      dataSource: "image-folder",
+      inputShape: [32, 32, 4],
+      numClasses: 6,
+    },
+    {
+      framework: "pytorch",
+      preset: "sequence-lstm",
+      dataSource: "sequence-array",
+      numClasses: 4,
+    },
+    {
+      framework: "pytorch",
+      preset: "tabular-regression-mlp",
+      dataSource: "diabetes",
+    },
+  ];
+
+  for (const config of cases) {
+    const result = generateNeuralScript(config);
+    for (const functionName of [
+      "load_datasets",
+      "build_loaders",
+      "train_epoch",
+      "evaluate",
+      "train_model",
+      "predict_sample",
+      "main",
+    ]) {
+      assert.match(
+        result.code,
+        new RegExp(`def ${functionName}\\(`),
+        `${config.preset} omitted ${functionName}`,
+      );
+    }
+    const parsed = spawnSync(
+      "python",
+      ["-c", "import ast,sys; compile(ast.parse(sys.stdin.read()), '<generated>', 'exec')"],
+      { input: result.code, encoding: "utf8" },
+    );
+    assert.equal(parsed.status, 0, `${config.preset}: ${parsed.stderr}`);
+  }
+});
+
 test("YOLO mission code keeps validation and prediction confidence separate", async () => {
   const recipe = await loadRecipe("yolo-detection-training");
   const result = buildRecipeResult(recipe, recipe.id, {
