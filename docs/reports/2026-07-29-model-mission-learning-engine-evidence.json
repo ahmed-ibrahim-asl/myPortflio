@@ -1,0 +1,1573 @@
+{
+  "audit": {
+    "baseCommit": "64f30754acf71b5d7422d5d9cc5f488f942a2516",
+    "branch": "feature/model-mission-learning-engine",
+    "date": "2026-07-29",
+    "deterministicBuilder": "scripts/build_model_mission_audit_artifacts.py",
+    "nextDocsRead": [
+      "node_modules/next/dist/docs/01-app/01-getting-started/01-installation.md",
+      "node_modules/next/dist/docs/01-app/01-getting-started/05-server-and-client-components.md",
+      "node_modules/next/dist/docs/01-app/01-getting-started/17-deploying.md",
+      "node_modules/next/dist/docs/01-app/02-guides/testing/playwright.md",
+      "node_modules/next/dist/docs/01-app/03-api-reference/05-config/02-typescript.md",
+      "node_modules/next/dist/docs/01-app/03-api-reference/05-config/01-next-config-js/typescript.md"
+    ],
+    "productionApiSources": {
+      "lib/tools/ml-generator/model-mission/adapters.js": "48988bfa89e42e4510c934565d6acc3b485600da148374b9232ab564842dc476",
+      "lib/tools/ml-generator/model-mission/control-registry.js": "c4605c961140df1d6462469428a4be4d98bcb19f97cd881670a8df4390a8f4dc",
+      "lib/tools/ml-generator/model-mission/project-bundle.js": "c1fb03fc2473984a2b5603d56903cf5f00f12e2c019d7545439d649dfa5e1cbc",
+      "lib/tools/ml-generator/model-mission/stored-zip.js": "30ee2303ee4ae2eb6550036bccd74b32c8ee9055e31eec9ab5273adc604214ad",
+      "lib/tools/ml-generator/workbench/classical-generator.js": "96eb447140068909df88925e459eeba1354e92e8c95666d409a3b706f5a5b674",
+      "lib/tools/ml-generator/workbench/neural-generator.js": "1f8fa12f691692813f86161e6ed77f832cacf17101a732084c4c61de5e69b79f",
+      "tests/tools/model-mission-responsive.test.js": "bb977e47e805af12079532009b063cb2508b9b3d31ff0a13c82cf29bd6869066"
+    },
+    "repository": "D:\\work\\portflioWebsite\\myPortfolio",
+    "title": "Model Mission Learning Engine Audit"
+  },
+  "deferredLedger": [
+    "accessible-explanation source test comment risk",
+    "CSV non-ISO time sorting before datetime parsing",
+    "unknown neural preset fallback",
+    "install-text test spacing coverage",
+    "project-bundle branch maintainability",
+    "stored-ZIP ambiguous-name example coverage"
+  ],
+  "education": {
+    "controlCounts": [
+      {
+        "advanced": 20,
+        "customize": 15,
+        "guided": 10,
+        "taskId": "classification"
+      },
+      {
+        "advanced": 17,
+        "customize": 15,
+        "guided": 10,
+        "taskId": "regression"
+      },
+      {
+        "advanced": 22,
+        "customize": 15,
+        "guided": 8,
+        "taskId": "sensor-classification"
+      },
+      {
+        "advanced": 17,
+        "customize": 12,
+        "guided": 6,
+        "taskId": "image-classification"
+      },
+      {
+        "advanced": 28,
+        "customize": 20,
+        "guided": 12,
+        "taskId": "object-detection"
+      },
+      {
+        "advanced": 28,
+        "customize": 20,
+        "guided": 12,
+        "taskId": "instance-segmentation"
+      },
+      {
+        "advanced": 29,
+        "customize": 19,
+        "guided": 10,
+        "taskId": "neural-network"
+      }
+    ],
+    "registeredControlCount": 153,
+    "registryErrors": [],
+    "scalingChoiceLabels": [
+      "none",
+      "standard",
+      "robust",
+      "minmax",
+      "maxabs",
+      "power",
+      "quantile"
+    ],
+    "scalingControl": {
+      "controlType": "select",
+      "defaultValue": "standard",
+      "explanation": {
+        "avoidWhen": "Avoid unnecessary scaling for tree-only workflows when preserving raw units improves interpretation.",
+        "codeEffect": "The generated Python preparation configuration sets scaling to the selected value.",
+        "tradeoff": "Scaling helps sensitive models but makes coefficients less directly tied to original units.",
+        "useWhen": "Use it for linear, nearest-neighbor, and kernel models with differently sized measurements.",
+        "what": "Feature scaling puts numeric features on comparable ranges before model fitting.",
+        "why": "Scaling helps linear, distance, and kernel models compare features fairly."
+      },
+      "id": "scaling",
+      "label": "Feature scaling",
+      "level": "guided",
+      "section": "preparation",
+      "shortHelp": "Scaling helps linear, distance, and kernel models compare features fairly.",
+      "step": "prepare",
+      "taskIds": [
+        "classification",
+        "regression"
+      ]
+    },
+    "scalingRecommendations": [
+      {
+        "model": "logistic-regression",
+        "recommendation": {
+          "label": "Standard scaling recommended",
+          "reason": "This model is sensitive to feature scale, so standard scaling gives features comparable influence.",
+          "recommendedValue": "standard"
+        }
+      },
+      {
+        "model": "knn",
+        "recommendation": {
+          "label": "Standard scaling recommended",
+          "reason": "This model is sensitive to feature scale, so standard scaling gives features comparable influence.",
+          "recommendedValue": "standard"
+        }
+      },
+      {
+        "model": "svm",
+        "recommendation": null
+      },
+      {
+        "model": "random-forest",
+        "recommendation": {
+          "label": "No scaling recommended",
+          "reason": "Tree-based models split on feature order, so scaling usually does not change their decisions.",
+          "recommendedValue": "none"
+        }
+      },
+      {
+        "model": "histogram-gradient-boosting",
+        "recommendation": null
+      }
+    ],
+    "steps": [
+      {
+        "examples": [],
+        "id": "goal",
+        "label": "Choose the goal",
+        "shortLabel": "Goal"
+      },
+      {
+        "examples": [],
+        "id": "data",
+        "label": "Choose the data",
+        "shortLabel": "Data"
+      },
+      {
+        "examples": [],
+        "id": "inspect",
+        "label": "Inspect the data",
+        "shortLabel": "Inspect"
+      },
+      {
+        "examples": [],
+        "id": "split",
+        "label": "Split safely",
+        "shortLabel": "Split"
+      },
+      {
+        "examples": [],
+        "id": "prepare",
+        "label": "Prepare features",
+        "shortLabel": "Prepare"
+      },
+      {
+        "examples": [],
+        "id": "model",
+        "label": "Choose the model",
+        "shortLabel": "Model"
+      },
+      {
+        "examples": [],
+        "id": "train",
+        "label": "Configure training",
+        "shortLabel": "Train"
+      },
+      {
+        "examples": [],
+        "id": "evaluate",
+        "label": "Evaluate results",
+        "shortLabel": "Evaluate"
+      },
+      {
+        "examples": [],
+        "id": "generate",
+        "label": "Generate Python",
+        "shortLabel": "Generate"
+      }
+    ],
+    "tasks": [
+      {
+        "adapterId": "classical",
+        "adapterTask": "classification",
+        "description": "Predict one label from two or more possible categories.",
+        "examples": [
+          "fault type",
+          "pass or fail",
+          "species"
+        ],
+        "id": "classification",
+        "level": "beginner",
+        "modality": "Tabular data",
+        "order": 1,
+        "recipeId": null,
+        "technicalTerm": "Classification",
+        "title": "Predict a category"
+      },
+      {
+        "adapterId": "classical",
+        "adapterTask": "regression",
+        "description": "Predict a continuous value such as lifetime, demand, or price.",
+        "examples": [
+          "remaining life",
+          "energy use",
+          "temperature"
+        ],
+        "id": "regression",
+        "level": "beginner",
+        "modality": "Tabular data",
+        "order": 2,
+        "recipeId": null,
+        "technicalTerm": "Regression",
+        "title": "Predict a number"
+      },
+      {
+        "adapterId": "legacy",
+        "adapterTask": "sequence-classification",
+        "description": "Turn ordered measurements into windows and predict their state.",
+        "examples": [
+          "fault detection",
+          "activity recognition",
+          "machine condition"
+        ],
+        "id": "sensor-classification",
+        "level": "intermediate",
+        "modality": "Sensor sequences",
+        "order": 3,
+        "recipeId": "sensor-timeseries-classification",
+        "technicalTerm": "Time-Series Classification",
+        "title": "Classify sensor data"
+      },
+      {
+        "adapterId": "legacy",
+        "adapterTask": "edge-image-classification",
+        "description": "Train an image classifier and export it for compact devices.",
+        "examples": [
+          "visual inspection",
+          "plant disease",
+          "product category"
+        ],
+        "id": "image-classification",
+        "level": "intermediate",
+        "modality": "Image folders",
+        "order": 4,
+        "recipeId": "edge-image-classification",
+        "technicalTerm": "Edge Image Classification",
+        "title": "Classify images"
+      },
+      {
+        "adapterId": "legacy",
+        "adapterTask": "object-detection",
+        "description": "Locate and classify multiple objects with bounding boxes.",
+        "examples": [
+          "defect location",
+          "traffic objects",
+          "inventory counting"
+        ],
+        "id": "object-detection",
+        "level": "advanced",
+        "modality": "Images with boxes",
+        "order": 5,
+        "recipeId": "yolo-detection-training",
+        "technicalTerm": "YOLO Object Detection",
+        "title": "Detect objects"
+      },
+      {
+        "adapterId": "legacy",
+        "adapterTask": "instance-segmentation",
+        "description": "Predict a precise mask for every detected object.",
+        "examples": [
+          "surface area",
+          "medical regions",
+          "part boundaries"
+        ],
+        "id": "instance-segmentation",
+        "level": "advanced",
+        "modality": "Images with polygons",
+        "order": 6,
+        "recipeId": "yolo-segmentation-training",
+        "technicalTerm": "YOLO Instance Segmentation",
+        "title": "Segment objects"
+      },
+      {
+        "adapterId": "neural",
+        "adapterTask": "tabular-mlp",
+        "description": "Arrange compatible layers and translate the design into code.",
+        "examples": [
+          "custom MLP",
+          "CNN",
+          "Conv1D or LSTM"
+        ],
+        "id": "neural-network",
+        "level": "advanced",
+        "modality": "Configurable tensor",
+        "order": 7,
+        "recipeId": null,
+        "technicalTerm": "Sequential Neural Network",
+        "title": "Design a neural network"
+      }
+    ]
+  },
+  "environment": {
+    "availablePythonModules": {
+      "imblearn": false,
+      "joblib": false,
+      "keras": false,
+      "numpy": true,
+      "pandas": false,
+      "sklearn": false,
+      "tensorflow": false,
+      "torch": false,
+      "torchvision": false,
+      "ultralytics": false,
+      "yaml": true
+    },
+    "networkCallsMade": false,
+    "packagesInstalled": false,
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]"
+  },
+  "limitations": {
+    "runtimeNote": "Training was attempted only for lightweight built-in-data projects when every declared local module was available.",
+    "staticCompileIsRuntime": false,
+    "studentComprehensionEstablished": false,
+    "universalNoCodeCoverageClaimed": false
+  },
+  "liveBrowserAudit": {
+    "allRequiredWidthsCovered": true,
+    "command": "npm run test:ml:responsive",
+    "harness": "tests/tools/model-mission-responsive.test.js",
+    "observableContracts": [
+      "no page overflow",
+      "no intersecting controls or panels",
+      "Configure/Code state preservation",
+      "hidden advanced values survive level changes",
+      "explanations remain inside field/layer cards",
+      "Advanced exposes more controls than Customize",
+      "no computed Model Mission background gradient",
+      "Python and project ZIP downloads are real local blobs"
+    ],
+    "observedWidthsFromHarness": [
+      320,
+      360,
+      390,
+      768,
+      900,
+      1024,
+      1440
+    ],
+    "outcome": "passed",
+    "requiredWidths": [
+      320,
+      360,
+      390,
+      768,
+      900,
+      1024,
+      1440
+    ]
+  },
+  "projects": [
+    {
+      "artifact": {
+        "declaredInPredictionAndReadme": true,
+        "expectedPath": "classification_pipeline.joblib",
+        "runtimeOutcome": "see runtime"
+      },
+      "configRoundTrip": true,
+      "configuration": {
+        "data": {
+          "dataPath": "data/dataset.csv",
+          "dataset": "breast-cancer",
+          "targetColumn": "target"
+        },
+        "evaluation": {
+          "calibration": "none",
+          "decisionThreshold": null
+        },
+        "inspection": {
+          "showHead": true,
+          "showMissing": true,
+          "showShape": true,
+          "showStatistics": true,
+          "showTarget": true
+        },
+        "learningLevel": "guided",
+        "model": {
+          "alpha": 1,
+          "c": 1,
+          "kernel": "rbf",
+          "l1Ratio": 0.5,
+          "model": "logistic-regression",
+          "neighbors": 5
+        },
+        "output": {
+          "projectName": "guided-logistic-standard"
+        },
+        "preparation": {
+          "balance": "none",
+          "categoricalImputer": "most_frequent",
+          "encoding": "onehot",
+          "numericImputer": "median",
+          "scaling": "standard"
+        },
+        "schemaVersion": 2,
+        "split": {
+          "cvFolds": 5,
+          "groupColumn": "",
+          "searchStrategy": "none",
+          "splitStrategy": "train-validation-test",
+          "stratify": true,
+          "testRatio": 0.15,
+          "timeColumn": "",
+          "validationRatio": 0.15
+        },
+        "taskId": "classification",
+        "training": {
+          "learningRate": 0.05,
+          "nEstimators": 200,
+          "randomSeed": 42
+        }
+      },
+      "generation": {
+        "astParse": "passed",
+        "codeBytes": 3976,
+        "codeSha256": "8d8c93c03c75f84a5e9a04ccae95b096a4786a4454d1883c77b05d95e01037f5",
+        "filename": "classification_pipeline.py",
+        "validationErrors": {},
+        "warnings": []
+      },
+      "id": "guided-logistic-standard",
+      "learningLevel": "guided",
+      "requirements": {
+        "dependencies": [
+          {
+            "package": "scikit-learn",
+            "purpose": "modeling and preprocessing",
+            "version": ">=1.5,<2"
+          },
+          {
+            "package": "pandas",
+            "purpose": "data loading",
+            "version": ">=2.2,<3"
+          },
+          {
+            "package": "numpy",
+            "purpose": "numerical operations",
+            "version": ">=1.26,<3"
+          },
+          {
+            "package": "joblib",
+            "purpose": "model persistence",
+            "version": ">=1.4,<2"
+          }
+        ],
+        "matchesStructuredDependencies": true,
+        "text": [
+          "joblib>=1.4,<2",
+          "numpy>=1.26,<3",
+          "pandas>=2.2,<3",
+          "scikit-learn>=1.5,<2"
+        ]
+      },
+      "runtime": {
+        "artifactCreated": false,
+        "attempted": false,
+        "missingModules": [
+          "joblib",
+          "pandas",
+          "sklearn"
+        ],
+        "reason": "Required local Python modules are unavailable.",
+        "scope": "built-in scikit-learn breast-cancer data",
+        "status": "unavailable"
+      },
+      "structuralSmoke": {
+        "command": "python tests/test_generated_project.py",
+        "exitCode": 0,
+        "scope": "dependency-free file, JSON, and AST checks; does not import or train",
+        "status": "passed"
+      },
+      "taskId": "classification",
+      "zip": {
+        "bytes": 10444,
+        "contents": [
+          ".gitignore",
+          "README.md",
+          "data/README.md",
+          "model_mission.json",
+          "requirements.txt",
+          "src/predict.py",
+          "src/train.py",
+          "tests/test_generated_project.py"
+        ],
+        "crcCheck": "passed",
+        "exactBaseContract": true,
+        "rootName": "guided-logistic-standard",
+        "sha256": "276503534ce2bb6a5d7cc9c985fdface6589be3c469d4eca231082eef7de4b5a"
+      }
+    },
+    {
+      "artifact": {
+        "declaredInPredictionAndReadme": true,
+        "expectedPath": "regression_pipeline.joblib",
+        "runtimeOutcome": "see runtime"
+      },
+      "configRoundTrip": true,
+      "configuration": {
+        "data": {
+          "dataPath": "data/grouped_regression.csv",
+          "dataset": "custom-csv",
+          "targetColumn": "target"
+        },
+        "evaluation": {
+          "calibration": "none",
+          "decisionThreshold": null
+        },
+        "inspection": {
+          "showHead": true,
+          "showMissing": true,
+          "showShape": true,
+          "showStatistics": true,
+          "showTarget": true
+        },
+        "learningLevel": "advanced",
+        "model": {
+          "alpha": 1,
+          "c": 1,
+          "kernel": "rbf",
+          "l1Ratio": 0.5,
+          "model": "ridge",
+          "neighbors": 5
+        },
+        "output": {
+          "projectName": "advanced-regression-group-power"
+        },
+        "preparation": {
+          "balance": "none",
+          "categoricalImputer": "most_frequent",
+          "encoding": "onehot",
+          "numericImputer": "median",
+          "scaling": "power"
+        },
+        "schemaVersion": 2,
+        "split": {
+          "cvFolds": 5,
+          "groupColumn": "group_id",
+          "searchStrategy": "none",
+          "splitStrategy": "group",
+          "stratify": false,
+          "testRatio": 0.15,
+          "timeColumn": "",
+          "validationRatio": 0.15
+        },
+        "taskId": "regression",
+        "training": {
+          "learningRate": 0.05,
+          "nEstimators": 200,
+          "randomSeed": 42
+        }
+      },
+      "generation": {
+        "astParse": "passed",
+        "codeBytes": 3474,
+        "codeSha256": "bf91663650722848032fb5d193896c4a51c97d0aed3b77ce33943560eca1910b",
+        "filename": "regression_pipeline.py",
+        "validationErrors": {},
+        "warnings": [
+          "Confirm the CSV path and target column before running the script."
+        ]
+      },
+      "id": "advanced-regression-group-power",
+      "learningLevel": "advanced",
+      "requirements": {
+        "dependencies": [
+          {
+            "package": "scikit-learn",
+            "purpose": "modeling and preprocessing",
+            "version": ">=1.5,<2"
+          },
+          {
+            "package": "pandas",
+            "purpose": "data loading",
+            "version": ">=2.2,<3"
+          },
+          {
+            "package": "numpy",
+            "purpose": "numerical operations",
+            "version": ">=1.26,<3"
+          },
+          {
+            "package": "joblib",
+            "purpose": "model persistence",
+            "version": ">=1.4,<2"
+          }
+        ],
+        "matchesStructuredDependencies": true,
+        "text": [
+          "joblib>=1.4,<2",
+          "numpy>=1.26,<3",
+          "pandas>=2.2,<3",
+          "scikit-learn>=1.5,<2"
+        ]
+      },
+      "runtime": {
+        "artifactCreated": false,
+        "attempted": false,
+        "reason": "The requested configuration needs user-supplied data or an external/heavyweight workflow.",
+        "scope": "custom grouped CSV is not bundled",
+        "status": "not-applicable"
+      },
+      "structuralSmoke": {
+        "command": "python tests/test_generated_project.py",
+        "exitCode": 0,
+        "scope": "dependency-free file, JSON, and AST checks; does not import or train",
+        "status": "passed"
+      },
+      "taskId": "regression",
+      "zip": {
+        "bytes": 9783,
+        "contents": [
+          ".gitignore",
+          "README.md",
+          "data/README.md",
+          "model_mission.json",
+          "requirements.txt",
+          "src/predict.py",
+          "src/train.py",
+          "tests/test_generated_project.py"
+        ],
+        "crcCheck": "passed",
+        "exactBaseContract": true,
+        "rootName": "advanced-regression-group-power",
+        "sha256": "14d2bfa258ceb7aacb6ad71646040be8c7dc5e965c804176a3a738ac77c45aa5"
+      }
+    },
+    {
+      "artifact": {
+        "declaredInPredictionAndReadme": true,
+        "expectedPath": "runs/detection/yolo_detection/weights/best.pt",
+        "runtimeOutcome": "see runtime"
+      },
+      "configRoundTrip": true,
+      "configuration": {
+        "data": {
+          "datasetYaml": "./dataset/data.yaml",
+          "sourcePath": "./sample.jpg"
+        },
+        "evaluation": {
+          "iouThreshold": 0.7,
+          "predictionConfidence": 0.25,
+          "validationConfidence": 0.001
+        },
+        "inspection": {
+          "cacheDataset": false
+        },
+        "learningLevel": "customize",
+        "model": {
+          "modelSize": "nano",
+          "task": "train"
+        },
+        "output": {
+          "exportFormat": "onnx",
+          "exportInt8": false,
+          "projectDirectory": "./runs/detection",
+          "projectName": "customized-yolo-detection-adamw",
+          "runName": "yolo_detection"
+        },
+        "preparation": {
+          "imageSize": "640"
+        },
+        "schemaVersion": 2,
+        "split": {},
+        "taskId": "object-detection",
+        "training": {
+          "batchSize": 16,
+          "deterministic": true,
+          "device": "auto",
+          "environment": "local",
+          "epochs": 100,
+          "freezeLayers": 0,
+          "learningRate": 0.0007,
+          "momentum": 0.937,
+          "optimizer": "AdamW",
+          "patience": 50,
+          "seed": 42,
+          "useAmp": true,
+          "warmupEpochs": 3,
+          "weightDecay": 0.0005,
+          "workers": 8
+        }
+      },
+      "generation": {
+        "astParse": "passed",
+        "codeBytes": 8298,
+        "codeSha256": "4d81227e508e13a9f6922655d8259fc1e0c1f5723c319c5de9edb3cfa4c348ff",
+        "filename": "train_yolo_detection.py",
+        "validationErrors": {},
+        "warnings": [
+          "Benchmark exported models with representative data on the actual deployment hardware.",
+          "Replace placeholder dataset and source paths before running this production-oriented script."
+        ]
+      },
+      "id": "customized-yolo-detection-adamw",
+      "learningLevel": "customize",
+      "requirements": {
+        "dependencies": [
+          {
+            "package": "ultralytics",
+            "purpose": "YOLO training, validation, inference, and export",
+            "version": ">=8.3,<9"
+          },
+          {
+            "package": "torch",
+            "purpose": "Model execution and hardware acceleration",
+            "version": ">=2.3,<3"
+          },
+          {
+            "package": "numpy",
+            "purpose": "Reproducible random state and numeric utilities",
+            "version": ">=1.26,<3"
+          },
+          {
+            "package": "PyYAML",
+            "purpose": "Dataset YAML validation",
+            "version": ">=6,<7"
+          }
+        ],
+        "matchesStructuredDependencies": true,
+        "text": [
+          "PyYAML>=6,<7",
+          "numpy>=1.26,<3",
+          "torch>=2.3,<3",
+          "ultralytics>=8.3,<9"
+        ]
+      },
+      "runtime": {
+        "artifactCreated": false,
+        "attempted": false,
+        "reason": "The requested configuration needs user-supplied data or an external/heavyweight workflow.",
+        "scope": "external YOLO data/weights and heavyweight runtime",
+        "status": "not-applicable"
+      },
+      "structuralSmoke": {
+        "command": "python tests/test_generated_project.py",
+        "exitCode": 0,
+        "scope": "dependency-free file, JSON, and AST checks; does not import or train",
+        "status": "passed"
+      },
+      "taskId": "object-detection",
+      "zip": {
+        "bytes": 14901,
+        "contents": [
+          ".gitignore",
+          "README.md",
+          "data/README.md",
+          "model_mission.json",
+          "requirements.txt",
+          "src/predict.py",
+          "src/train.py",
+          "tests/test_generated_project.py"
+        ],
+        "crcCheck": "passed",
+        "exactBaseContract": true,
+        "rootName": "customized-yolo-detection-adamw",
+        "sha256": "11f66647bffb626a9b21c130cffef72856eedb26d19cf22350b100abb1116cc4"
+      }
+    },
+    {
+      "artifact": {
+        "declaredInPredictionAndReadme": true,
+        "expectedPath": "runs/segmentation/yolo_segmentation/weights/best.pt",
+        "runtimeOutcome": "see runtime"
+      },
+      "configRoundTrip": true,
+      "configuration": {
+        "data": {
+          "datasetYaml": "./segmentation_dataset/data.yaml",
+          "sourcePath": "./sample.jpg"
+        },
+        "evaluation": {
+          "iouThreshold": 0.7,
+          "predictionConfidence": 0.4,
+          "validationConfidence": 0.002
+        },
+        "inspection": {
+          "cacheDataset": false
+        },
+        "learningLevel": "advanced",
+        "model": {
+          "modelSize": "nano",
+          "task": "train"
+        },
+        "output": {
+          "exportFormat": "onnx",
+          "exportInt8": false,
+          "projectDirectory": "./runs/segmentation",
+          "projectName": "advanced-yolo-segmentation-confidence",
+          "runName": "yolo_segmentation"
+        },
+        "preparation": {
+          "imageSize": "640"
+        },
+        "schemaVersion": 2,
+        "split": {},
+        "taskId": "instance-segmentation",
+        "training": {
+          "batchSize": 16,
+          "deterministic": true,
+          "device": "auto",
+          "environment": "local",
+          "epochs": 100,
+          "freezeLayers": 0,
+          "learningRate": 0.01,
+          "momentum": 0.937,
+          "optimizer": "auto",
+          "patience": 50,
+          "seed": 42,
+          "useAmp": true,
+          "warmupEpochs": 3,
+          "weightDecay": 0.0005,
+          "workers": 8
+        }
+      },
+      "generation": {
+        "astParse": "passed",
+        "codeBytes": 8294,
+        "codeSha256": "88a933cfcc01952589963091112bf23bbcfa2dbfc827ce720e8578831206027d",
+        "filename": "train_yolo_segmentation.py",
+        "validationErrors": {},
+        "warnings": [
+          "Poor polygon annotations produce poor masks even when bounding boxes look correct.",
+          "Extremely detailed polygons increase annotation and preprocessing cost.",
+          "Verify TensorRT and TensorFlow Lite exports using real segmentation outputs.",
+          "Automatic optimizer selection chooses its own learning rate.",
+          "Replace placeholder dataset and source paths before running this production-oriented script."
+        ]
+      },
+      "id": "advanced-yolo-segmentation-confidence",
+      "learningLevel": "advanced",
+      "requirements": {
+        "dependencies": [
+          {
+            "package": "ultralytics",
+            "purpose": "YOLO training, validation, inference, and export",
+            "version": ">=8.3,<9"
+          },
+          {
+            "package": "torch",
+            "purpose": "Model execution and hardware acceleration",
+            "version": ">=2.3,<3"
+          },
+          {
+            "package": "numpy",
+            "purpose": "Reproducible random state and numeric utilities",
+            "version": ">=1.26,<3"
+          },
+          {
+            "package": "PyYAML",
+            "purpose": "Dataset YAML validation",
+            "version": ">=6,<7"
+          }
+        ],
+        "matchesStructuredDependencies": true,
+        "text": [
+          "PyYAML>=6,<7",
+          "numpy>=1.26,<3",
+          "torch>=2.3,<3",
+          "ultralytics>=8.3,<9"
+        ]
+      },
+      "runtime": {
+        "artifactCreated": false,
+        "attempted": false,
+        "reason": "The requested configuration needs user-supplied data or an external/heavyweight workflow.",
+        "scope": "external YOLO data/weights and heavyweight runtime",
+        "status": "not-applicable"
+      },
+      "structuralSmoke": {
+        "command": "python tests/test_generated_project.py",
+        "exitCode": 0,
+        "scope": "dependency-free file, JSON, and AST checks; does not import or train",
+        "status": "passed"
+      },
+      "taskId": "instance-segmentation",
+      "zip": {
+        "bytes": 15261,
+        "contents": [
+          ".gitignore",
+          "README.md",
+          "data/README.md",
+          "model_mission.json",
+          "requirements.txt",
+          "src/predict.py",
+          "src/train.py",
+          "tests/test_generated_project.py"
+        ],
+        "crcCheck": "passed",
+        "exactBaseContract": true,
+        "rootName": "advanced-yolo-segmentation-confidence",
+        "sha256": "4a80fe334de6bcf69ef1d8bd67765fa5a7525948ed93dc2861d79b2e440d520d"
+      }
+    },
+    {
+      "artifact": {
+        "declaredInPredictionAndReadme": true,
+        "expectedPath": "artifacts/neural_network.keras",
+        "runtimeOutcome": "see runtime"
+      },
+      "configRoundTrip": true,
+      "configuration": {
+        "data": {
+          "dataPath": "data/dataset.csv",
+          "dataSource": "breast-cancer",
+          "targetColumn": "target"
+        },
+        "evaluation": {},
+        "inspection": {},
+        "learningLevel": "guided",
+        "model": {
+          "framework": "keras",
+          "preset": "tabular-mlp"
+        },
+        "output": {
+          "artifactPath": "artifacts/neural_network.keras",
+          "checkpointPath": "artifacts/best_neural_network.keras",
+          "projectName": "guided-keras-tabular"
+        },
+        "preparation": {
+          "scaling": "standard"
+        },
+        "schemaVersion": 2,
+        "split": {
+          "splitStrategy": "train-validation-test",
+          "testRatio": 0.15,
+          "validationRatio": 0.15
+        },
+        "taskId": "neural-network",
+        "training": {
+          "batchSize": 32,
+          "device": "auto",
+          "epochs": 1,
+          "gradientClip": 0,
+          "learningRate": 0.001,
+          "minimumDelta": 0,
+          "mixedPrecision": false,
+          "momentum": 0.9,
+          "optimizer": "adam",
+          "patience": 5,
+          "randomSeed": 42,
+          "scheduler": "none",
+          "weightDecay": 0,
+          "workers": 0
+        }
+      },
+      "generation": {
+        "astParse": "passed",
+        "codeBytes": 7449,
+        "codeSha256": "c813c8c848b7d403ae291fae7c88e11ee990702a4130fd20ba0c54c21a8373fb",
+        "filename": "keras_tabular_classification_network.py",
+        "validationErrors": {},
+        "warnings": []
+      },
+      "id": "guided-keras-tabular",
+      "learningLevel": "guided",
+      "requirements": {
+        "dependencies": [
+          {
+            "package": "keras",
+            "purpose": "neural network API",
+            "version": ">=3,<4"
+          },
+          {
+            "package": "numpy",
+            "purpose": "numerical operations",
+            "version": ">=1.26,<3"
+          },
+          {
+            "package": "pandas",
+            "purpose": "data loading",
+            "version": ">=2.2,<3"
+          },
+          {
+            "package": "scikit-learn",
+            "purpose": "modeling and preprocessing",
+            "version": ">=1.5,<2"
+          },
+          {
+            "package": "tensorflow",
+            "purpose": "Keras runtime",
+            "version": ">=2.16,<3"
+          }
+        ],
+        "matchesStructuredDependencies": true,
+        "text": [
+          "keras>=3,<4",
+          "numpy>=1.26,<3",
+          "pandas>=2.2,<3",
+          "scikit-learn>=1.5,<2",
+          "tensorflow>=2.16,<3"
+        ]
+      },
+      "runtime": {
+        "artifactCreated": false,
+        "attempted": false,
+        "missingModules": [
+          "keras",
+          "pandas",
+          "sklearn",
+          "tensorflow"
+        ],
+        "reason": "Required local Python modules are unavailable.",
+        "scope": "built-in scikit-learn breast-cancer data",
+        "status": "unavailable"
+      },
+      "structuralSmoke": {
+        "command": "python tests/test_generated_project.py",
+        "exitCode": 0,
+        "scope": "dependency-free file, JSON, and AST checks; does not import or train",
+        "status": "passed"
+      },
+      "taskId": "neural-network",
+      "zip": {
+        "bytes": 13812,
+        "contents": [
+          ".gitignore",
+          "README.md",
+          "data/README.md",
+          "model_mission.json",
+          "requirements.txt",
+          "src/predict.py",
+          "src/train.py",
+          "tests/test_generated_project.py"
+        ],
+        "crcCheck": "passed",
+        "exactBaseContract": true,
+        "rootName": "guided-keras-tabular",
+        "sha256": "57bcee15c663e24e49311c76d9562f898036c5cea5cf2c591d20c869b6c7cfca"
+      }
+    },
+    {
+      "artifact": {
+        "declaredInPredictionAndReadme": true,
+        "expectedPath": "artifacts/image.keras",
+        "runtimeOutcome": "see runtime"
+      },
+      "configRoundTrip": true,
+      "configuration": {
+        "data": {
+          "dataPath": "data/images",
+          "dataSource": "image-folder",
+          "targetColumn": ""
+        },
+        "evaluation": {},
+        "inspection": {},
+        "learningLevel": "advanced",
+        "model": {
+          "framework": "keras",
+          "inputShape": [
+            32,
+            32,
+            3
+          ],
+          "numClasses": 4,
+          "preset": "image-cnn"
+        },
+        "output": {
+          "artifactPath": "artifacts/image.keras",
+          "checkpointPath": "artifacts/best_image.keras",
+          "projectName": "advanced-keras-image"
+        },
+        "preparation": {
+          "scaling": "standard"
+        },
+        "schemaVersion": 2,
+        "split": {
+          "splitStrategy": "train-validation-test",
+          "testRatio": 0.15,
+          "validationRatio": 0.15
+        },
+        "taskId": "neural-network",
+        "training": {
+          "batchSize": 32,
+          "device": "auto",
+          "epochs": 1,
+          "gradientClip": 0,
+          "learningRate": 0.001,
+          "minimumDelta": 0,
+          "mixedPrecision": false,
+          "momentum": 0.9,
+          "optimizer": "adam",
+          "patience": 5,
+          "randomSeed": 42,
+          "scheduler": "none",
+          "weightDecay": 0,
+          "workers": 0
+        }
+      },
+      "generation": {
+        "astParse": "passed",
+        "codeBytes": 5734,
+        "codeSha256": "eb5ab3fcb4c7ee6064814fca21e37717fd88f5fc25fdf069c8a230874c40f499",
+        "filename": "keras_image_classification_network.py",
+        "validationErrors": {},
+        "warnings": []
+      },
+      "id": "advanced-keras-image",
+      "learningLevel": "advanced",
+      "requirements": {
+        "dependencies": [
+          {
+            "package": "keras",
+            "purpose": "neural network API",
+            "version": ">=3,<4"
+          },
+          {
+            "package": "numpy",
+            "purpose": "numerical operations",
+            "version": ">=1.26,<3"
+          },
+          {
+            "package": "tensorflow",
+            "purpose": "Keras runtime",
+            "version": ">=2.16,<3"
+          }
+        ],
+        "matchesStructuredDependencies": true,
+        "text": [
+          "keras>=3,<4",
+          "numpy>=1.26,<3",
+          "tensorflow>=2.16,<3"
+        ]
+      },
+      "runtime": {
+        "artifactCreated": false,
+        "attempted": false,
+        "reason": "The requested configuration needs user-supplied data or an external/heavyweight workflow.",
+        "scope": "image-folder data is not bundled",
+        "status": "not-applicable"
+      },
+      "structuralSmoke": {
+        "command": "python tests/test_generated_project.py",
+        "exitCode": 0,
+        "scope": "dependency-free file, JSON, and AST checks; does not import or train",
+        "status": "passed"
+      },
+      "taskId": "neural-network",
+      "zip": {
+        "bytes": 12002,
+        "contents": [
+          ".gitignore",
+          "README.md",
+          "data/README.md",
+          "model_mission.json",
+          "requirements.txt",
+          "src/predict.py",
+          "src/train.py",
+          "tests/test_generated_project.py"
+        ],
+        "crcCheck": "passed",
+        "exactBaseContract": true,
+        "rootName": "advanced-keras-image",
+        "sha256": "54ae0122fb5945ee56ee91dda2fff1d1b7f3b5dd4df71f6cffd283f98755ca05"
+      }
+    },
+    {
+      "artifact": {
+        "declaredInPredictionAndReadme": true,
+        "expectedPath": "artifacts/sequence.pt",
+        "runtimeOutcome": "see runtime"
+      },
+      "configRoundTrip": true,
+      "configuration": {
+        "data": {
+          "dataPath": "data/sequences.npz",
+          "dataSource": "sequence-array",
+          "targetColumn": "target"
+        },
+        "evaluation": {},
+        "inspection": {},
+        "learningLevel": "customize",
+        "model": {
+          "framework": "pytorch",
+          "inputShape": [
+            24,
+            6
+          ],
+          "numClasses": 3,
+          "preset": "sequence-lstm"
+        },
+        "output": {
+          "artifactPath": "artifacts/sequence.pt",
+          "checkpointPath": "artifacts/best_sequence.pt",
+          "projectName": "customized-pytorch-sequence-lstm"
+        },
+        "preparation": {
+          "scaling": "standard"
+        },
+        "schemaVersion": 2,
+        "split": {
+          "splitStrategy": "train-validation-test",
+          "testRatio": 0.15,
+          "validationRatio": 0.15
+        },
+        "taskId": "neural-network",
+        "training": {
+          "batchSize": 32,
+          "device": "auto",
+          "epochs": 1,
+          "gradientClip": 0,
+          "learningRate": 0.001,
+          "minimumDelta": 0,
+          "mixedPrecision": false,
+          "momentum": 0.9,
+          "optimizer": "adam",
+          "patience": 5,
+          "randomSeed": 42,
+          "scheduler": "none",
+          "weightDecay": 0,
+          "workers": 0
+        }
+      },
+      "generation": {
+        "astParse": "passed",
+        "codeBytes": 16403,
+        "codeSha256": "fef7d74129a905c067ddc2d9eab7c3995d36335a9e609179df1e488636127631",
+        "filename": "pytorch_sequence_classification_network.py",
+        "validationErrors": {},
+        "warnings": []
+      },
+      "id": "customized-pytorch-sequence-lstm",
+      "learningLevel": "customize",
+      "requirements": {
+        "dependencies": [
+          {
+            "package": "numpy",
+            "purpose": "numerical operations",
+            "version": ">=1.26,<3"
+          },
+          {
+            "package": "scikit-learn",
+            "purpose": "modeling and preprocessing",
+            "version": ">=1.5,<2"
+          },
+          {
+            "package": "torch",
+            "purpose": "neural network training",
+            "version": ">=2.3,<3"
+          }
+        ],
+        "matchesStructuredDependencies": true,
+        "text": [
+          "numpy>=1.26,<3",
+          "scikit-learn>=1.5,<2",
+          "torch>=2.3,<3"
+        ]
+      },
+      "runtime": {
+        "artifactCreated": false,
+        "attempted": false,
+        "reason": "The requested configuration needs user-supplied data or an external/heavyweight workflow.",
+        "scope": "sequence NPZ data is not bundled",
+        "status": "not-applicable"
+      },
+      "structuralSmoke": {
+        "command": "python tests/test_generated_project.py",
+        "exitCode": 0,
+        "scope": "dependency-free file, JSON, and AST checks; does not import or train",
+        "status": "passed"
+      },
+      "taskId": "neural-network",
+      "zip": {
+        "bytes": 23413,
+        "contents": [
+          ".gitignore",
+          "README.md",
+          "data/README.md",
+          "model_mission.json",
+          "requirements.txt",
+          "src/predict.py",
+          "src/train.py",
+          "tests/test_generated_project.py"
+        ],
+        "crcCheck": "passed",
+        "exactBaseContract": true,
+        "rootName": "customized-pytorch-sequence-lstm",
+        "sha256": "f031dc7cbcd37915131852cebd7682c3d4f4229463b3ff8de69e17593afd8782"
+      }
+    },
+    {
+      "artifact": {
+        "declaredInPredictionAndReadme": true,
+        "expectedPath": "artifacts/tabular.pt",
+        "runtimeOutcome": "see runtime"
+      },
+      "configRoundTrip": true,
+      "configuration": {
+        "data": {
+          "dataPath": "data/dataset.csv",
+          "dataSource": "breast-cancer",
+          "targetColumn": "target"
+        },
+        "evaluation": {},
+        "inspection": {},
+        "learningLevel": "advanced",
+        "model": {
+          "framework": "pytorch",
+          "preset": "tabular-mlp"
+        },
+        "output": {
+          "artifactPath": "artifacts/tabular.pt",
+          "checkpointPath": "artifacts/best_tabular.pt",
+          "projectName": "advanced-pytorch-tabular"
+        },
+        "preparation": {
+          "scaling": "standard"
+        },
+        "schemaVersion": 2,
+        "split": {
+          "splitStrategy": "train-validation-test",
+          "testRatio": 0.15,
+          "validationRatio": 0.15
+        },
+        "taskId": "neural-network",
+        "training": {
+          "batchSize": 32,
+          "device": "auto",
+          "epochs": 1,
+          "gradientClip": 0,
+          "learningRate": 0.001,
+          "minimumDelta": 0,
+          "mixedPrecision": false,
+          "momentum": 0.9,
+          "optimizer": "adam",
+          "patience": 5,
+          "randomSeed": 42,
+          "scheduler": "none",
+          "weightDecay": 0,
+          "workers": 0
+        }
+      },
+      "generation": {
+        "astParse": "passed",
+        "codeBytes": 16863,
+        "codeSha256": "af705a0766dbecb730f5542a452ac6c9a4e438326a321cdac139e46eaac79ef9",
+        "filename": "pytorch_tabular_classification_network.py",
+        "validationErrors": {},
+        "warnings": []
+      },
+      "id": "advanced-pytorch-tabular",
+      "learningLevel": "advanced",
+      "requirements": {
+        "dependencies": [
+          {
+            "package": "numpy",
+            "purpose": "numerical operations",
+            "version": ">=1.26,<3"
+          },
+          {
+            "package": "pandas",
+            "purpose": "data loading",
+            "version": ">=2.2,<3"
+          },
+          {
+            "package": "scikit-learn",
+            "purpose": "modeling and preprocessing",
+            "version": ">=1.5,<2"
+          },
+          {
+            "package": "torch",
+            "purpose": "neural network training",
+            "version": ">=2.3,<3"
+          }
+        ],
+        "matchesStructuredDependencies": true,
+        "text": [
+          "numpy>=1.26,<3",
+          "pandas>=2.2,<3",
+          "scikit-learn>=1.5,<2",
+          "torch>=2.3,<3"
+        ]
+      },
+      "runtime": {
+        "artifactCreated": false,
+        "attempted": false,
+        "missingModules": [
+          "pandas",
+          "sklearn",
+          "torch"
+        ],
+        "reason": "Required local Python modules are unavailable.",
+        "scope": "built-in scikit-learn breast-cancer data",
+        "status": "unavailable"
+      },
+      "structuralSmoke": {
+        "command": "python tests/test_generated_project.py",
+        "exitCode": 0,
+        "scope": "dependency-free file, JSON, and AST checks; does not import or train",
+        "status": "passed"
+      },
+      "taskId": "neural-network",
+      "zip": {
+        "bytes": 23881,
+        "contents": [
+          ".gitignore",
+          "README.md",
+          "data/README.md",
+          "model_mission.json",
+          "requirements.txt",
+          "src/predict.py",
+          "src/train.py",
+          "tests/test_generated_project.py"
+        ],
+        "crcCheck": "passed",
+        "exactBaseContract": true,
+        "rootName": "advanced-pytorch-tabular",
+        "sha256": "3645af19f9110284906df9fdc9112082ca2afa2dd795241f0df4a675757d993f"
+      }
+    }
+  ],
+  "schemaVersion": 1,
+  "score": {
+    "dimensions": [
+      {
+        "dimension": "Static generation and project integrity",
+        "maximum": 2.0,
+        "method": "All eight must pass AST, ZIP, requirements, config, artifact declaration, and structural smoke checks.",
+        "score": 2.0
+      },
+      {
+        "dimension": "Local runtime assurance",
+        "maximum": 1.5,
+        "method": "Dependency-free smoke coverage earns 0.5; training execution requires locally available declared runtimes.",
+        "score": 0.5
+      },
+      {
+        "dimension": "Learning workflow",
+        "maximum": 1.5,
+        "method": "Nine-step structure and complete metadata are present; no student comprehension study was performed and scaler options lack per-option lessons.",
+        "score": 1.2
+      },
+      {
+        "dimension": "Progressive disclosure",
+        "maximum": 1.5,
+        "method": "Every task must have guided < customize < advanced control counts and preserve state in the live harness.",
+        "score": 1.5
+      },
+      {
+        "dimension": "Generated behavior truthfulness",
+        "maximum": 1.5,
+        "method": "YOLO optimizer/confidence and active Keras/PyTorch training contracts are checked in generation and parity suites.",
+        "score": 1.5
+      },
+      {
+        "dimension": "Responsive live-route usability",
+        "maximum": 1.5,
+        "method": "The scoped live browser harness must pass all required widths and real state-preserving interactions.",
+        "score": 1.5
+      },
+      {
+        "dimension": "Scope honesty and handoff",
+        "maximum": 0.5,
+        "method": "Unavailable runtimes, user-supplied data, and no universal no-code claim are stated explicitly.",
+        "score": 0.5
+      }
+    ],
+    "overall": 8.7,
+    "scale": 10
+  },
+  "verification": [
+    {
+      "command": "npm run test:ml",
+      "counts": {
+        "fail": 0,
+        "pass": 120,
+        "skipped": 0,
+        "tests": 120
+      },
+      "exitCode": 0,
+      "id": "ml-suite",
+      "status": "passed",
+      "warnings": [
+        {
+          "classification": "non-failing tooling warning",
+          "count": 24,
+          "kind": "node-module-type",
+          "message": "Node reparsed ES-module syntax because package.json does not declare a module type."
+        }
+      ]
+    },
+    {
+      "command": "node --test tests/tools/ml-classical-generator-v2.test.js tests/tools/ml-neural-generator.test.js tests/tools/ml-project-config.test.js",
+      "counts": {
+        "fail": 0,
+        "pass": 47,
+        "skipped": 0,
+        "tests": 47
+      },
+      "exitCode": 0,
+      "id": "focused-generators",
+      "status": "passed",
+      "warnings": [
+        {
+          "classification": "non-failing tooling warning",
+          "count": 3,
+          "kind": "node-module-type",
+          "message": "Node reparsed ES-module syntax because package.json does not declare a module type."
+        }
+      ]
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "id": "typescript",
+      "status": "passed",
+      "warnings": []
+    },
+    {
+      "command": "npm run build",
+      "compiledSuccessfully": true,
+      "exitCode": 0,
+      "id": "production-build",
+      "staticPages": {
+        "generated": 0,
+        "total": 16
+      },
+      "status": "passed",
+      "warnings": []
+    },
+    {
+      "command": "npm run test:ml:responsive",
+      "counts": {
+        "fail": 0,
+        "pass": 2,
+        "skipped": 0,
+        "tests": 2
+      },
+      "exitCode": 0,
+      "id": "responsive-browser",
+      "status": "passed",
+      "warnings": []
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "id": "diff-check",
+      "status": "passed",
+      "warnings": []
+    }
+  ]
+}
