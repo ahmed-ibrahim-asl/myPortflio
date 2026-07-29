@@ -1446,22 +1446,37 @@ def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
             "dimension": "Scope honesty and handoff",
             "maximum": 0.5,
             "score": 0.5 if scope_honest else 0.0,
-            "method": "Unavailable runtimes, user-supplied data, and no universal no-code claim are stated explicitly.",
+            "method": "Runtime outcomes, data constraints, and universal-coverage limits are reported from current evidence.",
         },
     ]
+
+
+def runtime_facts(projects: list[dict[str, Any]]) -> dict[str, Any]:
+    statuses: dict[str, int] = {}
+    missing_modules: set[str] = set()
+    reasons: dict[str, int] = {}
+    for project in projects:
+        runtime = project["runtime"]
+        status = runtime["status"]
+        statuses[status] = statuses.get(status, 0) + 1
+        missing_modules.update(runtime.get("missingModules", []))
+        reason = runtime.get("reason")
+        if reason:
+            reasons[reason] = reasons.get(reason, 0) + 1
+    return {
+        "statuses": statuses,
+        "missingModules": sorted(missing_modules),
+        "reasons": reasons,
+    }
 
 
 def runtime_narrative(
     projects: list[dict[str, Any]],
     environment: dict[str, Any],
 ) -> str:
-    statuses: dict[str, int] = {}
-    missing_modules: set[str] = set()
-    for project in projects:
-        runtime = project["runtime"]
-        status = runtime["status"]
-        statuses[status] = statuses.get(status, 0) + 1
-        missing_modules.update(runtime.get("missingModules", []))
+    facts = runtime_facts(projects)
+    statuses = facts["statuses"]
+    missing_modules = facts["missingModules"]
     ordered_statuses = [
         "passed",
         "failed",
@@ -1480,6 +1495,15 @@ def runtime_narrative(
         if missing_modules
         else ""
     )
+    reason_text = (
+        " Recorded non-passing reasons: "
+        + "; ".join(
+            f"{reason} ({count})"
+            for reason, count in sorted(facts["reasons"].items())
+        )
+        if facts["reasons"]
+        else ""
+    )
     available_count = sum(
         value is True
         for value in environment.get(
@@ -1487,12 +1511,116 @@ def runtime_narrative(
             {},
         ).values()
     )
+    passed_count = statuses.get("passed", 0)
+    execution_text = (
+        " Training execution passed for "
+        f"{passed_count} reviewed "
+        f"{'project' if passed_count == 1 else 'projects'}."
+        if passed_count
+        else " No reviewed training execution passed in this environment."
+    )
     return (
         f"Current runtime evidence records {summary or 'no outcomes'}."
-        f"{details} The environment probe found {available_count} "
+        f"{details}{reason_text}{execution_text} "
+        f"The environment probe found {available_count} "
         "available declared-runtime import(s). Dependency-free structural "
         "smoke checks remain distinct from training execution."
     )
+
+
+def runtime_report_sections(
+    projects: list[dict[str, Any]],
+) -> dict[str, str]:
+    facts = runtime_facts(projects)
+    statuses = facts["statuses"]
+    definitions = {
+        "passed": (
+            "`passed`: the training command exited successfully and created "
+            "its declared artifact."
+        ),
+        "failed": (
+            "`failed`: training was attempted but the command or artifact "
+            "contract did not pass."
+        ),
+        "unavailable": (
+            "`unavailable`: the configuration uses built-in data but one or "
+            "more declared local Python modules are missing."
+        ),
+        "not-applicable": (
+            "`not-applicable`: execution requires user-supplied data, "
+            "external weights, or a heavyweight workflow."
+        ),
+    }
+    ordered_statuses = [
+        "passed",
+        "failed",
+        "unavailable",
+        "not-applicable",
+    ]
+    meaning_rows = [
+        f"- {definitions[status]}"
+        for status in ordered_statuses
+        if statuses.get(status, 0)
+    ]
+    meaning_rows.append(
+        "- A declared artifact path is not evidence that training created "
+        "it; creation is recorded by each runtime outcome."
+    )
+
+    passed = statuses.get("passed", 0)
+    failed = statuses.get("failed", 0)
+    unavailable = statuses.get("unavailable", 0)
+    not_applicable = statuses.get("not-applicable", 0)
+    if passed:
+        runtime_gap = (
+            f"- Training execution passed for {passed} reviewed "
+            f"{'project' if passed == 1 else 'projects'} and created the "
+            "declared artifact"
+        )
+    else:
+        runtime_gap = "- No reviewed training execution passed"
+    remaining = []
+    if failed:
+        remaining.append(f"{failed} failed")
+    if unavailable:
+        remaining.append(f"{unavailable} unavailable")
+    if not_applicable:
+        remaining.append(f"{not_applicable} not-applicable")
+    if remaining:
+        runtime_gap += "; remaining outcomes were " + ", ".join(remaining)
+    runtime_gap += "."
+
+    if passed:
+        conclusion = (
+            f"Its runtime evidence includes {passed} passed training "
+            f"{'execution' if passed == 1 else 'executions'}"
+        )
+    elif failed:
+        conclusion = (
+            "Its runtime evidence includes attempted training, but "
+            f"{failed} {'execution failed' if failed == 1 else 'executions failed'}"
+        )
+    elif unavailable:
+        conclusion = (
+            "Its runtime evidence is limited by "
+            f"{unavailable} unavailable "
+            f"{'workflow' if unavailable == 1 else 'workflows'}"
+        )
+    else:
+        conclusion = "Its reviewed training outcomes were not applicable"
+    if not_applicable:
+        conclusion += (
+            f"; {not_applicable} additional "
+            f"{'workflow was' if not_applicable == 1 else 'workflows were'} "
+            "not applicable"
+        )
+    conclusion += "."
+
+    return {
+        "meanings": "Runtime meanings:\n\n" + "\n".join(meaning_rows),
+        "remainingGap": runtime_gap,
+        "conclusion": conclusion,
+    }
 
 
 def warning_narrative(
@@ -1581,6 +1709,7 @@ def build_report(evidence: dict[str, Any]) -> str:
         evidence["projects"],
         evidence["environment"],
     )
+    runtime_sections = runtime_report_sections(evidence["projects"])
     warning_text = warning_narrative(evidence["verification"])
     all_verification_passed = all(
         item["status"] == "passed"
@@ -1737,11 +1866,7 @@ This is not a claim of universal no-code coverage. The tool generates editable t
 
 For every row, `model_mission.json` round-tripped to the resolved production configuration, `requirements.txt` matched the sorted structured dependency ranges, ZIP CRC inspection passed, `src/train.py`, `src/predict.py`, and the project smoke test parsed, and the dependency-free smoke test exited 0.
 
-Runtime meanings:
-
-- `unavailable`: the configuration uses built-in data but one or more declared local Python modules are missing.
-- `not-applicable`: execution would require user-supplied data, external weights, or a heavyweight workflow. The audit did not install packages, access the network, or invent data.
-- A declared artifact path is not evidence that training created it; runtime creation is reported separately.
+{runtime_sections["meanings"]}
 
 ## Live student and expert audit
 
@@ -1791,18 +1916,17 @@ The score measures the evidence available in this audit, not theoretical framewo
 
 - Student comprehension after one guided project is not established without a user study.
 - Scaler options have shared control-level education, not per-option beginner explanations.
-- Local training runtimes were unavailable, so this audit provides no new end-to-end metric or created-artifact evidence.
+{runtime_sections["remainingGap"]}
 - Custom CSV time splitting sorts before datetime parsing; non-ISO timestamps can order incorrectly.
 - Unknown neural presets currently fall back rather than producing a typed rejection.
 - The accessible-explanation source test relies on comment stripping and could miss behavior if comments change shape.
 - Install-text test coverage is spacing-sensitive and does not exercise every rendering variation.
 - Project-bundle task branching is growing and will become harder to maintain as workflows expand.
 - Stored-ZIP tests reject ambiguous names but lack a concrete cross-platform ambiguous-name example matrix.
-- No LLM or server-side execution was added. Generated output remains deterministic and local.
 
 ## Conclusion
 
-Within its registered workflows, Model Mission is a strong learning-oriented project generator with truthful configuration semantics and a reproducible handoff. Its main evidence gap is runtime breadth on this audit machine, not a failed static or browser contract. The next highest-value improvements are per-scaler explanations, typed unknown-preset rejection, time parsing before chronological sorting, and a small controlled student comprehension study.
+Within its registered workflows, Model Mission is a strong learning-oriented project generator with truthful configuration semantics and a reproducible handoff. {runtime_sections["conclusion"]} The next highest-value improvements are per-scaler explanations, typed unknown-preset rejection, time parsing before chronological sorting, and a small controlled student comprehension study.
 """
 
 

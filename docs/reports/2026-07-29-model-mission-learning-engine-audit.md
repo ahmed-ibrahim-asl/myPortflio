@@ -11,7 +11,7 @@ The reviewed Model Mission route passes every repository verification command ex
 
 This is not a claim of universal no-code coverage. The tool generates editable training projects for its registered workflows; users still provide task-appropriate data, install the declared environment, interpret metrics, and own deployment validation.
 
-Current runtime evidence records 3 unavailable, 5 not-applicable. Missing local modules recorded by the project outcomes: `joblib`, `keras`, `pandas`, `sklearn`, `tensorflow`, `torch`. The environment probe found 2 available declared-runtime import(s). Dependency-free structural smoke checks remain distinct from training execution.
+Current runtime evidence records 3 unavailable, 5 not-applicable. Missing local modules recorded by the project outcomes: `joblib`, `keras`, `pandas`, `sklearn`, `tensorflow`, `torch`. Recorded non-passing reasons: Required local Python modules are unavailable. (3); The requested configuration needs user-supplied data or an external/heavyweight workflow. (5) No reviewed training execution passed in this environment. The environment probe found 2 available declared-runtime import(s). Dependency-free structural smoke checks remain distinct from training execution.
 
 ## Verification
 
@@ -26,7 +26,7 @@ Current runtime evidence records 3 unavailable, 5 not-applicable. Missing local 
 | git diff --check -- scripts/build_model_mission_audit_artifacts.py tests/tools/model-mission-responsive.test.js tests/tools/test_model_mission_audit_builder.py | exit 0 (passed) | no command output |
 | git diff --check -- docs/reports/2026-07-29-model-mission-learning-engine-audit.md docs/reports/2026-07-29-model-mission-learning-engine-evidence.json | exit 0 (passed) | no command output |
 
-Normalized verification warnings: `ml-suite`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `focused-generators`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `yolo-baseline-parity`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `diff-check`: warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `diff-check`: warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-audit.md', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-evidence.json', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning).
+Normalized verification warnings: `ml-suite`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `focused-generators`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `yolo-baseline-parity`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `diff-check`: warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `diff-check`: warning: in the working copy of 'tests/tools/test_model_mission_audit_builder.py', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-audit.md', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-evidence.json', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning).
 
 ## Eight representative projects
 
@@ -46,8 +46,8 @@ For every row, `model_mission.json` round-tripped to the resolved production con
 Runtime meanings:
 
 - `unavailable`: the configuration uses built-in data but one or more declared local Python modules are missing.
-- `not-applicable`: execution would require user-supplied data, external weights, or a heavyweight workflow. The audit did not install packages, access the network, or invent data.
-- A declared artifact path is not evidence that training created it; runtime creation is reported separately.
+- `not-applicable`: execution requires user-supplied data, external weights, or a heavyweight workflow.
+- A declared artifact path is not evidence that training created it; creation is recorded by each runtime outcome.
 
 ## Live student and expert audit
 
@@ -123,7 +123,7 @@ Every project archive explains environment setup, data shape/source, training/ev
 | Progressive disclosure | 1.5 | 1.5 | Every task must have guided < customize < advanced control counts and preserve state in the live harness. |
 | Generated behavior truthfulness | 1.5 | 1.5 | YOLO optimizer/confidence and active Keras/PyTorch training contracts are checked in generation and parity suites. |
 | Responsive live-route usability | 1.5 | 1.5 | The scoped live browser harness must pass all required widths and real state-preserving interactions. |
-| Scope honesty and handoff | 0.5 | 0.5 | Unavailable runtimes, user-supplied data, and no universal no-code claim are stated explicitly. |
+| Scope honesty and handoff | 0.5 | 0.5 | Runtime outcomes, data constraints, and universal-coverage limits are reported from current evidence. |
 
 The score measures the evidence available in this audit, not theoretical framework breadth.
 
@@ -140,15 +140,14 @@ The score measures the evidence available in this audit, not theoretical framewo
 
 - Student comprehension after one guided project is not established without a user study.
 - Scaler options have shared control-level education, not per-option beginner explanations.
-- Local training runtimes were unavailable, so this audit provides no new end-to-end metric or created-artifact evidence.
+- No reviewed training execution passed; remaining outcomes were 3 unavailable, 5 not-applicable.
 - Custom CSV time splitting sorts before datetime parsing; non-ISO timestamps can order incorrectly.
 - Unknown neural presets currently fall back rather than producing a typed rejection.
 - The accessible-explanation source test relies on comment stripping and could miss behavior if comments change shape.
 - Install-text test coverage is spacing-sensitive and does not exercise every rendering variation.
 - Project-bundle task branching is growing and will become harder to maintain as workflows expand.
 - Stored-ZIP tests reject ambiguous names but lack a concrete cross-platform ambiguous-name example matrix.
-- No LLM or server-side execution was added. Generated output remains deterministic and local.
 
 ## Conclusion
 
-Within its registered workflows, Model Mission is a strong learning-oriented project generator with truthful configuration semantics and a reproducible handoff. Its main evidence gap is runtime breadth on this audit machine, not a failed static or browser contract. The next highest-value improvements are per-scaler explanations, typed unknown-preset rejection, time parsing before chronological sorting, and a small controlled student comprehension study.
+Within its registered workflows, Model Mission is a strong learning-oriented project generator with truthful configuration semantics and a reproducible handoff. Its runtime evidence is limited by 3 unavailable workflows; 5 additional workflows were not applicable. The next highest-value improvements are per-scaler explanations, typed unknown-preset rejection, time parsing before chronological sorting, and a small controlled student comprehension study.

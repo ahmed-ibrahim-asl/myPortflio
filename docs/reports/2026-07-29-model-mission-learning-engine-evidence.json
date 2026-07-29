@@ -1878,7 +1878,7 @@
       {
         "dimension": "Scope honesty and handoff",
         "maximum": 0.5,
-        "method": "Unavailable runtimes, user-supplied data, and no universal no-code claim are stated explicitly.",
+        "method": "Runtime outcomes, data constraints, and universal-coverage limits are reported from current evidence.",
         "score": 0.5
       }
     ],
@@ -2336,7 +2336,7 @@
       "id": "diff-check",
       "outputTail": [
         "warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it",
-        "warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it"
+        "warning: in the working copy of 'tests/tools/test_model_mission_audit_builder.py', LF will be replaced by CRLF the next time Git touches it"
       ],
       "status": "passed",
       "warnings": [
@@ -2348,7 +2348,7 @@
         {
           "classification": "non-failing tooling warning",
           "kind": "git-line-ending",
-          "message": "warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it"
+          "message": "warning: in the working copy of 'tests/tools/test_model_mission_audit_builder.py', LF will be replaced by CRLF the next time Git touches it"
         }
       ],
       "warningsOmitted": 0

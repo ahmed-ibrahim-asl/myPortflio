@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import os
@@ -462,6 +463,135 @@ class NarrativeDerivationTests(unittest.TestCase):
         self.assertIn("diff-check", warning_text)
         self.assertIn("warning: alpha line ending", warning_text)
         self.assertNotIn("MODULE_TYPELESS_PACKAGE_JSON", warning_text)
+
+    def test_complete_report_derives_all_runtime_and_warning_claims(
+        self,
+    ) -> None:
+        source_evidence = json.loads(
+            (
+                REPO_ROOT
+                / "docs/reports/"
+                "2026-07-29-model-mission-learning-engine-evidence.json"
+            ).read_text(encoding="utf-8")
+        )
+
+        unavailable = copy.deepcopy(source_evidence)
+        unavailable["environment"]["availablePythonModules"] = {
+            "alpha_runtime": False,
+        }
+        unavailable["projects"][0]["runtime"] = {
+            "attempted": False,
+            "status": "unavailable",
+            "scope": "built-in training data",
+            "reason": "Required local Python modules are unavailable.",
+            "missingModules": ["alpha_runtime"],
+            "artifactCreated": False,
+        }
+        for project in unavailable["projects"][1:]:
+            project["runtime"] = {
+                "attempted": False,
+                "status": "not-applicable",
+                "scope": "user-supplied training data",
+                "reason": "User-supplied data is required.",
+                "artifactCreated": False,
+            }
+        for command in unavailable["verification"]:
+            command["warnings"] = []
+        unavailable["verification"][0]["warnings"] = [
+            {
+                "kind": "node-module-type",
+                "classification": "non-failing tooling warning",
+                "message": (
+                    "Node reparsed ES-module syntax because package.json "
+                    "does not declare a module type."
+                ),
+            }
+        ]
+        unavailable_dimensions = audit.scorecard(unavailable)
+        unavailable["score"] = {
+            "scale": 10,
+            "overall": sum(
+                row["score"] for row in unavailable_dimensions
+            ),
+            "dimensions": unavailable_dimensions,
+        }
+
+        installed = copy.deepcopy(source_evidence)
+        installed["environment"]["availablePythonModules"] = {
+            name: True
+            for name in installed["environment"][
+                "availablePythonModules"
+            ]
+        }
+        installed["projects"][0]["runtime"] = {
+            "attempted": True,
+            "status": "passed",
+            "scope": "built-in training data",
+            "command": "python src/train.py",
+            "returnCode": 0,
+            "artifactCreated": True,
+            "outputTail": ["Training complete."],
+        }
+        for project in installed["projects"][1:]:
+            project["runtime"] = {
+                "attempted": False,
+                "status": "not-applicable",
+                "scope": "user-supplied training data",
+                "reason": "User-supplied data is required.",
+                "artifactCreated": False,
+            }
+        for command in installed["verification"]:
+            command["warnings"] = []
+        installed_dimensions = audit.scorecard(installed)
+        installed["score"] = {
+            "scale": 10,
+            "overall": sum(row["score"] for row in installed_dimensions),
+            "dimensions": installed_dimensions,
+        }
+
+        unavailable_report = audit.build_report(unavailable)
+        installed_report = audit.build_report(installed)
+
+        self.assertIn(
+            "1 unavailable, 7 not-applicable",
+            unavailable_report,
+        )
+        self.assertIn("alpha_runtime", unavailable_report)
+        self.assertIn(
+            "No reviewed training execution passed",
+            unavailable_report,
+        )
+        self.assertIn(
+            "Node reparsed ES-module syntax",
+            unavailable_report,
+        )
+
+        self.assertIn("1 passed, 7 not-applicable", installed_report)
+        self.assertIn(
+            "Training execution passed for 1 reviewed project",
+            installed_report,
+        )
+        self.assertIn(
+            "User-supplied data is required. (7) "
+            "Training execution passed",
+            installed_report,
+        )
+        self.assertIn(
+            "No verification command emitted a normalized warning.",
+            installed_report,
+        )
+        for stale_text in [
+            "Local training runtimes were unavailable",
+            "main evidence gap is runtime breadth",
+            "Missing local modules",
+            "Node reparsed ES-module syntax",
+            "- `unavailable`:",
+            "Unavailable runtimes, user-supplied data",
+            "No LLM or server-side execution was added",
+            "Generated output remains deterministic and local.",
+        ]:
+            with self.subTest(stale_text=stale_text):
+                self.assertNotIn(stale_text, installed_report)
 
 
 class StructuredBrowserEvidenceTests(unittest.TestCase):
