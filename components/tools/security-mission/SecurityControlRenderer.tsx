@@ -1,15 +1,21 @@
 "use client";
 
-import React from "react";
+import {
+  getSecurityProjectValue,
+} from "@/lib/tools/security-mission/project-paths.js";
+
 import { SecurityField } from "./SecurityField";
+import styles from "./SecurityMission.module.css";
 
 export type SecurityControlDef = {
   id: string;
   configKey: string;
+  valuePath: string;
   label: string;
   technicalTerm?: string;
   controlType: string;
   defaultValue?: unknown;
+  required?: boolean;
   options?: Array<{ label: string; value: string }>;
   shortHelp?: string;
   explanation?: {
@@ -24,121 +30,110 @@ export type SecurityControlDef = {
 
 export function SecurityControlRenderer({
   controls,
-  values = {},
+  project,
   errors = {},
   onChange,
+  onFocus,
 }: {
   controls: SecurityControlDef[];
-  values?: Record<string, unknown>;
+  project: Record<string, any>;
   errors?: Record<string, string>;
-  onChange: (key: string, value: unknown) => void;
+  onChange: (valuePath: string, value: unknown) => void;
+  onFocus?: (valuePath: string | null) => void;
 }) {
-  if (!controls || controls.length === 0) return null;
+  if (!controls || controls.length === 0) {
+    return (
+      <div className={styles.emptyState}>
+        <strong>No values needed for this step.</strong>
+        <span>Continue to review the generated command.</span>
+      </div>
+    );
+  }
 
   return (
-    <div className="security-control-renderer space-y-4">
-      {controls.map((ctrl) => {
-        const value = values[ctrl.configKey] ?? ctrl.defaultValue ?? "";
-        const error = errors[ctrl.configKey];
+    <div className={styles.controlList}>
+      {controls.map((control) => {
+        const value =
+          getSecurityProjectValue(project, control.valuePath)
+          ?? control.defaultValue
+          ?? "";
+        const error = errors[control.valuePath];
+        const inputClass = error ? styles.inputError : styles.input;
+        let input: React.ReactNode;
 
-        let inputElement: React.ReactNode = null;
-
-        switch (ctrl.controlType) {
-          case "toggle":
-            inputElement = (
-              <label className="inline-flex items-center cursor-pointer text-xs font-mono text-zinc-200">
-                <input
-                  type="checkbox"
-                  checked={Boolean(value)}
-                  onChange={(e) => onChange(ctrl.configKey, e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none border border-zinc-600 peer-checked:bg-cyan-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-200 after:border-zinc-300 after:border after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full relative"></div>
-                <span className="ml-2 font-mono">{ctrl.label}</span>
-              </label>
-            );
-            break;
-
-          case "select":
-            inputElement = (
-              <select
-                value={String(value)}
-                onChange={(e) => onChange(ctrl.configKey, e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 text-xs p-2 font-mono focus:border-cyan-500 focus:outline-none rounded-none"
-              >
-                {(ctrl.options ?? []).map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            );
-            break;
-
-          case "multi-select": {
-            const selectedList = Array.isArray(value) ? value : [];
-            inputElement = (
-              <div className="space-y-1 bg-zinc-900 p-2 border border-zinc-700 max-h-36 overflow-y-auto">
-                {(ctrl.options ?? []).map((opt) => {
-                  const isChecked = selectedList.includes(opt.value);
-                  return (
-                    <label key={opt.value} className="flex items-center text-xs font-mono text-zinc-200 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(e) => {
-                          const next = e.target.checked
-                            ? [...selectedList, opt.value]
-                            : selectedList.filter((v: string) => v !== opt.value);
-                          onChange(ctrl.configKey, next);
-                        }}
-                        className="mr-2 text-cyan-500 bg-zinc-950 border-zinc-700 rounded-none focus:ring-0"
-                      />
-                      {opt.label}
-                    </label>
-                  );
-                })}
-              </div>
-            );
-            break;
-          }
-
-          case "placeholder-secret":
-            inputElement = (
+        if (control.controlType === "toggle") {
+          input = (
+            <label className={styles.toggle}>
               <input
-                type="password"
-                value={String(value)}
-                onChange={(e) => onChange(ctrl.configKey, e.target.value)}
-                placeholder="<PLACEHOLDER_SECRET>"
-                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 text-xs p-2 font-mono focus:border-cyan-500 focus:outline-none rounded-none"
+                type="checkbox"
+                checked={Boolean(value)}
+                onChange={(event) =>
+                  onChange(control.valuePath, event.target.checked)}
               />
-            );
-            break;
-
-          default:
-            // text, host, number, port, cidr, url, domain, username, path, output-path, etc.
-            inputElement = (
-              <input
-                type="text"
-                value={String(value ?? "")}
-                onChange={(e) => onChange(ctrl.configKey, e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 text-xs p-2 font-mono focus:border-cyan-500 focus:outline-none rounded-none"
-              />
-            );
-            break;
+              <span aria-hidden="true" />
+              <strong>{Boolean(value) ? "Enabled" : "Disabled"}</strong>
+            </label>
+          );
+        } else if (control.controlType === "select") {
+          input = (
+            <select
+              className={inputClass}
+              value={String(value)}
+              onChange={(event) =>
+                onChange(control.valuePath, event.target.value)}
+            >
+              {(control.options ?? []).map((option) => (
+                <option value={option.value} key={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          );
+        } else {
+          const inputType = control.controlType === "placeholder-secret"
+            ? "password"
+            : ["number", "port"].includes(control.controlType)
+              ? "number"
+              : control.controlType === "url"
+                ? "url"
+                : "text";
+          input = (
+            <input
+              className={inputClass}
+              type={inputType}
+              value={String(value)}
+              min={control.controlType === "port" ? 1 : undefined}
+              max={control.controlType === "port" ? 65535 : undefined}
+              autoComplete={
+                control.controlType === "placeholder-secret"
+                  ? "off"
+                  : undefined
+              }
+              onChange={(event) =>
+                onChange(
+                  control.valuePath,
+                  inputType === "number" && event.target.value !== ""
+                    ? Number(event.target.value)
+                    : event.target.value,
+                )}
+            />
+          );
         }
 
         return (
           <SecurityField
-            key={ctrl.id}
-            id={`field-${ctrl.id}`}
-            label={ctrl.label}
-            technicalTerm={ctrl.technicalTerm}
-            shortHelp={ctrl.shortHelp}
-            explanation={ctrl.explanation}
+            key={control.id}
+            id={`security-field-${control.id}`}
+            valuePath={control.valuePath}
+            label={control.label}
+            technicalTerm={control.technicalTerm}
+            shortHelp={control.shortHelp}
+            explanation={control.explanation}
             error={error}
+            required={control.required}
+            onFocus={onFocus}
           >
-            {inputElement}
+            {input}
           </SecurityField>
         );
       })}

@@ -1,14 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
-import { useSecurityMission } from "@/lib/hooks/useSecurityMission";
-import { SecurityMissionNavigator } from "./SecurityMissionNavigator";
+import Link from "next/link";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useSecurityMission,
+} from "@/lib/hooks/useSecurityMission";
+import {
+  SECURITY_MISSION_STEPS,
+} from "@/lib/tools/security-mission/catalog.js";
+import {
+  SECURITY_WORKFLOWS,
+} from "@/lib/tools/security-mission/workflow-registry.js";
+
+import { CommandPreviewPanel } from "./CommandPreviewPanel";
 import { SecurityMissionRail } from "./SecurityMissionRail";
 import { SecurityMissionStepPanel } from "./SecurityMissionStepPanel";
-import { CommandPreviewPanel } from "./CommandPreviewPanel";
 import { WorkflowPreviewPanel } from "./WorkflowPreviewPanel";
+import styles from "./SecurityMission.module.css";
 
 export function SecurityMissionShell() {
+  const [hydrated, setHydrated] = useState(false);
   const {
     state,
     dispatch,
@@ -16,9 +31,16 @@ export function SecurityMissionShell() {
     tool,
     action,
     workflow,
+    compatibleObjectives,
+    compatibleTools,
+    compatibleActions,
     controls,
+    allActionControls,
     validation,
+    stepValidation,
+    stepGuard,
     generatedCommand,
+    generationError,
     compiledWorkflowSteps,
     recommendations,
     copyStatus,
@@ -27,154 +49,281 @@ export function SecurityMissionShell() {
     downloadRunbook,
     importProject,
   } = useSecurityMission();
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+  const currentIndex = SECURITY_MISSION_STEPS.findIndex(
+    ({ id }) => id === state.stepId,
+  );
+  const canGoBack = currentIndex > 0;
+  const canGoNext = currentIndex < SECURITY_MISSION_STEPS.length - 1;
+  const nextStep = canGoNext
+    ? SECURITY_MISSION_STEPS[currentIndex + 1]
+    : null;
 
-  const [activeTab, setActiveTab] = useState<"configure" | "command">("configure");
-
-  const handleSelectObjective = (objId: string) => {
-    dispatch({ type: "choose-objective", objectiveId: objId });
-    dispatch({ type: "go-to-step", stepId: "tool" });
+  const goToStep = (stepId: string) => {
+    const targetIndex = SECURITY_MISSION_STEPS.findIndex(
+      ({ id }) => id === stepId,
+    );
+    if (targetIndex <= currentIndex) {
+      dispatch({ type: "go-to-step", stepId });
+      return;
+    }
+    if (targetIndex === currentIndex + 1) {
+      dispatch({
+        type: "go-to-step",
+        stepId,
+        allowed: stepGuard.allowed,
+        reason: stepGuard.reason,
+      });
+      return;
+    }
+    dispatch({
+      type: "go-to-step",
+      stepId,
+      allowed: false,
+      reason: "Continue through each mission decision in order.",
+    });
   };
 
-  const handleSelectTool = (toolId: string) => {
-    dispatch({ type: "choose-tool", toolId });
-    dispatch({ type: "go-to-step", stepId: "action" });
+  const continueStep = () => {
+    if (!nextStep) {
+      dispatch({ type: "set-workspace-tab", tab: "command" });
+      return;
+    }
+    dispatch({
+      type: "next-step",
+      allowed: stepGuard.allowed,
+      reason: stepGuard.reason,
+    });
   };
 
-  const handleSelectWorkflow = (wfId: string) => {
-    dispatch({ type: "choose-workflow", workflowId: wfId });
-    dispatch({ type: "go-to-step", stepId: "configure" });
+  const chooseTokenSource = (valuePath: string) => {
+    dispatch({ type: "set-focused-value-path", valuePath });
+    dispatch({ type: "set-workspace-tab", tab: "configure" });
+    window.requestAnimationFrame(() => {
+      const field = document.querySelector(
+        `[data-control-path="${CSS.escape(valuePath)}"]`,
+      );
+      const control = field?.querySelector<HTMLElement>(
+        "input, select, button",
+      );
+      control?.focus();
+    });
   };
+
+  const activeMission =
+    workflow?.title
+    ?? action?.title
+    ?? tool?.name
+    ?? objective?.title
+    ?? "Choose a mission";
 
   return (
-    <div
+    <section
+      className={styles.root}
       data-security-mission
-      className="security-mission-container bg-zinc-950 text-zinc-100 min-h-screen font-mono p-4 md:p-6"
+      data-ready={hydrated ? "true" : "false"}
+      data-learning-level={state.project.learningLevel}
+      style={{
+        "--security-panel": "#0c1023",
+        "--security-panel-raised": "#121831",
+        "--security-cyan": "#55d5d8",
+        "--security-green": "#8edb7a",
+        "--security-gold": "#f0c66c",
+        "--security-red": "#f49aab",
+      } as React.CSSProperties}
     >
-      {/* Header */}
-      <header className="mb-6 border-b border-zinc-800 pb-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-cyan-400">
-              Security Mission
-            </h1>
-            <p className="text-xs text-zinc-400 mt-1">
-              From objective to command, one choice at a time.
-            </p>
+      <div className={styles.shell}>
+        <header className={styles.hero}>
+          <div className={styles.heroCopy}>
+            <Link href="/tools/" className={styles.backLink}>
+              ← Back to tools
+            </Link>
+            <span className={styles.kicker}>Authorized command workbench</span>
+            <h1>Security Mission</h1>
+            <p>From objective to command, one choice at a time.</p>
           </div>
+          <div className={styles.heroReadout}>
+            <span>Active mission</span>
+            <strong>{activeMission}</strong>
+            <small>
+              {state.project.mode} / {state.project.platform} / {state.project.shell}
+            </small>
+          </div>
+        </header>
 
-          {/* Disclosure level switch: Guided | Customize | Advanced */}
-          <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 p-1">
-            <span className="text-[10px] text-zinc-500 uppercase px-2">Level:</span>
-            {(["guided", "customize", "advanced"] as const).map((lvl) => (
-              <button
-                key={lvl}
-                type="button"
-                className={`px-2.5 py-1 text-xs uppercase font-bold transition-colors rounded-none ${
-                  state.project.learningLevel === lvl
-                    ? "bg-cyan-600 text-zinc-950"
-                    : "text-zinc-400 hover:text-zinc-200"
-                }`}
-                onClick={() =>
-                  dispatch({ type: "set-learning-level", level: lvl })
-                }
-              >
-                {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
-              </button>
-            ))}
-          </div>
+        <div className={styles.scopeBar} aria-label="Mission safety status">
+          <span><i data-status="safe" /> Local generation only</span>
+          <span><i data-status="scope" /> {state.project.authorizationContext.replaceAll("-", " ")}</span>
+          <span><i data-status="count" /> 109 tools / 159 actions</span>
         </div>
-      </header>
 
-      {/* Entry Navigator (Browse by objective / tool / workflow) */}
-      <SecurityMissionNavigator
-        onSelectObjective={handleSelectObjective}
-        onSelectTool={handleSelectTool}
-        onSelectWorkflow={handleSelectWorkflow}
-      />
-
-      {/* Outer 8-Step Rail */}
-      <SecurityMissionRail
-        currentStepId={state.stepId}
-        onGoToStep={(stepId) => dispatch({ type: "go-to-step", stepId })}
-      />
-
-      {/* Mobile Tab Selectors (Configure / Command) */}
-      <div className="flex md:hidden border-b border-zinc-800 mb-4">
-        <button
-          type="button"
-          className={`flex-1 py-2 font-bold text-xs uppercase text-center rounded-none ${
-            activeTab === "configure"
-              ? "bg-cyan-950 text-cyan-400 border-b-2 border-cyan-400"
-              : "text-zinc-400"
-          }`}
-          onClick={() => setActiveTab("configure")}
+        <div
+          className={styles.levelSwitch}
+          role="group"
+          aria-label="Explanation level"
         >
-          Configure
-        </button>
-        <button
-          type="button"
-          className={`flex-1 py-2 font-bold text-xs uppercase text-center rounded-none ${
-            activeTab === "command"
-              ? "bg-cyan-950 text-cyan-400 border-b-2 border-cyan-400"
-              : "text-zinc-400"
-          }`}
-          onClick={() => setActiveTab("command")}
-        >
-          Command
-        </button>
-      </div>
+          {[
+            ["guided", "Guided", "Required choices and safe defaults"],
+            ["customize", "Customize", "Common tuning and output choices"],
+            ["advanced", "Advanced", "Specialist controls and protocols"],
+          ].map(([value, label, help]) => (
+            <button
+              type="button"
+              key={value}
+              aria-pressed={state.project.learningLevel === value}
+              data-active={
+                state.project.learningLevel === value ? "true" : "false"
+              }
+              onClick={() => dispatch({
+                type: "set-learning-level",
+                level: value,
+              })}
+            >
+              <strong>{label}</strong>
+              <span>{help}</span>
+            </button>
+          ))}
+        </div>
 
-      {/* Workspace Grid */}
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
-        {/* Left Column: Configure Panel */}
-        <section
-          data-security-configure
-          className={`space-y-4 min-w-0 ${
-            activeTab === "configure" ? "block" : "hidden md:block"
-          }`}
+        <SecurityMissionRail
+          currentStepId={state.stepId}
+          onGoToStep={goToStep}
+        />
+
+        <div
+          className={styles.mobileTabs}
+          role="tablist"
+          aria-label="Mobile Security Mission workspace"
         >
-          <div className="bg-zinc-900/50 p-4 border border-zinc-800 min-w-0">
-            <h2 className="text-sm font-bold text-cyan-300 uppercase mb-4 tracking-wider">
-              [{state.stepId.toUpperCase()}: STEP CONFIGURATION]
-            </h2>
+          <button
+            type="button"
+            role="tab"
+            id="security-configure-tab"
+            aria-controls="security-configure-panel"
+            aria-selected={state.workspaceTab === "configure"}
+            onClick={() => dispatch({
+              type: "set-workspace-tab",
+              tab: "configure",
+            })}
+          >
+            Configure
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="security-command-tab"
+            aria-controls="security-command-panel"
+            aria-selected={state.workspaceTab === "command"}
+            onClick={() => dispatch({
+              type: "set-workspace-tab",
+              tab: "command",
+            })}
+          >
+            Command
+          </button>
+        </div>
+
+        <div
+          className={styles.workspace}
+          data-mobile-active={state.workspaceTab}
+        >
+          <section
+            id="security-configure-panel"
+            className={styles.configurePanel}
+            data-security-workspace-panel="configure"
+            role="tabpanel"
+            aria-labelledby="security-configure-tab"
+          >
             <SecurityMissionStepPanel
               stepId={state.stepId}
               project={state.project}
               dispatch={dispatch}
               controls={controls}
-              validation={validation as any}
+              validation={stepValidation}
+              objective={objective}
+              tool={tool}
               action={action}
-            />
-          </div>
-        </section>
-
-        {/* Right Column: Preview Panel */}
-        <section
-          data-security-preview
-          className={`space-y-4 min-w-0 ${
-            activeTab === "command" ? "block" : "hidden md:block"
-          }`}
-        >
-          {state.project.mode === "workflow" && workflow ? (
-            <WorkflowPreviewPanel
               workflow={workflow}
-              compiledSteps={compiledWorkflowSteps}
-              onCopyCommand={copyCommand}
-              onDownloadRunbook={downloadRunbook}
+              compatibleObjectives={compatibleObjectives}
+              compatibleTools={compatibleTools}
+              compatibleActions={compatibleActions}
+              workflows={SECURITY_WORKFLOWS}
+              entryMode={state.navigatorTab}
+              recommendation={recommendations}
+              importProject={importProject}
+              importError={state.importError}
+              importMessage={state.importMessage}
             />
-          ) : (
-            <CommandPreviewPanel
-              generatedCommand={generatedCommand}
-              authorizationContext={state.project.authorizationContext}
-              privilege={(action as any)?.privilege}
-              copyStatus={copyStatus}
-              onCopyCommand={copyCommand}
-              onDownloadRunbook={downloadRunbook}
-              onExportProject={downloadProject}
-            />
-          )}
-        </section>
-      </main>
-    </div>
+
+            {state.guardMessage && (
+              <p className={styles.guardMessage} role="alert">
+                {state.guardMessage}
+              </p>
+            )}
+            <footer className={styles.stepActions}>
+              <button
+                type="button"
+                disabled={!canGoBack}
+                onClick={() => dispatch({ type: "previous-step" })}
+              >
+                Previous
+              </button>
+              <span>
+                Step {currentIndex + 1} of {SECURITY_MISSION_STEPS.length}
+              </span>
+              <button
+                type="button"
+                className={styles.primaryAction}
+                data-step-continue
+                onClick={continueStep}
+              >
+                {nextStep ? `Continue to ${nextStep.title}` : "View command"}
+              </button>
+            </footer>
+            {!stepGuard.allowed && (
+              <p className={styles.disabledReason}>
+                Before continuing: {stepGuard.reason}
+              </p>
+            )}
+          </section>
+
+          <section
+            id="security-command-panel"
+            className={styles.previewPanel}
+            data-security-workspace-panel="command"
+            role="tabpanel"
+            aria-labelledby="security-command-tab"
+          >
+            {state.project.mode === "workflow" && workflow ? (
+              <WorkflowPreviewPanel
+                workflow={workflow}
+                compiledSteps={compiledWorkflowSteps}
+                copyStatus={copyStatus}
+                onCopyCommand={copyCommand}
+                onDownloadRunbook={downloadRunbook}
+                onExportProject={downloadProject}
+              />
+            ) : (
+              <CommandPreviewPanel
+                generatedCommand={generatedCommand}
+                generationError={generationError}
+                authorizationContext={state.project.authorizationContext}
+                privilege={(action as any)?.privilege}
+                copyStatus={copyStatus}
+                validation={validation}
+                controls={allActionControls}
+                focusedValuePath={state.focusedValuePath}
+                onChooseSource={chooseTokenSource}
+                onCopyCommand={copyCommand}
+                onDownloadRunbook={downloadRunbook}
+                onExportProject={downloadProject}
+              />
+            )}
+          </section>
+        </div>
+      </div>
+    </section>
   );
 }

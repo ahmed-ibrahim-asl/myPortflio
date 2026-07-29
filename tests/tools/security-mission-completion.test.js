@@ -22,6 +22,10 @@ import {
   getAllSecurityControls,
   getSecurityControls,
 } from "../../lib/tools/security-mission/control-registry.js";
+import {
+  SECURITY_WORKFLOWS,
+  validateSecurityWorkflowRegistry,
+} from "../../lib/tools/security-mission/workflow-registry.js";
 
 test("host discovery exposes Nmap and its five compatible actions", () => {
   const project = {
@@ -190,5 +194,75 @@ test("step guards name the missing choice that blocks progress", () => {
       stepId: "tool",
     }).allowed,
     true,
+  );
+});
+
+test("every named version-one workflow is implemented with valid command steps", () => {
+  const expectedTitles = [
+    "Local Network Orientation",
+    "Host Discovery",
+    "Full TCP Port Discovery",
+    "Targeted Service and Default-Script Enumeration",
+    "UDP Service Discovery",
+    "DNS Enumeration",
+    "SMB and RPC Enumeration",
+    "SNMP Enumeration",
+    "TLS Certificate Inspection",
+    "Username Discovery and Validation",
+    "Lockout-Aware Password Spray Preparation",
+    "Remote-Service Credential Audit",
+    "Credential Verification Through the Selected Protocol",
+    "Web Surface Identification",
+    "Content and Virtual-Host Discovery",
+    "Request Reproduction with curl",
+    "Login-Form Audit Preparation",
+    "SQL Injection Identification and Confirmation",
+    "Outdated Component Identification",
+    "Evidence Capture for a Finding",
+    "Search, Inspect, and Copy a Public Exploit",
+    "Prepare a Laboratory Payload and Listener",
+    "Establish and Document a Netcat Connection",
+    "Transfer a File in an Authorized Lab",
+    "Linux Local Enumeration",
+    "Windows Local Enumeration",
+    "Hash Identification and Offline Audit",
+    "Evidence Collection and Cleanup Reminders",
+    "SSH Local Forwarding",
+    "SSH Dynamic Forwarding with ProxyChains",
+    "Reverse Tunnel Setup",
+    "Route a Lab Subnet with sshuttle",
+    "Chisel Two-Host Setup",
+    "Ligolo-ng Multi-Host Setup",
+    "Inspect a Binary and Its Protections",
+    "Generate a Cyclic Pattern and Find the Offset",
+    "Compile a Debug Build",
+    "Inspect a Crash in GDB",
+    "Start a Pwntools Exploit Skeleton",
+    "Discover Domain Context",
+    "Enumerate LDAP, SMB, Users, Groups, and Shares",
+    "Validate Usernames with Kerberos",
+    "Identify AS-REP Roastable Accounts",
+    "Enumerate Service Accounts and Request Test Tickets",
+    "Collect a BloodHound Data Set",
+    "Test Authorized Pass-the-Hash Access",
+    "Prepare a Pass-the-Ticket Laboratory Session",
+    "Compare Supported Remote-Management Methods",
+    "Record Domain Privilege Evidence",
+    "Prepare a Wireless Interface for Monitor Mode",
+    "Observe an Authorized Wireless Network",
+    "Capture and Verify an Authorized Handshake",
+    "Perform an Offline Wireless Password Audit",
+    "Build a Bounded hping3 Packet Test",
+    "Capture and Filter Traffic with tcpdump or tshark",
+  ];
+
+  assert.equal(SECURITY_WORKFLOWS.length, expectedTitles.length);
+  assert.deepEqual(
+    SECURITY_WORKFLOWS.map(({ title }) => title),
+    expectedTitles,
+  );
+  assert.deepEqual(
+    validateSecurityWorkflowRegistry(SECURITY_WORKFLOWS, SECURITY_ACTIONS),
+    [],
   );
 });

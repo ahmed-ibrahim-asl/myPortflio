@@ -1,34 +1,106 @@
 "use client";
 
-import { SECURITY_WORKFLOWS } from "@/lib/tools/security-mission/workflow-registry.js";
+import {
+  useMemo,
+  useState,
+} from "react";
+
+import styles from "./SecurityMission.module.css";
 
 export function WorkflowBrowser({
+  workflows,
+  platform,
+  selectedId,
   onSelectWorkflow,
 }: {
+  workflows: readonly any[];
+  platform: string;
+  selectedId?: string | null;
   onSelectWorkflow: (workflowId: string) => void;
 }) {
+  const [search, setSearch] = useState("");
+  const visibleWorkflows = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return workflows;
+    return workflows.filter((workflow) =>
+      [
+        workflow.title,
+        workflow.description,
+        ...(workflow.objectiveIds ?? []),
+        ...(workflow.steps ?? []).flatMap((step: any) => [
+          step.toolId,
+          step.actionId,
+        ]),
+      ]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(query)));
+  }, [search, workflows]);
+  const resultLabel = `${visibleWorkflows.length} ${
+    visibleWorkflows.length === 1 ? "workflow" : "workflows"
+  }`;
+
   return (
-    <div className="workflow-browser font-mono text-xs space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {SECURITY_WORKFLOWS.map((wf: any) => (
-          <div
-            key={wf.id}
-            onClick={() => onSelectWorkflow(wf.id)}
-            className="p-3 bg-zinc-900 border border-zinc-700 hover:border-cyan-500 cursor-pointer transition-colors"
-          >
-            <div className="flex justify-between items-start mb-1">
-              <span className="font-bold text-zinc-100">{wf.title}</span>
-              <span className="text-[10px] px-1.5 py-0.5 bg-cyan-950 text-cyan-300 border border-cyan-800">
-                {wf.steps?.length ?? 0} Steps
+    <div className={styles.browser}>
+      <div className={styles.searchBar}>
+        <label className={styles.searchField}>
+          <span>Find a workflow</span>
+          <input
+            type="search"
+            value={search}
+            data-workflow-search
+            placeholder="Search mission, tool, or objective"
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </label>
+      </div>
+      <div
+        className={styles.resultCount}
+        data-workflow-result-count
+        aria-live="polite"
+      >
+        {resultLabel}
+      </div>
+      <div className={styles.cardGrid}>
+        {visibleWorkflows.map((workflow) => {
+          const compatible = workflow.platform === "cross-platform"
+            || workflow.platform === platform;
+          return (
+            <button
+              type="button"
+              key={workflow.id}
+              className={styles.choiceCard}
+              data-workflow-id={workflow.id}
+              data-compatible={compatible ? "true" : "false"}
+              data-selected={selectedId === workflow.id ? "true" : "false"}
+              aria-pressed={selectedId === workflow.id}
+              disabled={!compatible}
+              title={
+                compatible
+                  ? undefined
+                  : `Requires ${workflow.platform}; current platform is ${platform}.`
+              }
+              onClick={() => onSelectWorkflow(workflow.id)}
+            >
+              <span className={styles.cardTopline}>
+                <strong>{workflow.title}</strong>
+                <span className={styles.badge}>
+                  {workflow.steps?.length ?? 0} steps
+                </span>
               </span>
-            </div>
-            <p className="text-zinc-400 text-[11px] mb-2">{wf.description}</p>
-            <div className="flex justify-between text-[10px] text-zinc-500">
-              <span>Platform: {wf.platform}</span>
-              <span>Risk: {wf.risk}</span>
-            </div>
-          </div>
-        ))}
+              <span className={styles.cardDescription}>
+                {workflow.description}
+              </span>
+              <span className={styles.cardFoot}>
+                <span>
+                  {compatible
+                    ? workflow.platform
+                    : `Requires ${workflow.platform}`}
+                </span>
+                <span>{workflow.risk} risk</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

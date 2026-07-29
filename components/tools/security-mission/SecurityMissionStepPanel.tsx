@@ -1,9 +1,55 @@
 "use client";
 
-import React from "react";
-import { SecurityControlRenderer, SecurityControlDef } from "./SecurityControlRenderer";
-import { SECURITY_OBJECTIVES } from "@/lib/tools/security-mission/objective-registry.js";
-import { SECURITY_TOOLS } from "@/lib/tools/security-mission/catalog.js";
+import { ActionBrowser } from "./ActionBrowser";
+import { SecurityControlRenderer } from "./SecurityControlRenderer";
+import { SecurityMissionNavigator } from "./SecurityMissionNavigator";
+import { SecurityProjectImport } from "./SecurityProjectImport";
+import { ToolBrowser } from "./ToolBrowser";
+import { WorkflowStepRail } from "./WorkflowStepRail";
+import styles from "./SecurityMission.module.css";
+
+const STEP_COPY: Record<string, { kicker: string; title: string; body: string }> = {
+  scope: {
+    kicker: "01 / Safe operating context",
+    title: "Confirm where this command will run",
+    body: "Set the authorized environment and output shell before choosing a security objective.",
+  },
+  objective: {
+    kicker: "02 / Mission outcome",
+    title: "What are you trying to accomplish?",
+    body: "Start from an outcome, a familiar tool, or a curated multi-command workflow.",
+  },
+  tool: {
+    kicker: "03 / Compatible tool",
+    title: "Choose the instrument for this mission",
+    body: "Only tools with a verified action for the selected objective and platform appear here.",
+  },
+  action: {
+    kicker: "04 / Verified recipe",
+    title: "Choose the command outcome",
+    body: "Each action is a registry-owned recipe backed by source evidence.",
+  },
+  target: {
+    kicker: "05 / Authorized target",
+    title: "Define the lab target",
+    body: "These values become quoted command arguments. Keep every target inside your approved scope.",
+  },
+  configure: {
+    kicker: "06 / Command behavior",
+    title: "Tune the command",
+    body: "Guided shows necessary choices. Customize and Advanced reveal more controls without discarding values.",
+  },
+  review: {
+    kicker: "07 / Preflight review",
+    title: "Check the mission before copying",
+    body: "Review scope, platform, selections, warnings, and every value that affects the command.",
+  },
+  generate: {
+    kicker: "08 / Local artifacts",
+    title: "Copy or download the result",
+    body: "Security Mission generates text locally and never executes a command.",
+  },
+};
 
 export function SecurityMissionStepPanel({
   stepId,
@@ -11,152 +57,225 @@ export function SecurityMissionStepPanel({
   dispatch,
   controls,
   validation,
+  objective,
+  tool,
   action,
+  workflow,
+  compatibleObjectives,
+  compatibleTools,
+  compatibleActions,
+  workflows,
+  entryMode,
+  recommendation,
+  importProject,
+  importError,
+  importMessage,
 }: {
   stepId: string;
   project: any;
   dispatch: React.Dispatch<any>;
-  controls: SecurityControlDef[];
+  controls: any[];
   validation: { errors: Record<string, string>; warnings: string[] };
+  objective: any;
+  tool: any;
   action: any;
+  workflow: any;
+  compatibleObjectives: any[];
+  compatibleTools: any[];
+  compatibleActions: any[];
+  workflows: readonly any[];
+  entryMode: "objective" | "tool" | "workflow";
+  recommendation: any;
+  importProject: (json: string) => boolean;
+  importError?: string;
+  importMessage?: string;
 }) {
-  switch (stepId) {
-    case "scope":
-      return (
-        <div className="space-y-4 font-mono text-xs">
-          <div>
-            <label className="block text-xs font-bold text-zinc-100 mb-1">
-              Authorization Context
-            </label>
-            <select
-              value={project.authorizationContext}
-              onChange={(e) =>
-                dispatch({
-                  type: "set-authorization-context",
-                  context: e.target.value,
-                })
-              }
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 text-xs p-2 font-mono focus:border-cyan-500 focus:outline-none rounded-none"
-            >
-              <option value="certification-lab">Certification Lab (e.g. eCPPT)</option>
-              <option value="personal-lab">Personal Lab / Home Lab</option>
-              <option value="ctf">Capture The Flag (CTF) Environment</option>
-              <option value="client-authorized">Client-Authorized Assessment</option>
-            </select>
-          </div>
+  const copy = STEP_COPY[stepId] ?? STEP_COPY.scope;
+  let content: React.ReactNode = null;
 
-          <div>
-            <label className="block text-xs font-bold text-zinc-100 mb-1">Target Operating System</label>
-            <select
-              value={project.platform}
-              onChange={(e) =>
-                dispatch({ type: "set-platform", platform: e.target.value })
-              }
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 text-xs p-2 font-mono focus:border-cyan-500 focus:outline-none rounded-none"
-            >
-              <option value="linux">Linux</option>
-              <option value="windows">Windows</option>
-              <option value="macos">macOS</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-zinc-100 mb-1">Shell Format</label>
-            <select
-              value={project.shell}
-              onChange={(e) =>
-                dispatch({ type: "set-shell", shell: e.target.value })
-              }
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 text-xs p-2 font-mono focus:border-cyan-500 focus:outline-none rounded-none"
-            >
-              <option value="bash">Bash / POSIX Shell</option>
-              <option value="powershell">PowerShell</option>
-              <option value="cmd">Windows Command Prompt (CMD)</option>
-            </select>
-          </div>
-        </div>
-      );
-
-    case "objective":
-      return (
-        <div className="space-y-4 font-mono text-xs">
-          <label className="block text-xs font-bold text-zinc-100 mb-1">Selected Objective</label>
+  if (stepId === "scope") {
+    content = (
+      <div className={styles.scopeFields}>
+        <label>
+          <span>Authorization context</span>
           <select
-            value={project.objectiveId}
-            onChange={(e) =>
-              dispatch({ type: "choose-objective", objectiveId: e.target.value })
-            }
-            className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 text-xs p-2 font-mono focus:border-cyan-500 focus:outline-none rounded-none"
+            id="security-authorization-context"
+            value={project.authorizationContext}
+            onChange={(event) => dispatch({
+              type: "set-authorization-context",
+              context: event.target.value,
+            })}
           >
-            {SECURITY_OBJECTIVES.map((obj: any) => (
-              <option key={obj.id} value={obj.id}>
-                {obj.title} ({obj.domain})
-              </option>
-            ))}
+            <option value="certification-lab">Certification lab</option>
+            <option value="personal-lab">Personal or home lab</option>
+            <option value="ctf">Capture the Flag environment</option>
+            <option value="client-authorized">Client-authorized assessment</option>
           </select>
-        </div>
-      );
-
-    case "tool":
-      return (
-        <div className="space-y-4 font-mono text-xs">
-          <label className="block text-xs font-bold text-zinc-100 mb-1">Selected Tool</label>
+        </label>
+        <label>
+          <span>Command platform</span>
           <select
-            value={project.toolId ?? ""}
-            onChange={(e) =>
-              dispatch({ type: "choose-tool", toolId: e.target.value || null })
-            }
-            className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100 text-xs p-2 font-mono focus:border-cyan-500 focus:outline-none rounded-none"
+            id="security-platform"
+            value={project.platform}
+            onChange={(event) => dispatch({
+              type: "set-platform",
+              platform: event.target.value,
+            })}
           >
-            <option value="">-- Choose a tool --</option>
-            {SECURITY_TOOLS.map((t: any) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
+            <option value="linux">Linux</option>
+            <option value="windows">Windows</option>
+            <option value="macos">macOS</option>
           </select>
+        </label>
+        <label>
+          <span>Shell format</span>
+          <select
+            id="security-shell"
+            value={project.shell}
+            onChange={(event) => dispatch({
+              type: "set-shell",
+              shell: event.target.value,
+            })}
+          >
+            <option value="bash">Bash / POSIX</option>
+            <option value="powershell">PowerShell</option>
+            <option value="cmd">Windows CMD</option>
+          </select>
+        </label>
+        <div className={styles.scopeAssurance}>
+          <strong>Authorized use only</strong>
+          <p>
+            This tool creates local command text. It does not scan a target,
+            store credentials, or send project data to a server.
+          </p>
         </div>
-      );
-
-    case "action":
-      return (
-        <div className="space-y-4 font-mono text-xs">
-          <label className="block text-xs font-bold text-zinc-100 mb-1">
-            Selected Action Recipe
-          </label>
-          <div className="text-zinc-400 text-xs mb-2">
-            {action ? action.title : "Choose an action recipe matching your selected tool."}
-          </div>
-        </div>
-      );
-
-    case "target":
-    case "configure":
-      return (
+      </div>
+    );
+  } else if (stepId === "objective") {
+    content = (
+      <SecurityMissionNavigator
+        entryMode={entryMode}
+        objectives={compatibleObjectives}
+        tools={compatibleTools}
+        workflows={workflows}
+        platform={project.platform}
+        selectedObjectiveId={project.objectiveId}
+        selectedToolId={project.toolId}
+        selectedWorkflowId={project.workflowId}
+        onChooseEntryMode={(mode) => dispatch({
+          type: "choose-entry-mode",
+          mode,
+        })}
+        onSelectObjective={(objectiveId) => dispatch({
+          type: "choose-objective",
+          objectiveId,
+        })}
+        onSelectTool={(toolId) => dispatch({
+          type: "choose-tool",
+          toolId,
+        })}
+        onSelectWorkflow={(workflowId) => dispatch({
+          type: "choose-workflow",
+          workflowId,
+        })}
+      />
+    );
+  } else if (stepId === "tool") {
+    content = (
+      <ToolBrowser
+        tools={compatibleTools}
+        selectedId={project.toolId}
+        onSelectTool={(toolId) => dispatch({
+          type: "choose-tool",
+          toolId,
+        })}
+      />
+    );
+  } else if (stepId === "action") {
+    content = (
+      <ActionBrowser
+        actions={compatibleActions}
+        selectedId={project.actionId}
+        recommendation={recommendation}
+        onSelectAction={(actionId) => dispatch({
+          type: "choose-action",
+          actionId,
+        })}
+      />
+    );
+  } else if (["target", "configure"].includes(stepId)) {
+    content = (
+      <>
+        {workflow && (
+          <WorkflowStepRail
+            workflow={workflow}
+            activeStepId={project.workflow.activeStepId}
+            onSelectStep={(activeStepId) => dispatch({
+              type: "set-active-workflow-step",
+              activeStepId,
+            })}
+          />
+        )}
         <SecurityControlRenderer
           controls={controls}
-          values={project.options}
+          project={project}
           errors={validation.errors}
-          onChange={(key, val) =>
-            dispatch({ type: "patch-options", patch: { [key]: val } })
-          }
+          onChange={(valuePath, value) => dispatch({
+            type: "patch-project-value",
+            valuePath,
+            value,
+          })}
+          onFocus={(valuePath) => dispatch({
+            type: "set-focused-value-path",
+            valuePath,
+          })}
         />
-      );
-
-    case "review":
-    case "generate":
-      return (
-        <div className="font-mono text-xs text-zinc-300 space-y-3">
-          <div className="p-3 bg-zinc-900 border border-zinc-800">
-            <div className="text-cyan-400 font-bold mb-1">[CONFIGURATION REVIEW]</div>
-            <div>Context: {project.authorizationContext}</div>
-            <div>Platform: {project.platform} ({project.shell})</div>
-            <div>Learning Level: {project.learningLevel}</div>
-          </div>
-        </div>
-      );
-
-    default:
-      return null;
+      </>
+    );
+  } else {
+    content = (
+      <div className={styles.reviewGrid}>
+        <article>
+          <span>Scope</span>
+          <strong>{project.authorizationContext.replaceAll("-", " ")}</strong>
+          <small>{project.platform} / {project.shell}</small>
+        </article>
+        <article>
+          <span>Objective</span>
+          <strong>{objective?.title ?? "Workflow objective"}</strong>
+          <small>{objective?.technicalTerm}</small>
+        </article>
+        <article>
+          <span>{workflow ? "Workflow" : "Command"}</span>
+          <strong>{workflow?.title ?? action?.title ?? "Not selected"}</strong>
+          <small>{tool?.name ?? `${workflow?.steps?.length ?? 0} steps`}</small>
+        </article>
+        <article>
+          <span>Validation</span>
+          <strong>
+            {Object.keys(validation.errors).length === 0
+              ? "Ready"
+              : `${Object.keys(validation.errors).length} corrections`}
+          </strong>
+          <small>{validation.warnings.length} warnings</small>
+        </article>
+        <SecurityProjectImport
+          importError={importError}
+          importMessage={importMessage}
+          onImport={importProject}
+        />
+      </div>
+    );
   }
+
+  return (
+    <div className={styles.stepPanel}>
+      <header className={styles.stepHeader}>
+        <span>{copy.kicker}</span>
+        <h2>{copy.title}</h2>
+        <p>{copy.body}</p>
+      </header>
+      {content}
+    </div>
+  );
 }

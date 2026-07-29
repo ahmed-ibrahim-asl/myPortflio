@@ -30,9 +30,9 @@ test("Security Mission Shell and workspace components satisfy contract requireme
   assert.match(navCode, /Browse by tool/);
   assert.match(navCode, /Browse workflows/);
 
-  assert.match(railCode, /Scope/);
-  assert.match(railCode, /Objective/);
-  assert.match(railCode, /Generate/);
+  assert.match(railCode, /SECURITY_MISSION_STEPS/);
+  assert.match(railCode, /aria-current/);
+  assert.match(railCode, /data-step-id/);
 
   assert.match(previewCode, /Copy command|copyCommand/);
   assert.match(previewCode, /Download runbook|downloadRunbook/);

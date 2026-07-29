@@ -1,65 +1,98 @@
 "use client";
 
-import React, { useState } from "react";
 import { ObjectiveBrowser } from "./ObjectiveBrowser";
 import { ToolBrowser } from "./ToolBrowser";
 import { WorkflowBrowser } from "./WorkflowBrowser";
+import styles from "./SecurityMission.module.css";
 
 export function SecurityMissionNavigator({
+  entryMode,
+  objectives,
+  tools,
+  workflows,
+  platform,
+  selectedObjectiveId,
+  selectedToolId,
+  selectedWorkflowId,
+  onChooseEntryMode,
   onSelectObjective,
   onSelectTool,
   onSelectWorkflow,
 }: {
+  entryMode: "objective" | "tool" | "workflow";
+  objectives: any[];
+  tools: any[];
+  workflows: readonly any[];
+  platform: string;
+  selectedObjectiveId?: string | null;
+  selectedToolId?: string | null;
+  selectedWorkflowId?: string | null;
+  onChooseEntryMode: (mode: "objective" | "tool" | "workflow") => void;
   onSelectObjective: (id: string) => void;
   onSelectTool: (id: string) => void;
   onSelectWorkflow: (id: string) => void;
 }) {
-  const [tab, setTab] = useState<"objective" | "tool" | "workflow">("objective");
+  const entries = [
+    {
+      id: "objective",
+      label: "Objective",
+      help: "Browse by objective",
+    },
+    {
+      id: "tool",
+      label: "Tool",
+      help: "Browse by tool",
+    },
+    {
+      id: "workflow",
+      label: "Workflow",
+      help: "Browse workflows",
+    },
+  ] as const;
 
   return (
-    <div className="security-mission-navigator font-mono text-xs mb-6">
-      <div className="flex border-b border-zinc-800 mb-4">
-        <button
-          type="button"
-          className={`px-4 py-2 font-bold uppercase transition-colors rounded-none ${
-            tab === "objective"
-              ? "bg-cyan-950 text-cyan-400 border-b-2 border-cyan-400"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
-          onClick={() => setTab("objective")}
-        >
-          Browse by objective
-        </button>
-        <button
-          type="button"
-          className={`px-4 py-2 font-bold uppercase transition-colors rounded-none ${
-            tab === "tool"
-              ? "bg-cyan-950 text-cyan-400 border-b-2 border-cyan-400"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
-          onClick={() => setTab("tool")}
-        >
-          Browse by tool
-        </button>
-        <button
-          type="button"
-          className={`px-4 py-2 font-bold uppercase transition-colors rounded-none ${
-            tab === "workflow"
-              ? "bg-cyan-950 text-cyan-400 border-b-2 border-cyan-400"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
-          onClick={() => setTab("workflow")}
-        >
-          Browse workflows
-        </button>
+    <div className={styles.navigator}>
+      <div
+        className={styles.entryModes}
+        role="group"
+        aria-label="Start Security Mission with"
+      >
+        {entries.map((entry) => (
+          <button
+            type="button"
+            key={entry.id}
+            data-entry-mode={entry.id}
+            data-active={entryMode === entry.id ? "true" : "false"}
+            aria-pressed={entryMode === entry.id}
+            onClick={() => onChooseEntryMode(entry.id)}
+          >
+            <strong>{entry.label}</strong>
+            <span>{entry.help}</span>
+          </button>
+        ))}
       </div>
 
-      {tab === "objective" && (
-        <ObjectiveBrowser onSelectObjective={onSelectObjective} />
+      {entryMode === "objective" && (
+        <ObjectiveBrowser
+          objectives={objectives}
+          selectedId={selectedObjectiveId}
+          onSelectObjective={onSelectObjective}
+        />
       )}
-      {tab === "tool" && <ToolBrowser onSelectTool={onSelectTool} />}
-      {tab === "workflow" && (
-        <WorkflowBrowser onSelectWorkflow={onSelectWorkflow} />
+      {entryMode === "tool" && (
+        <ToolBrowser
+          tools={tools}
+          selectedId={selectedToolId}
+          onSelectTool={onSelectTool}
+        />
+      )}
+      {entryMode === "workflow" && (
+        <WorkflowBrowser
+          workflows={workflows}
+          platform={platform}
+          selectedId={selectedWorkflowId}
+          onSelectWorkflow={onSelectWorkflow}
+        />
       )}
     </div>
   );

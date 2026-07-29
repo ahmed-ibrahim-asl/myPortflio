@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import {
+  useId,
+  useState,
+} from "react";
+
+import styles from "./SecurityMission.module.css";
 
 export type ExplanationData = {
   what?: string;
@@ -11,61 +16,44 @@ export type ExplanationData = {
   codeEffect?: string;
 };
 
-export function SecurityExplanation({ explanation }: { explanation?: ExplanationData }) {
+export function SecurityExplanation({
+  explanation,
+}: {
+  explanation?: ExplanationData;
+}) {
   const [expanded, setExpanded] = useState(false);
-
+  const panelId = useId();
   if (!explanation) return null;
 
+  const rows = [
+    ["What it is", explanation.what],
+    ["Why it matters", explanation.why],
+    ["Use it when", explanation.useWhen],
+    ["Avoid it when", explanation.avoidWhen],
+    ["Trade-off", explanation.tradeoff],
+    ["Command effect", explanation.codeEffect],
+  ].filter(([, value]) => Boolean(value));
+
   return (
-    <div className="security-explanation mt-2">
+    <div className={styles.explanation}>
       <button
         type="button"
-        className="text-xs text-cyan-400 hover:underline font-mono focus:outline-none"
+        className={styles.explanationButton}
         aria-expanded={expanded}
-        onClick={() => setExpanded((prev) => !prev)}
+        aria-controls={panelId}
+        onClick={() => setExpanded((value) => !value)}
       >
-        {expanded ? "[-] Hide choice explanation" : "[+] Learn this choice"}
+        {expanded ? "Hide explanation" : "Explain this choice"}
       </button>
-
       {expanded && (
-        <div className="mt-2 p-3 bg-zinc-900 border border-zinc-700 text-xs font-mono space-y-2 text-zinc-300">
-          {explanation.what && (
-            <div>
-              <span className="text-cyan-400 font-bold">WHAT: </span>
-              {explanation.what}
+        <dl id={panelId} className={styles.explanationPanel}>
+          {rows.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
             </div>
-          )}
-          {explanation.why && (
-            <div>
-              <span className="text-green-400 font-bold">WHY: </span>
-              {explanation.why}
-            </div>
-          )}
-          {explanation.useWhen && (
-            <div>
-              <span className="text-emerald-400 font-bold">USE WHEN: </span>
-              {explanation.useWhen}
-            </div>
-          )}
-          {explanation.avoidWhen && (
-            <div>
-              <span className="text-amber-400 font-bold">AVOID WHEN: </span>
-              {explanation.avoidWhen}
-            </div>
-          )}
-          {explanation.tradeoff && (
-            <div>
-              <span className="text-yellow-400 font-bold">TRADEOFF: </span>
-              {explanation.tradeoff}
-            </div>
-          )}
-          {explanation.codeEffect && (
-            <div>
-              <span className="text-cyan-300 font-bold">COMMAND EFFECT: </span>
-              {explanation.codeEffect}
-            </div>
-          )}
-        </div>
+          ))}
+        </dl>
       )}
     </div>
   );

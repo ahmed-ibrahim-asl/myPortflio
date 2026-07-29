@@ -1,59 +1,84 @@
 "use client";
 
-import React from "react";
+import styles from "./SecurityMission.module.css";
 
 export function WorkflowPreviewPanel({
   workflow,
   compiledSteps = [],
+  copyStatus,
   onCopyCommand,
   onDownloadRunbook,
+  onExportProject,
 }: {
   workflow: any;
   compiledSteps?: any[];
-  onCopyCommand: (cmd?: string) => void;
+  copyStatus: string;
+  onCopyCommand: (command?: string) => void;
   onDownloadRunbook: () => void;
+  onExportProject: () => void;
 }) {
   if (!workflow) return null;
+  const workflowReady = compiledSteps.length > 0
+    && compiledSteps.every((step) => step.ready !== false);
 
   return (
-    <div className="workflow-preview-panel font-mono text-xs bg-zinc-950 p-4 border border-zinc-800 space-y-4">
-      <div className="border-b border-zinc-800 pb-2">
-        <span className="font-bold text-cyan-400 uppercase tracking-wider">
-          [Workflow Runbook: {workflow.title}]
-        </span>
-        <p className="text-zinc-400 text-[11px] mt-1">{workflow.description}</p>
-      </div>
-
-      <div className="space-y-4">
-        {compiledSteps.map((stepCmd, idx) => (
-          <div key={idx} className="p-3 bg-zinc-900 border border-zinc-800 space-y-2">
-            <div className="flex justify-between items-center text-xs font-bold text-cyan-300">
-              <span>Step {idx + 1}: {stepCmd?.actionId}</span>
-              <span className="text-[10px] text-zinc-500">Host Role: {stepCmd?.hostRole ?? "Operator"}</span>
-            </div>
-            <pre className="text-emerald-400 font-mono whitespace-pre-wrap break-all text-xs">
-              {stepCmd?.formatted ?? stepCmd?.command}
-            </pre>
+    <div className={styles.commandPanel}>
+      <header className={styles.commandHeader}>
+        <div>
+          <span>Workflow runbook</span>
+          <strong>{workflow.title}</strong>
+        </div>
+        <span className={styles.badge}>{compiledSteps.length} commands</span>
+      </header>
+      <p className={styles.workflowDescription}>{workflow.description}</p>
+      <ol className={styles.workflowSteps}>
+        {compiledSteps.map((step, index) => (
+          <li key={`${step.actionId}-${index}`}>
+            <header>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <strong>{step.title}</strong>
+                <small>{step.hostRole} / {step.purpose}</small>
+                {step.ready === false && (
+                  <small>
+                    {Object.keys(step.validation?.errors ?? {}).length} required
+                    values need attention
+                  </small>
+                )}
+              </div>
+            </header>
+            <pre><code>{step.formatted ?? step.command}</code></pre>
             <button
               type="button"
-              className="text-[10px] text-cyan-400 hover:underline"
-              onClick={() => onCopyCommand(stepCmd?.command)}
+              disabled={step.ready === false}
+              onClick={() => onCopyCommand(step.command)}
             >
-              Copy step command
+              Copy step
             </button>
-          </div>
+          </li>
         ))}
-      </div>
-
-      <div className="pt-2 border-t border-zinc-800">
+      </ol>
+      <footer className={styles.commandActions}>
         <button
           type="button"
-          className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-zinc-950 font-bold rounded-none"
+          className={styles.primaryAction}
+          disabled={!workflowReady}
           onClick={onDownloadRunbook}
         >
           Download runbook
         </button>
-      </div>
+        <button type="button" onClick={onExportProject}>
+          Export project
+        </button>
+        <span className={styles.srOnly} aria-live="polite">
+          {copyStatus === "copied" ? "Step command copied." : ""}
+        </span>
+      </footer>
+      {!workflowReady && compiledSteps.length > 0 && (
+        <p className={styles.disabledReason}>
+          Complete each workflow step before copying or downloading its command.
+        </p>
+      )}
     </div>
   );
 }

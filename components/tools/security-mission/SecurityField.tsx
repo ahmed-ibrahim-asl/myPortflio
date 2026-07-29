@@ -1,7 +1,12 @@
 "use client";
 
 import React from "react";
-import { SecurityExplanation, ExplanationData } from "./SecurityExplanation";
+
+import {
+  SecurityExplanation,
+  type ExplanationData,
+} from "./SecurityExplanation";
+import styles from "./SecurityMission.module.css";
 
 export function SecurityField({
   id,
@@ -10,6 +15,9 @@ export function SecurityField({
   shortHelp,
   explanation,
   error,
+  required,
+  valuePath,
+  onFocus,
   children,
 }: {
   id: string;
@@ -18,12 +26,14 @@ export function SecurityField({
   shortHelp?: string;
   explanation?: ExplanationData;
   error?: string;
+  required?: boolean;
+  valuePath: string;
+  onFocus?: (valuePath: string | null) => void;
   children: React.ReactNode;
 }) {
   const helpId = `${id}-help`;
   const errorId = `${id}-error`;
-
-  const ariaDescribedBy = [
+  const describedBy = [
     shortHelp ? helpId : null,
     error ? errorId : null,
   ]
@@ -31,37 +41,49 @@ export function SecurityField({
     .join(" ");
 
   return (
-    <div className="security-field mb-4 font-mono">
-      <div className="flex items-baseline justify-between mb-1">
-        <label htmlFor={id} className="text-xs font-bold text-zinc-100">
+    <div
+      className={styles.field}
+      data-control-path={valuePath}
+      onFocusCapture={() => onFocus?.(valuePath)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+          onFocus?.(null);
+        }
+      }}
+    >
+      <div className={styles.fieldHeader}>
+        <label htmlFor={id}>
           {label}
+          {required && <span aria-hidden="true"> *</span>}
         </label>
-        {technicalTerm && (
-          <span className="text-xs text-zinc-500">{technicalTerm}</span>
-        )}
+        {technicalTerm && <span>{technicalTerm}</span>}
       </div>
-
-      <div>
-        {React.isValidElement(children)
-          ? React.cloneElement(children as React.ReactElement<{ id?: string; "aria-describedby"?: string }>, {
+      {React.isValidElement(children)
+        ? React.cloneElement(
+            children as React.ReactElement<{
+              id?: string;
+              "aria-describedby"?: string;
+              "aria-invalid"?: boolean;
+              required?: boolean;
+            }>,
+            {
               id,
-              "aria-describedby": ariaDescribedBy || undefined,
-            })
-          : children}
-      </div>
-
+              "aria-describedby": describedBy || undefined,
+              "aria-invalid": Boolean(error),
+              required,
+            },
+          )
+        : children}
       {shortHelp && (
-        <div id={helpId} className="text-xs text-zinc-400 mt-1">
+        <p id={helpId} className={styles.fieldHelp}>
           {shortHelp}
-        </div>
+        </p>
       )}
-
       {error && (
-        <div id={errorId} role="alert" className="text-xs text-red-400 font-bold mt-1">
+        <p id={errorId} role="alert" className={styles.fieldError}>
           {error}
-        </div>
+        </p>
       )}
-
       <SecurityExplanation explanation={explanation} />
     </div>
   );

@@ -31,6 +31,21 @@ test("choosing a compatible tool advances directly to action selection", () => {
   assert.equal(state.stepId, "action");
 });
 
+test("tool-first entry clears the default objective and asks for a compatible outcome", () => {
+  let state = securityMissionReducer(createSecurityMissionState(), {
+    type: "choose-entry-mode",
+    mode: "tool",
+  });
+  state = securityMissionReducer(state, {
+    type: "choose-tool",
+    toolId: "nmap",
+  });
+
+  assert.equal(state.project.objectiveId, null);
+  assert.equal(state.project.toolId, "nmap");
+  assert.equal(state.stepId, "objective");
+});
+
 test("choosing an action seeds its controls and advances to its first form", () => {
   let state = createSecurityMissionState();
   state = securityMissionReducer(state, {
@@ -84,4 +99,44 @@ test("a failed imported project keeps the active project", () => {
 
   assert.equal(state.project, original.project);
   assert.match(state.importError, /valid project/i);
+});
+
+test("import sanitizes secrets while restoring allowed project choices", () => {
+  const state = securityMissionReducer(createSecurityMissionState(), {
+    type: "import-project",
+    project: {
+      schemaVersion: 1,
+      mode: "command",
+      authorizationContext: "personal-lab",
+      learningLevel: "advanced",
+      platform: "linux",
+      shell: "bash",
+      objectiveId: "host-discovery-port-scanning",
+      toolId: "nmap",
+      actionId: "nmap-tcp-scan",
+      target: { host: "10.10.10.10" },
+      options: { password: "do-not-keep", ports: "80,443" },
+      output: { includeLabValues: true, format: "single-line" },
+    },
+  });
+
+  assert.equal(state.project.learningLevel, "advanced");
+  assert.equal(state.project.actionId, "nmap-tcp-scan");
+  assert.equal(state.project.options.ports, "80,443");
+  assert.equal(state.project.options.password, "<REDACTED>");
+  assert.equal(state.stepId, "review");
+});
+
+test("import rejects unknown registry identifiers without replacing the project", () => {
+  const original = createSecurityMissionState();
+  const state = securityMissionReducer(original, {
+    type: "import-project",
+    project: {
+      ...original.project,
+      toolId: "not-a-real-tool",
+    },
+  });
+
+  assert.equal(state.project, original.project);
+  assert.match(state.importError, /unknown tool/i);
 });

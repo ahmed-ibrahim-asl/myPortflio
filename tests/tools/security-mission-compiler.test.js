@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { compileSecurityCommand } from "../../lib/tools/security-mission/compiler.js";
+import { getSecurityAction } from "../../lib/tools/security-mission/catalog.js";
 import { createDefaultSecurityMissionProject } from "../../lib/tools/security-mission/project-config.js";
 
 const fixtureAction = {
@@ -35,4 +36,28 @@ test("compiler produces equivalent one-line and formatted commands", () => {
   assert.equal(result.command, "fixture --verbose --port '443' 'lab host'");
   assert.deepEqual(result.placeholders, []);
   assert.match(result.formatted, /\\\n/);
+});
+
+test("compiler tokens identify the project value that produced each argument", () => {
+  const project = {
+    ...createDefaultSecurityMissionProject(),
+    toolId: "nmap",
+    actionId: "nmap-host-discovery",
+    target: { network: "10.20.30.0/24" },
+  };
+  const result = compileSecurityCommand(
+    project,
+    getSecurityAction("nmap-host-discovery"),
+  );
+
+  assert.deepEqual(result.tokens[0], {
+    type: "executable",
+    value: "nmap",
+    sourcePath: null,
+  });
+  assert.ok(
+    result.tokens.some((token) =>
+      token.value === "10.20.30.0/24"
+      && token.sourcePath === "target.network"),
+  );
 });

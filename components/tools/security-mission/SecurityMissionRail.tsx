@@ -1,6 +1,10 @@
 "use client";
 
-import { SECURITY_MISSION_STEPS } from "@/lib/tools/security-mission/catalog.js";
+import {
+  SECURITY_MISSION_STEPS,
+} from "@/lib/tools/security-mission/catalog.js";
+
+import styles from "./SecurityMission.module.css";
 
 export function SecurityMissionRail({
   currentStepId,
@@ -9,29 +13,33 @@ export function SecurityMissionRail({
   currentStepId: string;
   onGoToStep: (stepId: string) => void;
 }) {
+  const currentIndex = SECURITY_MISSION_STEPS.findIndex(
+    ({ id }) => id === currentStepId,
+  );
+
   return (
-    /* 8-step rail: Scope, Objective, Tool, Action, Target, Configure, Review, Generate */
-    <nav aria-label="Security Mission Rail" className="security-mission-rail font-mono text-xs mb-6 overflow-x-auto">
-      <ol className="flex items-center space-x-1 min-w-max border-b border-zinc-800 pb-2">
-        {SECURITY_MISSION_STEPS.map((step: any, idx: number) => {
+    <nav aria-label="Security Mission progress" className={styles.rail}>
+      <ol>
+        {SECURITY_MISSION_STEPS.map((step: any, index: number) => {
           const isCurrent = step.id === currentStepId;
           return (
-            <li key={step.id} className="flex items-center">
+            <li key={step.id}>
               <button
                 type="button"
-                aria-current={isCurrent ? "step" : undefined}
-                className={`px-3 py-1.5 font-bold uppercase transition-colors rounded-none ${
+                data-step-id={step.id}
+                data-state={
                   isCurrent
-                    ? "bg-cyan-600 text-zinc-950"
-                    : "bg-zinc-900 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
-                }`}
+                    ? "current"
+                    : index < currentIndex
+                      ? "complete"
+                      : "upcoming"
+                }
+                aria-current={isCurrent ? "step" : undefined}
                 onClick={() => onGoToStep(step.id)}
               >
-                {idx + 1}. {step.title}
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{step.title}</strong>
               </button>
-              {idx < SECURITY_MISSION_STEPS.length - 1 && (
-                <span className="text-zinc-600 mx-1">&gt;</span>
-              )}
             </li>
           );
         })}
