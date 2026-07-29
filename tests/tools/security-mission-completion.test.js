@@ -10,6 +10,7 @@ import {
   getCompatibleActions,
   getCompatibleObjectives,
   getCompatibleTools,
+  getStepGuard,
 } from "../../lib/tools/security-mission/selectors.js";
 import { validateSecurityRegistry } from "../../lib/tools/security-mission/registry-validation.js";
 import { SECURITY_OBJECTIVES } from "../../lib/tools/security-mission/objective-registry.js";
@@ -170,5 +171,24 @@ test("registry validation reports an action argument with no control source", ()
   assert.ok(
     errors.some((error) =>
       error.includes("nmap-host-discovery:target.network")),
+  );
+});
+
+test("step guards name the missing choice that blocks progress", () => {
+  const project = createDefaultSecurityMissionProject();
+  assert.deepEqual(
+    getStepGuard({ project, stepId: "tool" }),
+    {
+      allowed: false,
+      reason: "Choose a compatible tool.",
+      fieldPath: null,
+    },
+  );
+  assert.equal(
+    getStepGuard({
+      project: { ...project, toolId: "nmap" },
+      stepId: "tool",
+    }).allowed,
+    true,
   );
 });

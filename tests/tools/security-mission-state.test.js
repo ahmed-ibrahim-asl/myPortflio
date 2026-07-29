@@ -19,3 +19,69 @@ test("choosing an incompatible tool clears action-specific values", () => {
   assert.equal(state.project.actionId, null);
   assert.deepEqual(state.project.options, {});
 });
+
+test("choosing a compatible tool advances directly to action selection", () => {
+  const state = securityMissionReducer(createSecurityMissionState(), {
+    type: "choose-tool",
+    toolId: "nmap",
+  });
+
+  assert.equal(state.project.objectiveId, "host-discovery-port-scanning");
+  assert.equal(state.project.toolId, "nmap");
+  assert.equal(state.stepId, "action");
+});
+
+test("choosing an action seeds its controls and advances to its first form", () => {
+  let state = createSecurityMissionState();
+  state = securityMissionReducer(state, {
+    type: "choose-tool",
+    toolId: "nmap",
+  });
+  state = securityMissionReducer(state, {
+    type: "choose-action",
+    actionId: "nmap-host-discovery",
+  });
+
+  assert.equal(state.stepId, "target");
+  assert.equal(state.project.target.network, "10.10.10.0/24");
+  assert.equal(state.project.options.network, undefined);
+});
+
+test("choosing a workflow initializes workflow mode, objective, and steps", () => {
+  const state = securityMissionReducer(createSecurityMissionState(), {
+    type: "choose-workflow",
+    workflowId: "host-discovery",
+  });
+
+  assert.equal(state.project.mode, "workflow");
+  assert.equal(state.project.workflowId, "host-discovery");
+  assert.equal(
+    state.project.objectiveId,
+    "host-discovery-port-scanning",
+  );
+  assert.equal(state.project.workflow.activeStepId, "step-1");
+  assert.equal(state.project.workflow.steps.length, 2);
+  assert.equal(state.stepId, "target");
+});
+
+test("patch-project-value writes the registry path instead of flattening it", () => {
+  const state = securityMissionReducer(createSecurityMissionState(), {
+    type: "patch-project-value",
+    valuePath: "target.network",
+    value: "10.20.30.0/24",
+  });
+
+  assert.equal(state.project.target.network, "10.20.30.0/24");
+  assert.equal(state.project.options["target.network"], undefined);
+});
+
+test("a failed imported project keeps the active project", () => {
+  const original = createSecurityMissionState();
+  const state = securityMissionReducer(original, {
+    type: "import-project",
+    project: null,
+  });
+
+  assert.equal(state.project, original.project);
+  assert.match(state.importError, /valid project/i);
+});
