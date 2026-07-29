@@ -1,0 +1,1596 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-29",
+  "records": [
+    {
+      "actionId": "ip-address-show",
+      "evidenceId": "ip-address-show",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ip-link-show",
+      "evidenceId": "ip-link-show",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ip-route-show",
+      "evidenceId": "ip-route-show",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ip-neighbor-show",
+      "evidenceId": "ip-neighbor-show",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ipconfig-all",
+      "evidenceId": "ipconfig-all",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ping-host",
+      "evidenceId": "ping-host",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "fping-targets",
+      "evidenceId": "fping-targets",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "arp-table",
+      "evidenceId": "arp-table",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "arp-scan-local",
+      "evidenceId": "arp-scan-local",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "netdiscover-range",
+      "evidenceId": "netdiscover-range",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "traceroute-host",
+      "evidenceId": "traceroute-host",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "route-table",
+      "evidenceId": "route-table",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ss-sockets",
+      "evidenceId": "ss-sockets",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "netstat-sockets",
+      "evidenceId": "netstat-sockets",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "nmap-host-discovery",
+      "evidenceId": "nmap-host-discovery",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://nmap.org/book/man.html"
+      ]
+    },
+    {
+      "actionId": "nmap-tcp-scan",
+      "evidenceId": "nmap-tcp-scan",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://nmap.org/book/man.html"
+      ]
+    },
+    {
+      "actionId": "nmap-udp-scan",
+      "evidenceId": "nmap-udp-scan",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://nmap.org/book/man.html"
+      ]
+    },
+    {
+      "actionId": "nmap-service-enumeration",
+      "evidenceId": "nmap-service-enumeration",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://nmap.org/book/man.html"
+      ]
+    },
+    {
+      "actionId": "nmap-nse-scan",
+      "evidenceId": "nmap-nse-scan",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://nmap.org/book/man.html"
+      ]
+    },
+    {
+      "actionId": "masscan-port-discovery",
+      "evidenceId": "masscan-port-discovery",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "rustscan-port-discovery",
+      "evidenceId": "rustscan-port-discovery",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "whois-domain",
+      "evidenceId": "whois-domain",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "dig-records",
+      "evidenceId": "dig-records",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "dig-reverse",
+      "evidenceId": "dig-reverse",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "dig-trace",
+      "evidenceId": "dig-trace",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "host-lookup",
+      "evidenceId": "host-lookup",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "nslookup-query",
+      "evidenceId": "nslookup-query",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "dnsrecon-standard",
+      "evidenceId": "dnsrecon-standard",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "dnsenum-domain",
+      "evidenceId": "dnsenum-domain",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "snmpwalk-oid",
+      "evidenceId": "snmpwalk-oid",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "onesixtyone-community-audit",
+      "evidenceId": "onesixtyone-community-audit",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "nbtscan-network",
+      "evidenceId": "nbtscan-network",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "enum4linux-enumerate",
+      "evidenceId": "enum4linux-enumerate",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "smbclient-list-shares",
+      "evidenceId": "smbclient-list-shares",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "smbclient-browse-share",
+      "evidenceId": "smbclient-browse-share",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "rpcclient-query",
+      "evidenceId": "rpcclient-query",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ldapsearch-query",
+      "evidenceId": "ldapsearch-query",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "openssl-tls-inspect",
+      "evidenceId": "openssl-tls-inspect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "netcat-connect",
+      "evidenceId": "netcat-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "netcat-listen",
+      "evidenceId": "netcat-listen",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "netcat-udp-connect",
+      "evidenceId": "netcat-udp-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "netcat-banner-input",
+      "evidenceId": "netcat-banner-input",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ncat-tls-connect",
+      "evidenceId": "ncat-tls-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "hydra-service-audit",
+      "evidenceId": "hydra-service-audit",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/vanhauser-thc/thc-hydra"
+      ]
+    },
+    {
+      "actionId": "hydra-http-form-audit",
+      "evidenceId": "hydra-http-form-audit",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/vanhauser-thc/thc-hydra"
+      ]
+    },
+    {
+      "actionId": "medusa-service-audit",
+      "evidenceId": "medusa-service-audit",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "http://foofus.net/goofus/tools/medusa/medusa.html"
+      ]
+    },
+    {
+      "actionId": "ncrack-service-audit",
+      "evidenceId": "ncrack-service-audit",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://nmap.org/ncrack/"
+      ]
+    },
+    {
+      "actionId": "kerbrute-user-enumeration",
+      "evidenceId": "kerbrute-user-enumeration",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/ropnop/kerbrute"
+      ]
+    },
+    {
+      "actionId": "kerbrute-password-spray",
+      "evidenceId": "kerbrute-password-spray",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/ropnop/kerbrute"
+      ]
+    },
+    {
+      "actionId": "netexec-auth-check",
+      "evidenceId": "netexec-auth-check",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.netexec.wiki/"
+      ]
+    },
+    {
+      "actionId": "ssh-connect",
+      "evidenceId": "ssh-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man.openbsd.org/ssh"
+      ]
+    },
+    {
+      "actionId": "evil-winrm-connect",
+      "evidenceId": "evil-winrm-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "xfreerdp-connect",
+      "evidenceId": "xfreerdp-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/FreeRDP/FreeRDP"
+      ]
+    },
+    {
+      "actionId": "curl-request",
+      "evidenceId": "curl-request",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://curl.se/docs/manpage.html"
+      ]
+    },
+    {
+      "actionId": "curl-authenticated-request",
+      "evidenceId": "curl-authenticated-request",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://curl.se/docs/manpage.html"
+      ]
+    },
+    {
+      "actionId": "curl-proxy-request",
+      "evidenceId": "curl-proxy-request",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://curl.se/docs/manpage.html"
+      ]
+    },
+    {
+      "actionId": "curl-timing",
+      "evidenceId": "curl-timing",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://curl.se/docs/manpage.html"
+      ]
+    },
+    {
+      "actionId": "wget-download",
+      "evidenceId": "wget-download",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.gnu.org/software/wget/manual/"
+      ]
+    },
+    {
+      "actionId": "wget-bounded-mirror",
+      "evidenceId": "wget-bounded-mirror",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.gnu.org/software/wget/manual/"
+      ]
+    },
+    {
+      "actionId": "whatweb-fingerprint",
+      "evidenceId": "whatweb-fingerprint",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/urbanadventurer/WhatWeb"
+      ]
+    },
+    {
+      "actionId": "nikto-scan",
+      "evidenceId": "nikto-scan",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/sullo/nikto/wiki"
+      ]
+    },
+    {
+      "actionId": "ffuf-content-discovery",
+      "evidenceId": "ffuf-content-discovery",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/ffuf/ffuf"
+      ]
+    },
+    {
+      "actionId": "ffuf-vhost-discovery",
+      "evidenceId": "ffuf-vhost-discovery",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/ffuf/ffuf"
+      ]
+    },
+    {
+      "actionId": "gobuster-directory",
+      "evidenceId": "gobuster-directory",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/OJ/gobuster"
+      ]
+    },
+    {
+      "actionId": "gobuster-dns",
+      "evidenceId": "gobuster-dns",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/OJ/gobuster"
+      ]
+    },
+    {
+      "actionId": "gobuster-vhost",
+      "evidenceId": "gobuster-vhost",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/OJ/gobuster"
+      ]
+    },
+    {
+      "actionId": "feroxbuster-content",
+      "evidenceId": "feroxbuster-content",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/epi052/feroxbuster"
+      ]
+    },
+    {
+      "actionId": "dirsearch-content",
+      "evidenceId": "dirsearch-content",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/maurosoria/dirsearch"
+      ]
+    },
+    {
+      "actionId": "wfuzz-request",
+      "evidenceId": "wfuzz-request",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://wfuzz.readthedocs.io/"
+      ]
+    },
+    {
+      "actionId": "wpscan-enumerate",
+      "evidenceId": "wpscan-enumerate",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://wpscan.com/"
+      ]
+    },
+    {
+      "actionId": "sqlmap-identify",
+      "evidenceId": "sqlmap-identify",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://sqlmap.org/"
+      ]
+    },
+    {
+      "actionId": "sqlmap-request-file",
+      "evidenceId": "sqlmap-request-file",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://sqlmap.org/"
+      ]
+    },
+    {
+      "actionId": "burp-suite-checklist",
+      "evidenceId": "burp-suite-checklist",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "owasp-zap-checklist",
+      "evidenceId": "owasp-zap-checklist",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "searchsploit-search",
+      "evidenceId": "searchsploit-search",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.exploit-db.com/searchsploit"
+      ]
+    },
+    {
+      "actionId": "searchsploit-copy",
+      "evidenceId": "searchsploit-copy",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.exploit-db.com/searchsploit"
+      ]
+    },
+    {
+      "actionId": "msfconsole-launch",
+      "evidenceId": "msfconsole-launch",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://docs.metasploit.com/"
+      ]
+    },
+    {
+      "actionId": "msfvenom-generate-lab-payload",
+      "evidenceId": "msfvenom-generate-lab-payload",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://docs.metasploit.com/"
+      ]
+    },
+    {
+      "actionId": "netcat-file-send",
+      "evidenceId": "netcat-file-send",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "netcat-file-receive",
+      "evidenceId": "netcat-file-receive",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "socat-relay",
+      "evidenceId": "socat-relay",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "http://www.dest-unreach.org/socat/doc/socat.html"
+      ]
+    },
+    {
+      "actionId": "python-http-server",
+      "evidenceId": "python-http-server",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://docs.python.org/3/"
+      ]
+    },
+    {
+      "actionId": "impacket-smbserver",
+      "evidenceId": "impacket-smbserver",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "curl-file-transfer",
+      "evidenceId": "curl-file-transfer",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://curl.se/docs/manpage.html"
+      ]
+    },
+    {
+      "actionId": "wget-file-transfer",
+      "evidenceId": "wget-file-transfer",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.gnu.org/software/wget/manual/"
+      ]
+    },
+    {
+      "actionId": "linpeas-run",
+      "evidenceId": "linpeas-run",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/carlospolop/PEASS-ng"
+      ]
+    },
+    {
+      "actionId": "winpeas-run",
+      "evidenceId": "winpeas-run",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/carlospolop/PEASS-ng"
+      ]
+    },
+    {
+      "actionId": "pspy-monitor",
+      "evidenceId": "pspy-monitor",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/DominicBreuker/pspy"
+      ]
+    },
+    {
+      "actionId": "hashid-identify",
+      "evidenceId": "hashid-identify",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/psypolar/hashID"
+      ]
+    },
+    {
+      "actionId": "hashcat-audit",
+      "evidenceId": "hashcat-audit",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://hashcat.net/wiki/"
+      ]
+    },
+    {
+      "actionId": "hashcat-restore",
+      "evidenceId": "hashcat-restore",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://hashcat.net/wiki/"
+      ]
+    },
+    {
+      "actionId": "hashcat-show",
+      "evidenceId": "hashcat-show",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://hashcat.net/wiki/"
+      ]
+    },
+    {
+      "actionId": "john-audit",
+      "evidenceId": "john-audit",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.openwall.com/john/doc/"
+      ]
+    },
+    {
+      "actionId": "john-restore",
+      "evidenceId": "john-restore",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.openwall.com/john/doc/"
+      ]
+    },
+    {
+      "actionId": "john-show",
+      "evidenceId": "john-show",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.openwall.com/john/doc/"
+      ]
+    },
+    {
+      "actionId": "secretsdump-local",
+      "evidenceId": "secretsdump-local",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "secretsdump-authorized-remote",
+      "evidenceId": "secretsdump-authorized-remote",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "ssh-local-forward",
+      "evidenceId": "ssh-local-forward",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man.openbsd.org/ssh"
+      ]
+    },
+    {
+      "actionId": "ssh-remote-forward",
+      "evidenceId": "ssh-remote-forward",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man.openbsd.org/ssh"
+      ]
+    },
+    {
+      "actionId": "ssh-dynamic-forward",
+      "evidenceId": "ssh-dynamic-forward",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man.openbsd.org/ssh"
+      ]
+    },
+    {
+      "actionId": "proxychains-wrap",
+      "evidenceId": "proxychains-wrap",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/haad/proxychains"
+      ]
+    },
+    {
+      "actionId": "sshuttle-route",
+      "evidenceId": "sshuttle-route",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://sshuttle.readthedocs.io/"
+      ]
+    },
+    {
+      "actionId": "chisel-server",
+      "evidenceId": "chisel-server",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/jpillora/chisel"
+      ]
+    },
+    {
+      "actionId": "chisel-client",
+      "evidenceId": "chisel-client",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/jpillora/chisel"
+      ]
+    },
+    {
+      "actionId": "ligolo-proxy",
+      "evidenceId": "ligolo-proxy",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ligolo-agent",
+      "evidenceId": "ligolo-agent",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "ligolo-route",
+      "evidenceId": "ligolo-route",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "socat-forward",
+      "evidenceId": "socat-forward",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "http://www.dest-unreach.org/socat/doc/socat.html"
+      ]
+    },
+    {
+      "actionId": "file-inspect",
+      "evidenceId": "file-inspect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/man1/file.1.html"
+      ]
+    },
+    {
+      "actionId": "strings-extract",
+      "evidenceId": "strings-extract",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/man1/strings.1.html"
+      ]
+    },
+    {
+      "actionId": "objdump-headers",
+      "evidenceId": "objdump-headers",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/man1/objdump.1.html"
+      ]
+    },
+    {
+      "actionId": "objdump-disassemble",
+      "evidenceId": "objdump-disassemble",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/man1/objdump.1.html"
+      ]
+    },
+    {
+      "actionId": "readelf-inspect",
+      "evidenceId": "readelf-inspect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/man1/readelf.1.html"
+      ]
+    },
+    {
+      "actionId": "checksec-file",
+      "evidenceId": "checksec-file",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/slimm609/checksec.sh"
+      ]
+    },
+    {
+      "actionId": "gdb-debug",
+      "evidenceId": "gdb-debug",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.sourceware.org/gdb/documentation/"
+      ]
+    },
+    {
+      "actionId": "gdb-core",
+      "evidenceId": "gdb-core",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.sourceware.org/gdb/documentation/"
+      ]
+    },
+    {
+      "actionId": "pattern-create",
+      "evidenceId": "pattern-create",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "pattern-offset",
+      "evidenceId": "pattern-offset",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "gcc-debug-build",
+      "evidenceId": "gcc-debug-build",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://gcc.gnu.org/onlinedocs/"
+      ]
+    },
+    {
+      "actionId": "nasm-assemble",
+      "evidenceId": "nasm-assemble",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.nasm.us/docs.php"
+      ]
+    },
+    {
+      "actionId": "python-run-script",
+      "evidenceId": "python-run-script",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://docs.python.org/3/"
+      ]
+    },
+    {
+      "actionId": "pwntools-project-checklist",
+      "evidenceId": "pwntools-project-checklist",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://docs.pwntools.com/"
+      ]
+    },
+    {
+      "actionId": "pwndbg-checklist",
+      "evidenceId": "pwndbg-checklist",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://pwndbg.re/"
+      ]
+    },
+    {
+      "actionId": "netexec-smb",
+      "evidenceId": "netexec-smb",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.netexec.wiki/"
+      ]
+    },
+    {
+      "actionId": "netexec-ldap",
+      "evidenceId": "netexec-ldap",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.netexec.wiki/"
+      ]
+    },
+    {
+      "actionId": "netexec-winrm",
+      "evidenceId": "netexec-winrm",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.netexec.wiki/"
+      ]
+    },
+    {
+      "actionId": "netexec-rdp",
+      "evidenceId": "netexec-rdp",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.netexec.wiki/"
+      ]
+    },
+    {
+      "actionId": "netexec-mssql",
+      "evidenceId": "netexec-mssql",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.netexec.wiki/"
+      ]
+    },
+    {
+      "actionId": "getnpusers-asreproast",
+      "evidenceId": "getnpusers-asreproast",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "getuserspns-kerberoast",
+      "evidenceId": "getuserspns-kerberoast",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "psexec-connect",
+      "evidenceId": "psexec-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "wmiexec-connect",
+      "evidenceId": "wmiexec-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "smbexec-connect",
+      "evidenceId": "smbexec-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "atexec-connect",
+      "evidenceId": "atexec-connect",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "ntlmrelayx-relay",
+      "evidenceId": "ntlmrelayx-relay",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "gettgt-request",
+      "evidenceId": "gettgt-request",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "getst-request",
+      "evidenceId": "getst-request",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "ticketer-forge",
+      "evidenceId": "ticketer-forge",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/fortra/impacket"
+      ]
+    },
+    {
+      "actionId": "responder-analyze",
+      "evidenceId": "responder-analyze",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/lgandx/Responder"
+      ]
+    },
+    {
+      "actionId": "bloodhound-python-ingest",
+      "evidenceId": "bloodhound-python-ingest",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "sharphound-ingest",
+      "evidenceId": "sharphound-ingest",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/BloodHoundAD/SharpHound"
+      ]
+    },
+    {
+      "actionId": "ldapdomaindump-extract",
+      "evidenceId": "ldapdomaindump-extract",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/dirkjanm/ldapdomaindump"
+      ]
+    },
+    {
+      "actionId": "certipy-find",
+      "evidenceId": "certipy-find",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/ly4k/Certipy"
+      ]
+    },
+    {
+      "actionId": "certipy-req",
+      "evidenceId": "certipy-req",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/ly4k/Certipy"
+      ]
+    },
+    {
+      "actionId": "mimikatz-sekurlsa",
+      "evidenceId": "mimikatz-sekurlsa",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/gentilkiwi/mimikatz"
+      ]
+    },
+    {
+      "actionId": "rubeus-asktgt",
+      "evidenceId": "rubeus-asktgt",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/GhostPack/Rubeus"
+      ]
+    },
+    {
+      "actionId": "rubeus-asreproast",
+      "evidenceId": "rubeus-asreproast",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/GhostPack/Rubeus"
+      ]
+    },
+    {
+      "actionId": "rubeus-kerberoast",
+      "evidenceId": "rubeus-kerberoast",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/GhostPack/Rubeus"
+      ]
+    },
+    {
+      "actionId": "powerview-get-domainuser",
+      "evidenceId": "powerview-get-domainuser",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/PowerShellMafia/PowerSploit"
+      ]
+    },
+    {
+      "actionId": "hping3-bounded-send",
+      "evidenceId": "hping3-bounded-send",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://github.com/antirez/hping"
+      ]
+    },
+    {
+      "actionId": "tcpdump-capture",
+      "evidenceId": "tcpdump-capture",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.tcpdump.org/manpages/tcpdump.1.html"
+      ]
+    },
+    {
+      "actionId": "tshark-capture",
+      "evidenceId": "tshark-capture",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.wireshark.org/docs/man-pages/tshark.html"
+      ]
+    },
+    {
+      "actionId": "wireshark-analyze",
+      "evidenceId": "wireshark-analyze",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://www.wireshark.org/docs/"
+      ]
+    },
+    {
+      "actionId": "iw-interface-info",
+      "evidenceId": "iw-interface-info",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://wireless.wiki.kernel.org/en/users/documentation/iw"
+      ]
+    },
+    {
+      "actionId": "rfkill-unblock",
+      "evidenceId": "rfkill-unblock",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/man8/rfkill.8.html"
+      ]
+    },
+    {
+      "actionId": "airmon-ng-monitor",
+      "evidenceId": "airmon-ng-monitor",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "airodump-ng-capture",
+      "evidenceId": "airodump-ng-capture",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "aireplay-ng-deauth",
+      "evidenceId": "aireplay-ng-deauth",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    },
+    {
+      "actionId": "aircrack-ng-crack",
+      "evidenceId": "aircrack-ng-crack",
+      "evidenceTier": "official-docs",
+      "toolVersion": ">=1.0",
+      "verifiedAt": "2026-07-29",
+      "sourceUrls": [
+        "https://man7.org/linux/man-pages/"
+      ]
+    }
+  ]
+}

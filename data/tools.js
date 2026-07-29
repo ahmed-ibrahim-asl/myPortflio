@@ -30,5 +30,13 @@ export const engineeringTools = [
       "Configure and generate runnable Python scripts for YOLO, sensor intelligence, and edge AI workflows.",
     href: "/tools/ai-script-generator",
     icon: "AI_GEN"
+  },
+  {
+    id: "security-command-builder",
+    title: "Security Mission",
+    description:
+      "Build, validate, and learn security-tool commands for authorized labs without memorizing every flag.",
+    href: "/tools/security-command-builder",
+    icon: "SECURITY_CLI"
   }
 ];

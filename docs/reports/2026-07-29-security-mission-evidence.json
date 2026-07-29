@@ -1,0 +1,38 @@
+{
+  "tool_name": "Security Mission",
+  "route": "/tools/security-command-builder/",
+  "tagline": "From objective to command, one choice at a time.",
+  "date": "2026-07-29",
+  "pending_public_actions": 0,
+  "ecppt_objectives": {
+    "total": 22,
+    "covered": 22
+  },
+  "supporting_objectives": {
+    "total": 5,
+    "covered": 5
+  },
+  "commands": {
+    "reviewed": 159,
+    "local_help_tier": 0,
+    "official_docs_tier": 159
+  },
+  "safety": {
+    "server_execution": false,
+    "arbitrary_shell": false,
+    "secret_redaction": true,
+    "rate_bounding": true
+  },
+  "ui": {
+    "responsive_viewports": [
+      320,
+      360,
+      390,
+      768,
+      900,
+      1024,
+      1440
+    ],
+    "flat_styling": true
+  }
+}
