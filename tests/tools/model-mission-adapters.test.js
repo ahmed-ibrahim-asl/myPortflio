@@ -206,6 +206,19 @@ test("string dependencies receive defaults and unknown packages stay installable
   ]);
 });
 
+test("legacy adaptation requires the resolved project", () => {
+  assert.throws(
+    () => adaptLegacyMissionResult({
+      filename: "train.py",
+      code: "print('ready')\n",
+    }),
+    {
+      name: "TypeError",
+      message: "A resolved ProjectConfig is required for legacy adaptation.",
+    },
+  );
+});
+
 test("unsupported synchronous tasks return a blocking task error", () => {
   const result = generateSynchronousMissionResult({
     ...createDefaultProjectConfig(),

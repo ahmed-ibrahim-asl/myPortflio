@@ -79,9 +79,11 @@ test("synchronous and active legacy tasks share one result contract", () => {
   assert.equal(regression.status, "ready");
   assert.match(regression.result.filename, /\.py$/);
 
+  const detectionProject = createProjectForTask("object-detection");
+  detectionProject.model.modelSize = "s";
   const detection = resolveMissionGeneration({
     task: getModelMissionTask("object-detection"),
-    project: createProjectForTask("object-detection"),
+    project: detectionProject,
     legacy: {
       recipeId: "yolo-detection-training",
       status: "ready",
@@ -104,4 +106,16 @@ test("synchronous and active legacy tasks share one result contract", () => {
       purpose: "runtime",
     },
   ]);
+  assert.deepEqual(
+    detection.result.resolvedConfig,
+    detectionProject,
+  );
+  assert.notEqual(
+    detection.result.resolvedConfig,
+    detectionProject,
+  );
+  assert.notEqual(
+    detection.result.resolvedConfig.model,
+    detectionProject.model,
+  );
 });

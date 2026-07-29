@@ -24,10 +24,9 @@ import {
 } from "../../lib/tools/ml-generator/workbench/neural-generator.js";
 
 async function generateTask(task) {
+  const project = createProjectForTask(task.id);
   if (task.adapterId !== "legacy") {
-    return generateSynchronousMissionResult(
-      createProjectForTask(task.id),
-    );
+    return generateSynchronousMissionResult(project);
   }
   const recipe = await loadRecipe(task.recipeId);
   const defaults = getRecipeDefaultConfig(recipe, "starter");
@@ -38,6 +37,7 @@ async function generateTask(task) {
       defaults,
       "starter",
     ),
+    project,
   );
 }
 
