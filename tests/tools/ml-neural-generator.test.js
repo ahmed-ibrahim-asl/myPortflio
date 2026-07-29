@@ -614,6 +614,115 @@ test("PyTorch tabular and image loaders preserve split and channel contracts", (
   assert.deepEqual(image.dependencies, ["numpy", "torch", "torchvision"]);
 });
 
+test("PyTorch image transforms are pickleable by spawn workers", () => {
+  const harness = String.raw`
+import ast
+import json
+from multiprocessing.reduction import ForkingPickler
+import sys
+import types
+
+payload = json.load(sys.stdin)
+
+class FakePath:
+    def __init__(self, *parts):
+        self.parts = tuple(str(part) for part in parts)
+
+    def __truediv__(self, part):
+        return FakePath(*self.parts, part)
+
+    def is_dir(self):
+        return True
+
+class FakeLambda:
+    def __init__(self, function):
+        self.function = function
+
+class FakeCompose:
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+class FakeResize:
+    def __init__(self, size):
+        self.size = size
+
+class FakeToTensor:
+    pass
+
+class FakeImageFolder:
+    def __init__(self, directory, transform):
+        self.directory = directory
+        self.transform = transform
+        self.class_to_idx = {
+            f"class-{index}": index
+            for index in range(payload["num_classes"])
+        }
+
+tree = ast.parse(payload["code"])
+selected = []
+for node in tree.body:
+    if isinstance(node, ast.Assign):
+        names = {target.id for target in node.targets if isinstance(target, ast.Name)}
+        if names & {"IMAGE_DIRECTORY", "INPUT_SHAPE", "NUM_CLASSES"}:
+            selected.append(node)
+    elif isinstance(node, ast.FunctionDef) and node.name in {
+        "convert_image_mode",
+        "load_datasets",
+    }:
+        selected.append(node)
+
+module_name = "generated_image_pickle_seam"
+module = types.ModuleType(module_name)
+module.__dict__.update({
+    "ImageFolder": FakeImageFolder,
+    "Path": FakePath,
+    "transforms": types.SimpleNamespace(
+        Compose=FakeCompose,
+        Lambda=FakeLambda,
+        Resize=FakeResize,
+        ToTensor=FakeToTensor,
+    ),
+})
+sys.modules[module_name] = module
+exec(
+    compile(ast.Module(body=selected, type_ignores=[]), module_name, "exec"),
+    module.__dict__,
+)
+datasets = module.load_datasets()
+ForkingPickler.dumps(datasets)
+print("spawn-pickle-ok")
+`;
+
+  for (const channels of [1, 3, 4]) {
+    const numClasses = 3;
+    const code = generateNeuralScript({
+      framework: "pytorch",
+      preset: "image-cnn",
+      dataSource: "image-folder",
+      inputShape: [32, 32, channels],
+      numClasses,
+      workers: 2,
+    }).code;
+    const executed = spawnSync(
+      "python",
+      ["-c", harness],
+      {
+        input: JSON.stringify({
+          code,
+          num_classes: numClasses,
+        }),
+        encoding: "utf8",
+      },
+    );
+    assert.equal(
+      executed.status,
+      0,
+      `${channels} channels: ${executed.stderr}`,
+    );
+    assert.match(executed.stdout, /spawn-pickle-ok/);
+  }
+});
+
 test("PyTorch array target preparation produces loss-compatible dtypes and shapes", () => {
   const harness = String.raw`
 import ast
