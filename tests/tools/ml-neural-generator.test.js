@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
@@ -358,30 +359,131 @@ test("Keras sequence arrays validate shape, split deterministically, and scale t
 });
 
 test("Keras sequence arrays encode non-zero-based binary and multiclass labels train-only", () => {
-  for (const { numClasses, exampleLabels } of [
-    { numClasses: 2, exampleLabels: [-1, 1] },
-    { numClasses: 3, exampleLabels: [1, 2, 3] },
-  ]) {
+  const harness = String.raw`
+import json
+import sys
+import types
+
+import numpy as np
+
+payload = json.load(sys.stdin)
+fit_calls = []
+transform_calls = []
+
+class InstrumentedLabelEncoder:
+    def fit_transform(self, values):
+        values = np.asarray(values)
+        fit_calls.append(values.tolist())
+        self.classes_ = np.unique(values)
+        self.mapping = {value: index for index, value in enumerate(self.classes_)}
+        return np.asarray([self.mapping[value] for value in values], dtype=int)
+
+    def transform(self, values):
+        values = np.asarray(values)
+        transform_calls.append(values.tolist())
+        encoded = np.asarray([self.mapping[value] for value in values], dtype=int)
+        if payload.get("force_bad_range") and len(transform_calls) == 1:
+            encoded[0] = payload["num_classes"]
+        return encoded
+
+class UnusedScaler:
+    pass
+
+keras = types.ModuleType("keras")
+keras.layers = types.SimpleNamespace()
+sys.modules["keras"] = keras
+
+sklearn = types.ModuleType("sklearn")
+model_selection = types.ModuleType("sklearn.model_selection")
+model_selection.train_test_split = lambda *args, **kwargs: None
+preprocessing = types.ModuleType("sklearn.preprocessing")
+preprocessing.LabelEncoder = InstrumentedLabelEncoder
+preprocessing.MinMaxScaler = UnusedScaler
+preprocessing.RobustScaler = UnusedScaler
+preprocessing.StandardScaler = UnusedScaler
+sys.modules["sklearn"] = sklearn
+sys.modules["sklearn.model_selection"] = model_selection
+sys.modules["sklearn.preprocessing"] = preprocessing
+
+namespace = {}
+exec(payload["code"], namespace)
+train = np.asarray(payload["train"])
+validation = np.asarray(payload["validation"])
+test = np.asarray(payload["test"])
+
+try:
+    encoded = namespace["_encode_sequence_targets"](train, validation, test)
+except ValueError as error:
+    if not payload.get("force_bad_range"):
+        raise
+    assert "outside the model output range" in str(error)
+    print("range-guard-ok")
+else:
+    assert not payload.get("force_bad_range")
+    assert fit_calls == [payload["train"]]
+    assert transform_calls == [payload["validation"], payload["test"]]
+    expected = list(range(payload["num_classes"]))
+    for values in encoded:
+        assert sorted(np.unique(values).tolist()) == expected
+    print("encoding-ok")
+`;
+  const cases = [
+    {
+      numClasses: 2,
+      train: [-1, 1, -1, 1],
+      validation: [1, -1],
+      test: [-1, 1],
+    },
+    {
+      numClasses: 3,
+      train: [1, 2, 3, 1, 2, 3],
+      validation: [3, 1, 2],
+      test: [2, 3, 1],
+    },
+    {
+      numClasses: 3,
+      train: ["idle", "run", "walk", "run", "walk", "idle"],
+      validation: ["walk", "idle", "run"],
+      test: ["run", "walk", "idle"],
+    },
+    {
+      numClasses: 2,
+      train: [-1, 1, -1, 1],
+      validation: [1, -1],
+      test: [-1, 1],
+      forceBadRange: true,
+    },
+  ];
+
+  for (const item of cases) {
     const code = generateNeuralScript({
       framework: "keras",
       preset: "sequence-conv1d",
-      numClasses,
+      numClasses: item.numClasses,
     }).code;
-
-    assert.match(code, /encoder = LabelEncoder\(\)/);
-    assert.match(code, /y_train = encoder\.fit_transform\(y_train\)/);
-    assert.match(code, /y_validation = encoder\.transform\(y_validation\)/);
-    assert.match(code, /y_test = encoder\.transform\(y_test\)/);
-    assert.doesNotMatch(code, /encoder\.fit(?:_transform)?\(targets\)/);
-    assert.doesNotMatch(code, /np\.unique\(targets\)/);
-    assert.ok(
-      code.indexOf(") = _split_arrays(features, targets")
-        < code.indexOf("encoder.fit_transform(y_train)"),
+    const executed = spawnSync(
+      "python",
+      ["-c", harness],
+      {
+        input: JSON.stringify({
+          code,
+          num_classes: item.numClasses,
+          train: item.train,
+          validation: item.validation,
+          test: item.test,
+          force_bad_range: item.forceBadRange === true,
+        }),
+        encoding: "utf8",
+      },
     );
-    assert.match(code, /encoded\.min\(\) < 0 or encoded\.max\(\) >= NUM_CLASSES/);
-    assert.notDeepEqual(
-      exampleLabels,
-      Array.from({ length: numClasses }, (_, index) => index),
+    assert.equal(
+      executed.status,
+      0,
+      `${item.numClasses} classes: ${executed.stderr}`,
+    );
+    assert.match(
+      executed.stdout,
+      item.forceBadRange ? /range-guard-ok/ : /encoding-ok/,
     );
   }
 });
