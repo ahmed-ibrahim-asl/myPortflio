@@ -5,6 +5,8 @@
 **Route:** `/tools/security-command-builder/`
 **Product:** Security Mission
 **Tagline:** From objective to command, one choice at a time.
+**Implementation environment:** OpenCode
+**Primary implementation model:** Nemotron 3 Ultra
 
 ## 1. Purpose
 
@@ -380,11 +382,20 @@ type SecurityAction = {
   compatibilityRules: CompatibilityRule[];
   validationRules: ValidationRule[];
   evidenceHints: string[];
+  verification: {
+    toolVersion: string;
+    verifiedAt: string;
+    evidenceTier: "local-help" | "official-docs" | "pending";
+    sourceUrls: string[];
+    helpCommand?: string;
+    notes?: string;
+  };
 };
 ```
 
 Registry records must remain serializable. UI components must not contain tool
-flags or certification mappings.
+flags or certification mappings. Actions with `evidenceTier: "pending"` may
+appear in the implementation ledger but cannot ship in the public catalog.
 
 ### 8.4 Control registry
 
@@ -1014,6 +1025,7 @@ lib/
         ├── quoting.js
         ├── recommendations.js
         ├── sensitive-values.js
+        ├── source-ledger.js
         ├── state.js
         ├── validation.js
         ├── workflow-registry.js
@@ -1049,6 +1061,7 @@ tests/
     ├── security-mission-project-config.test.js
     ├── security-mission-quoting.test.js
     ├── security-mission-responsive.test.js
+    ├── security-mission-source-ledger.test.js
     ├── security-mission-state.test.js
     ├── security-mission-style.test.js
     ├── security-mission-validation.test.js
@@ -1058,9 +1071,14 @@ scripts/
 └── build_security_mission_audit_artifacts.py
 
 docs/
-└── reports/
-    ├── 2026-07-29-security-mission-audit.md
-    └── 2026-07-29-security-mission-evidence.json
+├── reports/
+│   ├── 2026-07-29-security-mission-audit.md
+│   ├── 2026-07-29-security-mission-evidence.json
+│   ├── 2026-07-29-security-mission-implementation-progress.md
+│   └── 2026-07-29-security-mission-tool-verification.json
+└── superpowers/
+    └── plans/
+        └── 2026-07-29-security-mission-command-builder.md
 ```
 
 The implementation updates:
@@ -1069,6 +1087,136 @@ The implementation updates:
 - `package.json` to add focused Security Mission test scripts;
 - `app/tools/page.tsx` metadata and copy if needed to represent security tools;
 - `app/sitemap.js` if the sitemap does not derive the new route.
+
+### 18.1 Nemotron 3 Ultra and OpenCode execution profile
+
+Nemotron 3 Ultra serves as the primary implementation agent inside OpenCode.
+The model may use its cybersecurity training to propose tool actions, flag
+relationships, aliases, workflow stages, and explanations. Training data does
+not count as verification evidence.
+
+#### Workspace and branch
+
+OpenCode must start from:
+
+```text
+D:\work\portflioWebsite\myPortfolio
+```
+
+The implementation should use:
+
+```text
+feature/security-mission-command-builder
+```
+
+The agent must start from the completed portfolio and Model Mission state. It
+must not implement Security Mission on an active Model Mission branch or mix
+unrelated migration files into Security Mission commits. If the checkout
+contains unrelated changes, the agent must create or use an isolated worktree
+instead of cleaning, resetting, moving, or deleting those changes.
+
+#### Required context-loading order
+
+At the beginning of the first OpenCode session, Nemotron must read:
+
+1. `D:\work\portflioWebsite\myPortfolio\AGENTS.md`
+2. `D:\work\portflioWebsite\myPortfolio\docs\superpowers\specs\2026-07-29-security-mission-command-builder-design.md`
+3. `D:\work\portflioWebsite\myPortfolio\docs\superpowers\plans\2026-07-29-security-mission-command-builder.md`
+4. `D:\work\portflioWebsite\myPortfolio\package.json`
+5. `D:\work\portflioWebsite\myPortfolio\data\tools.js`
+6. `D:\work\portflioWebsite\myPortfolio\lib\tools\ml-generator\model-mission\control-registry.js`
+7. `D:\work\portflioWebsite\myPortfolio\lib\tools\ml-generator\model-mission\state.js`
+8. `D:\work\portflioWebsite\myPortfolio\components\tools\model-mission\ModelMissionShell.tsx`
+9. `D:\work\portflioWebsite\myPortfolio\tests\tools\model-mission-control-registry.test.js`
+10. `D:\work\portflioWebsite\myPortfolio\tests\tools\model-mission-responsive.test.js`
+
+The agent should load only the tool modules and tests needed for the active
+implementation task after this first orientation. This keeps each task within
+a reviewable context.
+
+#### Source authority
+
+Nemotron must use this authority order for command facts:
+
+1. output from the installed tool's version and `--help`, `-h`, help subcommand,
+   or local manual page;
+2. official upstream documentation or the tool's official source repository;
+3. the current INE eCPPT objectives for certification mapping;
+4. Nemotron's trained knowledge for discovery and candidate generation.
+
+The model must record the chosen source, tool version, review date, and evidence
+tier in
+`docs/reports/2026-07-29-security-mission-tool-verification.json`.
+Conflicting or missing evidence blocks that action from the public catalog.
+
+Nemotron must not:
+
+- invent a flag when documentation is unavailable;
+- combine syntax from different versions without a version rule;
+- treat a blog, cheat sheet, copied command list, or generated answer as an
+  authoritative source;
+- claim that a tool belongs to eCPPT because the model remembers seeing it in a
+  course;
+- add a real target, credential, token, hash, client name, or private key to
+  tests, fixtures, snapshots, reports, or commits.
+
+#### Per-tool implementation cycle
+
+For each tool family, Nemotron must:
+
+1. list candidate actions from its trained knowledge;
+2. verify the executable name, supported platforms, actions, flags, defaults,
+   incompatibilities, and output behavior;
+3. write failing registry, validation, quoting, and snapshot tests;
+4. implement the smallest registry and compiler changes that pass those tests;
+5. run the focused tests and the shared Security Mission contract tests;
+6. record verification evidence and unsupported actions;
+7. inspect the diff for secrets, real targets, unsafe shell interpolation, and
+   unrelated files;
+8. commit the bounded task.
+
+The agent must mark uncertain actions as deferred in the verification ledger.
+It must not weaken a test to preserve an unverified command.
+
+#### Task and context boundaries
+
+Nemotron should work through the implementation plan in order. One coding task
+may cover one infrastructure boundary or one cohesive tool family. The agent
+must not implement the entire catalog in one turn.
+
+After each committed task, the agent updates:
+
+```text
+D:\work\portflioWebsite\myPortfolio\docs\reports\2026-07-29-security-mission-implementation-progress.md
+```
+
+The progress record includes:
+
+- task and commit;
+- files changed;
+- tool versions and evidence tiers;
+- tests run and results;
+- deferred actions;
+- known risks;
+- the next task and its required context.
+
+#### Review gates
+
+Nemotron performs a self-review after each task. OpenCode then starts a clean
+review session with the task brief, commit diff, test output, and verification
+records. The reviewer does not receive the implementer's private reasoning. The
+review checks:
+
+- compliance with this specification and the implementation plan;
+- command and flag accuracy against recorded sources;
+- shell injection and secret-handling boundaries;
+- UI reachability for each registered control;
+- regression-test quality;
+- scope isolation.
+
+The implementation agent fixes accepted findings through new failing tests.
+Reviewers must reject unverified commands even when the syntax appears
+plausible.
 
 ## 19. Testing strategy
 
@@ -1149,6 +1297,17 @@ The implementation is complete when:
 - responsive tests pass at each required viewport;
 - the audit report records coverage, limitations, and remaining gaps.
 
+### 19.8 Model-knowledge verification
+
+- each public action has `local-help` or `official-docs` evidence;
+- each action records a tool version or a version range;
+- source URLs point to official upstream material;
+- installed-tool evidence records the help command and captured version;
+- version-specific flags compile only for compatible versions;
+- the verification ledger contains no real targets or secrets;
+- no `pending` action enters the public catalog;
+- a reviewer can trace each command snapshot to one verification record.
+
 ## 20. Delivery order
 
 The implementation plan should divide work into reviewable tasks:
@@ -1171,6 +1330,20 @@ The implementation plan should divide work into reviewable tasks:
 
 Each task must start with failing behavior-focused tests, change a bounded set of
 files, run focused tests, and commit its own result.
+
+The implementation plan must address Nemotron 3 Ultra directly. Each task
+provides:
+
+- its goal and exact repository paths;
+- the spec sections to reread;
+- official documentation or local-help evidence to collect;
+- the failing tests to create;
+- the production changes to make;
+- focused and regression commands;
+- the progress-ledger entry;
+- the expected commit message;
+- a stop condition for ambiguity, missing sources, or conflicting tool
+  versions.
 
 ## 21. Explicit non-goals
 
