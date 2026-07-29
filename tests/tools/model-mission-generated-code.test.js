@@ -94,6 +94,14 @@ test("representative Keras workflows compile without executing training", () => 
       framework: "keras",
       preset: "image-cnn",
       dataSource: "image-folder",
+      inputShape: [32, 32, 1],
+      numClasses: 6,
+    },
+    {
+      framework: "keras",
+      preset: "image-cnn",
+      dataSource: "image-folder",
+      inputShape: [32, 32, 4],
       numClasses: 6,
     },
     {

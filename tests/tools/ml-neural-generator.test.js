@@ -234,6 +234,14 @@ test("Keras tabular preprocessing learns only from training rows", () => {
   assert.match(result.code, /preprocessor\.transform\(X_validation\)/);
   assert.match(result.code, /preprocessor\.transform\(X_test\)/);
   assert.doesNotMatch(result.code, /fit_transform\(X_validation\)|fit_transform\(X_test\)/);
+  assert.ok(
+    result.code.indexOf(") = _split_arrays(features, targets")
+      < result.code.indexOf("encoder.fit_transform(y_train)"),
+  );
+  assert.match(result.code, /y_train = encoder\.fit_transform\(y_train\)/);
+  assert.match(result.code, /y_validation = encoder\.transform\(y_validation\)/);
+  assert.match(result.code, /y_test = encoder\.transform\(y_test\)/);
+  assert.doesNotMatch(result.code, /encoder\.fit_transform\(targets\)/);
   assert.match(result.code, /RobustScaler\(\)/);
   assert.match(result.code, /RANDOM_SEED = 73/);
 });
@@ -293,6 +301,37 @@ test("Keras image folders load explicit train, validation, and test datasets", (
   assert.match(code, /model\.fit\(\s*train_data,/);
 });
 
+test("Keras image folders derive loader color mode from supported channel counts", () => {
+  const grayscale = generateNeuralScript({
+    framework: "keras",
+    preset: "image-cnn",
+    inputShape: [32, 32, 1],
+  }).code;
+  const rgba = generateNeuralScript({
+    framework: "keras",
+    preset: "image-cnn",
+    inputShape: [32, 32, 4],
+  }).code;
+
+  for (const code of [grayscale, rgba]) {
+    assert.match(
+      code,
+      /color_mode = \{1: "grayscale", 3: "rgb", 4: "rgba"\}\[INPUT_SHAPE\[-1\]\]/,
+    );
+    assert.equal(code.match(/color_mode=color_mode,/g)?.length, 3);
+  }
+  assert.throws(
+    () => generateNeuralScript({
+      framework: "keras",
+      preset: "image-cnn",
+      inputShape: [32, 32, 2],
+    }),
+    (error) => error instanceof NeuralConfigurationError
+      && error.section === "architecture"
+      && /1 \(grayscale\), 3 \(RGB\), or 4 \(RGBA\)/.test(error.message),
+  );
+});
+
 test("Keras sequence arrays validate shape, split deterministically, and scale train-only", () => {
   const code = generateNeuralScript({
     framework: "keras",
@@ -316,6 +355,35 @@ test("Keras sequence arrays validate shape, split deterministically, and scale t
   assert.match(code, /MinMaxScaler\(\)/);
   assert.match(code, /keras\.callbacks\.LearningRateScheduler\(/);
   assert.match(code, /RANDOM_SEED = 19/);
+});
+
+test("Keras sequence arrays encode non-zero-based binary and multiclass labels train-only", () => {
+  for (const { numClasses, exampleLabels } of [
+    { numClasses: 2, exampleLabels: [-1, 1] },
+    { numClasses: 3, exampleLabels: [1, 2, 3] },
+  ]) {
+    const code = generateNeuralScript({
+      framework: "keras",
+      preset: "sequence-conv1d",
+      numClasses,
+    }).code;
+
+    assert.match(code, /encoder = LabelEncoder\(\)/);
+    assert.match(code, /y_train = encoder\.fit_transform\(y_train\)/);
+    assert.match(code, /y_validation = encoder\.transform\(y_validation\)/);
+    assert.match(code, /y_test = encoder\.transform\(y_test\)/);
+    assert.doesNotMatch(code, /encoder\.fit(?:_transform)?\(targets\)/);
+    assert.doesNotMatch(code, /np\.unique\(targets\)/);
+    assert.ok(
+      code.indexOf(") = _split_arrays(features, targets")
+        < code.indexOf("encoder.fit_transform(y_train)"),
+    );
+    assert.match(code, /encoded\.min\(\) < 0 or encoded\.max\(\) >= NUM_CLASSES/);
+    assert.notDeepEqual(
+      exampleLabels,
+      Array.from({ length: numClasses }, (_, index) => index),
+    );
+  }
 });
 
 test("Keras workflow dependencies include every directly imported data package", () => {
