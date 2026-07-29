@@ -549,6 +549,26 @@ class NarrativeDerivationTests(unittest.TestCase):
             "dimensions": installed_dimensions,
         }
 
+        unavailable_runtime_score = next(
+            row["score"]
+            for row in unavailable_dimensions
+            if row["dimension"] == "Local runtime assurance"
+        )
+        installed_runtime_score = next(
+            row["score"]
+            for row in installed_dimensions
+            if row["dimension"] == "Local runtime assurance"
+        )
+        self.assertEqual(unavailable_runtime_score, 0.5)
+        self.assertGreater(
+            installed_runtime_score,
+            unavailable_runtime_score,
+        )
+        self.assertGreater(
+            installed["score"]["overall"],
+            unavailable["score"]["overall"],
+        )
+
         unavailable_report = audit.build_report(unavailable)
         installed_report = audit.build_report(installed)
 
@@ -578,6 +598,11 @@ class NarrativeDerivationTests(unittest.TestCase):
         )
         self.assertIn(
             "No verification command emitted a normalized warning.",
+            installed_report,
+        )
+        self.assertIn(
+            "1/1 eligible workflows passed after 1 execution(s) "
+            "(0 failed, 0 unavailable, 7 not-applicable)",
             installed_report,
         )
         for stale_text in [

@@ -1405,6 +1405,35 @@ def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         evidence["limitations"]["universalNoCodeCoverageClaimed"] is False
         and evidence["limitations"]["staticCompileIsRuntime"] is False
     )
+    runtime_statuses = runtime_facts(evidence["projects"])["statuses"]
+    passed_runtime = runtime_statuses.get("passed", 0)
+    failed_runtime = runtime_statuses.get("failed", 0)
+    unavailable_runtime = runtime_statuses.get("unavailable", 0)
+    not_applicable_runtime = runtime_statuses.get("not-applicable", 0)
+    eligible_runtime = (
+        passed_runtime + failed_runtime + unavailable_runtime
+    )
+    executed_runtime = passed_runtime + failed_runtime
+    execution_coverage = (
+        executed_runtime / eligible_runtime if eligible_runtime else 0.0
+    )
+    execution_pass_rate = (
+        passed_runtime / executed_runtime if executed_runtime else 0.0
+    )
+    runtime_score = 0.0
+    if all_static:
+        runtime_score = 0.5 + min(
+            1.0,
+            execution_coverage * execution_pass_rate,
+        )
+    runtime_method = (
+        "Dependency-free smoke coverage earns 0.5 when every static "
+        "project contract passes. Runtime evidence records "
+        f"{passed_runtime}/{eligible_runtime} eligible workflows passed "
+        f"after {executed_runtime} execution(s) ({failed_runtime} failed, "
+        f"{unavailable_runtime} unavailable, {not_applicable_runtime} "
+        "not-applicable); execution coverage and pass rate add up to 1.0."
+    )
     return [
         {
             "dimension": "Static generation and project integrity",
@@ -1415,8 +1444,8 @@ def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         {
             "dimension": "Local runtime assurance",
             "maximum": 1.5,
-            "score": 0.5 if all_static else 0.0,
-            "method": "Dependency-free smoke coverage earns 0.5; training execution requires locally available declared runtimes.",
+            "score": runtime_score,
+            "method": runtime_method,
         },
         {
             "dimension": "Learning workflow",
@@ -1456,8 +1485,10 @@ def runtime_facts(projects: list[dict[str, Any]]) -> dict[str, Any]:
     missing_modules: set[str] = set()
     reasons: dict[str, int] = {}
     for project in projects:
-        runtime = project["runtime"]
-        status = runtime["status"]
+        runtime = project.get("runtime", {})
+        status = runtime.get("status")
+        if not status:
+            continue
         statuses[status] = statuses.get(status, 0) + 1
         missing_modules.update(runtime.get("missingModules", []))
         reason = runtime.get("reason")

@@ -118,7 +118,7 @@ Every project archive explains environment setup, data shape/source, training/ev
 | Dimension | Score | Maximum | Method |
 | --- | ---: | ---: | --- |
 | Static generation and project integrity | 2.0 | 2.0 | All eight must pass AST, ZIP, requirements, config, artifact declaration, and structural smoke checks. |
-| Local runtime assurance | 0.5 | 1.5 | Dependency-free smoke coverage earns 0.5; training execution requires locally available declared runtimes. |
+| Local runtime assurance | 0.5 | 1.5 | Dependency-free smoke coverage earns 0.5 when every static project contract passes. Runtime evidence records 0/3 eligible workflows passed after 0 execution(s) (0 failed, 3 unavailable, 5 not-applicable); execution coverage and pass rate add up to 1.0. |
 | Learning workflow | 1.2 | 1.5 | Nine-step structure and complete metadata are present; no student comprehension study was performed and scaler options lack per-option lessons. |
 | Progressive disclosure | 1.5 | 1.5 | Every task must have guided < customize < advanced control counts and preserve state in the live harness. |
 | Generated behavior truthfulness | 1.5 | 1.5 | YOLO optimizer/confidence and active Keras/PyTorch training contracts are checked in generation and parity suites. |

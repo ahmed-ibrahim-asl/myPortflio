@@ -1848,7 +1848,7 @@
       {
         "dimension": "Local runtime assurance",
         "maximum": 1.5,
-        "method": "Dependency-free smoke coverage earns 0.5; training execution requires locally available declared runtimes.",
+        "method": "Dependency-free smoke coverage earns 0.5 when every static project contract passes. Runtime evidence records 0/3 eligible workflows passed after 0 execution(s) (0 failed, 3 unavailable, 5 not-applicable); execution coverage and pass rate add up to 1.0.",
         "score": 0.5
       },
       {
