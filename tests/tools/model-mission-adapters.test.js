@@ -91,7 +91,10 @@ test("neural adapter passes every project section into its complete contract", (
   assert.deepEqual(result.validationErrors, {});
   assert.match(result.code, /data\/patients\.csv/);
   assert.match(result.code, /artifacts\/patient_network\.pt/);
-  assert.match(result.code, /optimizer = torch\.optim\.SGD/);
+  assert.match(
+    result.code,
+    /def build_optimizer\(model\):\n    return torch\.optim\.SGD\(model\.parameters\(\), lr=LEARNING_RATE, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY\)/,
+  );
 });
 
 test("neural adapter returns typed configuration errors by section", () => {

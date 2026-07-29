@@ -147,6 +147,46 @@ test("compatible layer settings preserve inferred shapes and generated effects",
     inputShape: [24, 6],
     layers,
   }).code;
+  const imageLayers = [
+    {
+      id: "conv-image",
+      type: "conv2d",
+      filters: 12,
+      kernelSize: 3,
+      activation: "relu",
+      initializer: "glorot-uniform",
+      normalization: "layer",
+    },
+    { id: "summary-image", type: "global-average-pool2d" },
+  ];
+  const kerasImage = generateNeuralScript({
+    framework: "keras",
+    preset: "image-cnn",
+    inputShape: [32, 32, 3],
+    layers: imageLayers,
+  }).code;
+  const pytorchImage = generateNeuralScript({
+    framework: "pytorch",
+    preset: "image-cnn",
+    inputShape: [32, 32, 3],
+    layers: imageLayers,
+  }).code;
+  const denseLayers = [
+    {
+      id: "dense-normalized",
+      type: "dense",
+      units: 24,
+      activation: "relu",
+      initializer: "he-normal",
+      normalization: "batch",
+    },
+  ];
+  const pytorchDense = generateNeuralScript({
+    framework: "pytorch",
+    preset: "tabular-mlp",
+    inputShape: [10],
+    layers: denseLayers,
+  }).code;
 
   assert.deepEqual(inference.errors, []);
   assert.equal(normalized.layers[0].initializer, "he-normal");
@@ -168,17 +208,130 @@ test("compatible layer settings preserve inferred shapes and generated effects",
     ],
   );
   assert.match(keras, /layers\.Conv1D\(16, 5/);
-  assert.match(keras, /activation="gelu"/);
+  assert.match(
+    keras,
+    /activation="gelu", kernel_initializer="he_normal"/,
+  );
+  assert.match(keras, /layers\.BatchNormalization\(\)/);
   assert.match(keras, /layers\.MaxPooling1D\(pool_size=2\)/);
-  assert.match(keras, /layers\.LSTM\(8, return_sequences=True\)/);
+  assert.match(
+    keras,
+    /layers\.LSTM\(8, return_sequences=True, kernel_initializer="orthogonal", recurrent_initializer="orthogonal"\)/,
+  );
+  assert.match(keras, /layers\.LayerNormalization\(\)/);
   assert.match(keras, /layers\.Dense\(4, activation="tanh"\)/);
   assert.match(keras, /layers\.Dropout\(0\.35\)/);
-  assert.match(pytorch, /nn\.Conv1d\(6, 16, kernel_size=5/);
+  assert.match(
+    pytorch,
+    /nn\.Sequential\(nn\.Conv1d\(6, 16, kernel_size=5, padding="same"\), nn\.GELU\(\), nn\.BatchNorm1d\(16\)\)/,
+  );
+  assert.match(
+    pytorch,
+    /initialize_module\(self\.layer_0, "he-normal"\)/,
+  );
   assert.match(pytorch, /nn\.MaxPool1d\(2\)/);
   assert.match(pytorch, /nn\.LSTM\(input_size=16, hidden_size=8, batch_first=True/);
+  assert.match(
+    pytorch,
+    /initialize_module\(self\.layer_2, "orthogonal"\)/,
+  );
+  assert.match(
+    pytorch,
+    /self\.layer_2_normalization = nn\.LayerNorm\(8\)/,
+  );
+  assert.match(pytorch, /x = self\.layer_2_normalization\(x\)/);
   assert.match(pytorch, /nn\.Linear\(8, 4\)/);
   assert.match(pytorch, /nn\.Tanh\(\)/);
   assert.match(pytorch, /nn\.Dropout\(0\.35\)/);
+  assert.match(
+    kerasImage,
+    /kernel_initializer="glorot_uniform"/,
+  );
+  assert.match(kerasImage, /layers\.LayerNormalization\(\)/);
+  assert.match(
+    pytorchImage,
+    /self\.layer_0 = nn\.Sequential\(nn\.Conv2d\(3, 12, kernel_size=3, padding="same"\), nn\.ReLU\(\), ChannelLayerNorm2d\(12\)\)/,
+  );
+  assert.match(
+    pytorchImage,
+    /initialize_module\(self\.layer_0, "glorot-uniform"\)/,
+  );
+  assert.match(
+    pytorchDense,
+    /nn\.Sequential\(nn\.Linear\(10, 24\), nn\.ReLU\(\), nn\.BatchNorm1d\(24\)\)/,
+  );
+
+  for (const [framework, code] of [
+    ["keras-sequence", keras],
+    ["pytorch-sequence", pytorch],
+    ["keras-image", kerasImage],
+    ["pytorch-image", pytorchImage],
+    ["pytorch-dense", pytorchDense],
+  ]) {
+    const parsed = spawnSync(
+      "python",
+      ["-c", "import ast, sys; ast.parse(sys.stdin.read()); print('ast-ok')"],
+      { input: code, encoding: "utf8" },
+    );
+    assert.equal(parsed.status, 0, `${framework}: ${parsed.stderr}`);
+    assert.match(parsed.stdout, /ast-ok/, framework);
+  }
+});
+
+test("layer initialization and normalization reject unsupported combinations", () => {
+  const invalidLayers = [
+    {
+      layer: {
+        id: "bad-initializer",
+        type: "dense",
+        units: 8,
+        initializer: "lecun-normal",
+      },
+      message: /initializer.*framework-default.*glorot-uniform.*he-normal.*orthogonal/i,
+    },
+    {
+      layer: {
+        id: "bad-normalization",
+        type: "dense",
+        units: 8,
+        normalization: "instance",
+      },
+      message: /normalization.*none.*batch.*layer/i,
+    },
+    {
+      layer: {
+        id: "pool-initializer",
+        type: "maxpool1d",
+        poolSize: 2,
+        initializer: "he-normal",
+      },
+      message: /MaxPool1D does not support an initializer/i,
+    },
+    {
+      layer: {
+        id: "recurrent-batch",
+        type: "lstm",
+        units: 8,
+        normalization: "batch",
+      },
+      message: /LSTM supports none or layer normalization/i,
+    },
+  ];
+
+  for (const { layer, message } of invalidLayers) {
+    assert.throws(
+      () => normalizeNeuralConfig({
+        preset: "sequence-conv1d",
+        layers: [
+          layer,
+          { id: "summary", type: "global-average-pool1d" },
+        ],
+      }),
+      (error) => error instanceof NeuralConfigurationError
+        && error.section === "architecture"
+        && message.test(error.message),
+    );
+  }
 });
 
 test("neural normalization resolves a complete tabular training contract", () => {

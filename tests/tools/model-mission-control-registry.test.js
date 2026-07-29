@@ -81,7 +81,28 @@ test("controls have complete specific explanations and validation rejects omissi
 test("control IDs identify their task-specific definitions and freeze nested values", () => {
   const neuralLearningRate = getMissionControl("neuralLearningRate");
   assert.equal(neuralLearningRate?.defaultValue, 0.001);
-  assert.equal(neuralLearningRate?.level, "advanced");
+  assert.equal(neuralLearningRate?.level, "customize");
+
+  const neuralProject = createProjectForTask("neural-network");
+  const customizeTraining = getMissionControls({
+    taskId: "neural-network",
+    stepId: "train",
+    learningLevel: "customize",
+    project: neuralProject,
+  });
+  const advancedTraining = getMissionControls({
+    taskId: "neural-network",
+    stepId: "train",
+    learningLevel: "advanced",
+    project: neuralProject,
+  });
+  assert.ok(
+    customizeTraining.some(({ id }) => id === "neuralLearningRate"),
+  );
+  assert.ok(
+    advancedTraining.some(({ id }) => id === "neuralLearningRate"),
+  );
+  assert.ok(advancedTraining.length > customizeTraining.length);
 
   const inputShape = getMissionControl("inputShape");
   const alpha = getMissionControl("alpha");
