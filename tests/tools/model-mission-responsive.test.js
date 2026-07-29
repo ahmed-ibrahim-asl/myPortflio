@@ -632,6 +632,240 @@ test(
       );
       assert.deepEqual(neuralInputShape.result.value.inputShape, [24, 6]);
       assert.match(neuralInputShape.result.value.code, /INPUT_SHAPE = \(24, 6\)/);
+
+      const neuralControls = await client.send("Runtime.evaluate", {
+        awaitPromise: true,
+        returnByValue: true,
+        expression: `(async () => {
+          const pause = () => new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve))
+          );
+          const workflowButton = (label) => [...document.querySelectorAll(
+            "[data-mission-workflow] button"
+          )].find((button) => button.textContent.includes(label));
+          const levelButton = (label) => [...document.querySelectorAll(
+            '[aria-label="Explanation level"] button'
+          )].find((button) => button.textContent.includes(label));
+          const ids = () => [...document.querySelectorAll("[data-control-id]")]
+            .filter((element) => element.getClientRects().length > 0)
+            .map((element) => element.getAttribute("data-control-id"));
+          const setValue = (element, value) => {
+            const setter = Object.getOwnPropertyDescriptor(
+              element instanceof HTMLSelectElement
+                ? HTMLSelectElement.prototype
+                : HTMLInputElement.prototype,
+              "value",
+            ).set;
+            setter.call(element, value);
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+            element.dispatchEvent(new Event("change", { bubbles: true }));
+          };
+
+          workflowButton("Train").click();
+          levelButton("Guided").click();
+          await pause();
+          const guided = ids();
+          levelButton("Customize").click();
+          await pause();
+          const customize = ids();
+          levelButton("Advanced").click();
+          await pause();
+          const advanced = ids();
+          const optimizer = document.querySelector(
+            '[data-control-id="optimizer"] select'
+          );
+          setValue(optimizer, "adamw");
+          await pause();
+          levelButton("Guided").click();
+          await pause();
+          levelButton("Advanced").click();
+          await pause();
+          const optimizerRestored = document.querySelector(
+            '[data-control-id="optimizer"] select'
+          )?.value;
+
+          workflowButton("Prepare").click();
+          await pause();
+          setValue(
+            document.querySelector('[data-control-id="preset"] select'),
+            "sequence-lstm",
+          );
+          await pause();
+          workflowButton("Model").click();
+          await pause();
+          const layerCards = [...document.querySelectorAll(
+            '[data-control-id="layers"] article'
+          )];
+          const layerEvidence = {
+            count: layerCards.length,
+            shapes: layerCards.map((card) =>
+              card.querySelector("[data-layer-shape]")?.textContent
+            ),
+            dropout: Boolean(document.querySelector(
+              '[data-layer-field="dropout-rate"]'
+            )),
+            returnSequences: Boolean(document.querySelector(
+              '[data-layer-field="return-sequences"]'
+            )),
+            initializerEditable: Boolean(document.querySelector(
+              '[data-layer-field="initializer"]:not([disabled])'
+            )),
+            normalizationEditable: Boolean(document.querySelector(
+              '[data-layer-field="normalization"]:not([disabled])'
+            )),
+            unsafeRemovalBlocked: [...layerCards[0].querySelectorAll("button")]
+              .find((button) => button.textContent.includes("Remove"))
+              ?.disabled === true,
+          };
+          setValue(
+            layerCards[0].querySelector("select"),
+            "conv2d",
+          );
+          let invalidDownloadBlocked = false;
+          for (let attempt = 0; attempt < 100; attempt += 1) {
+            const editor = document.querySelector(
+              '[data-control-id="layers"] [data-architecture-valid]'
+            );
+            const codeButtons = [...document.querySelectorAll(
+              "[data-mission-code-panel] header button"
+            )];
+            if (
+              editor?.getAttribute("data-architecture-valid") === "false"
+              && codeButtons.length > 0
+              && codeButtons.every((button) => button.disabled)
+            ) {
+              invalidDownloadBlocked = true;
+              break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 35));
+          }
+          return {
+            guided,
+            customize,
+            advanced,
+            optimizerRestored,
+            layerEvidence,
+            invalidDownloadBlocked,
+          };
+        })()`,
+      });
+      assert.equal(
+        neuralControls.exceptionDetails,
+        undefined,
+        JSON.stringify(neuralControls.exceptionDetails),
+      );
+      const neuralControlResult = neuralControls.result.value;
+      for (const id of ["epochs", "batchSize"]) {
+        assert.ok(neuralControlResult.guided.includes(id), id);
+      }
+      for (const id of ["optimizer", "neuralLearningRate", "patience"]) {
+        assert.equal(neuralControlResult.guided.includes(id), false, id);
+        assert.ok(neuralControlResult.customize.includes(id), id);
+      }
+      for (const id of [
+        "scheduler",
+        "weightDecay",
+        "momentum",
+        "minimumDelta",
+        "gradientClip",
+        "mixedPrecision",
+        "device",
+        "workers",
+        "deterministic",
+      ]) {
+        assert.equal(neuralControlResult.customize.includes(id), false, id);
+        assert.ok(neuralControlResult.advanced.includes(id), id);
+      }
+      assert.ok(
+        neuralControlResult.advanced.length
+          > neuralControlResult.customize.length,
+      );
+      assert.equal(neuralControlResult.optimizerRestored, "adamw");
+      assert.ok(neuralControlResult.layerEvidence.count > 0);
+      assert.equal(
+        neuralControlResult.layerEvidence.shapes.every((shape) =>
+          /\[[\d, ]+\].*\[[\d, ]+\]/.test(shape)
+        ),
+        true,
+      );
+      assert.deepEqual(
+        {
+          dropout: neuralControlResult.layerEvidence.dropout,
+          returnSequences: neuralControlResult.layerEvidence.returnSequences,
+          initializerEditable:
+            neuralControlResult.layerEvidence.initializerEditable,
+          normalizationEditable:
+            neuralControlResult.layerEvidence.normalizationEditable,
+          unsafeRemovalBlocked:
+            neuralControlResult.layerEvidence.unsafeRemovalBlocked,
+        },
+        {
+          dropout: true,
+          returnSequences: true,
+          initializerEditable: true,
+          normalizationEditable: true,
+          unsafeRemovalBlocked: true,
+        },
+      );
+      assert.equal(neuralControlResult.invalidDownloadBlocked, true);
+
+      for (const viewport of [
+        { width: 320, height: 700 },
+        { width: 360, height: 760 },
+        { width: 390, height: 844 },
+        { width: 768, height: 1024 },
+        { width: 900, height: 900 },
+        { width: 1024, height: 768 },
+        { width: 1440, height: 900 },
+      ]) {
+        await client.send("Emulation.setDeviceMetricsOverride", {
+          ...viewport,
+          deviceScaleFactor: 1,
+          mobile: viewport.width < 600,
+        });
+        const neuralLayout = await client.send("Runtime.evaluate", {
+          returnByValue: true,
+          expression: `(() => {
+            const visible = (element) =>
+              element && element.getClientRects().length > 0
+              && getComputedStyle(element).display !== "none";
+            const config = document.querySelector(
+              "[data-mission-config-panel]"
+            );
+            const configRect = visible(config)
+              ? config.getBoundingClientRect()
+              : null;
+            const controls = visible(config)
+              ? [...config.querySelectorAll(
+                  '[data-control-id="layers"] input, '
+                  + '[data-control-id="layers"] select, '
+                  + '[data-control-id="layers"] button'
+                )]
+                .filter(visible)
+                .map((element) => element.getBoundingClientRect())
+              : [];
+            return {
+              viewportWidth: document.documentElement.clientWidth,
+              documentWidth: document.documentElement.scrollWidth,
+              controlsInside: !configRect || controls.every((control) =>
+                control.left >= configRect.left - 1
+                && control.right <= configRect.right + 1
+              ),
+            };
+          })()`,
+        });
+        const layout = neuralLayout.result.value;
+        assert.equal(
+          layout.documentWidth,
+          layout.viewportWidth,
+          `neural editor has no page overflow at ${viewport.width}px`,
+        );
+        assert.equal(
+          layout.controlsInside,
+          true,
+          `neural controls stay contained at ${viewport.width}px`,
+        );
+      }
     } finally {
       client?.socket.close();
       stopProcessTree(chrome);

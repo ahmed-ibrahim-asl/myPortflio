@@ -361,8 +361,10 @@
   gap: 14px;
 }
 
-.field {
+.field,
+.readOnlyControl {
   display: grid;
+  min-width: 0;
   gap: 7px;
   align-content: start;
   padding: 14px;
@@ -381,6 +383,7 @@
 
 .field input,
 .field select,
+.readOnlyControl input,
 .layerControls input,
 .layerControls select,
 .addLayer select,
@@ -397,6 +400,7 @@
 }
 
 .field small,
+.readOnlyControl small,
 .toggleField small,
 .root :global(.ml-generator-field-help) {
   color: var(--muted);
@@ -550,7 +554,8 @@
 
 .stepActions button:disabled,
 .codeActions button:disabled,
-.layerActions button:disabled {
+.layerActions button:disabled,
+.addLayer button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
@@ -722,6 +727,13 @@
   font-size: 0.58rem;
 }
 
+.layerToggle input {
+  width: 22px;
+  min-height: 22px;
+  padding: 0;
+  accent-color: var(--pixel-green);
+}
+
 .layerActions {
   display: flex;
   flex-wrap: wrap;
@@ -742,6 +754,13 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
+}
+
+.layerSafety {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.6rem;
+  line-height: 1.5;
 }
 
 .root :global(.ml-generator-field) {

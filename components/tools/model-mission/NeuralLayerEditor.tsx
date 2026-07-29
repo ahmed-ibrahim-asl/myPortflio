@@ -19,6 +19,8 @@ type NeuralLayer = {
   poolSize: number;
   rate: number;
   activation: string;
+  initializer: string;
+  normalization: string;
   returnSequences: boolean;
 };
 
@@ -38,6 +40,8 @@ function layerDefaults(type: string, index: number): NeuralLayer {
     poolSize: 2,
     rate: 0.2,
     activation: "relu",
+    initializer: "framework-default",
+    normalization: "none",
     returnSequences: false,
   };
 }
@@ -52,12 +56,20 @@ export function NeuralLayerEditor({
   onChange,
 }: NeuralLayerEditorProps) {
   const [newLayerType, setNewLayerType] = useState("dense");
-  const config = normalizeNeuralConfig({
+  const normalizedConfig = normalizeNeuralConfig({
     ...model,
     ...training,
   }) as {
     inputShape: number[];
     layers: NeuralLayer[];
+  };
+  const config = {
+    ...normalizedConfig,
+    layers: normalizedConfig.layers.map((layer) => ({
+      ...layer,
+      initializer: layer.initializer ?? "framework-default",
+      normalization: layer.normalization ?? "none",
+    })),
   };
   const inference = useMemo(
     () => inferLayerShapes(config.inputShape, config.layers) as {
@@ -100,9 +112,36 @@ export function NeuralLayerEditor({
     ];
     onChange(layers);
   };
+  const candidateMove = (index: number, direction: -1 | 1) => {
+    const destination = index + direction;
+    if (destination < 0 || destination >= config.layers.length) {
+      return null;
+    }
+    const layers = [...config.layers];
+    [layers[index], layers[destination]] = [
+      layers[destination],
+      layers[index],
+    ];
+    return layers;
+  };
+  const candidateRemoval = (index: number) =>
+    config.layers.filter((_, layerIndex) => layerIndex !== index);
+  const keepsValidStack = (layers: NeuralLayer[] | null) =>
+    Boolean(
+      layers
+      && layers.length > 0
+      && inferLayerShapes(config.inputShape, layers).errors.length === 0,
+    );
+  const candidateAddition = [
+    ...config.layers,
+    layerDefaults(newLayerType, config.layers.length),
+  ];
 
   return (
-    <div className={styles.layerEditor}>
+    <div
+      className={styles.layerEditor}
+      data-architecture-valid={inference.errors.length === 0 ? "true" : "false"}
+    >
       <div className={styles.layerList}>
         {inference.steps.map((step, index) => {
           const layer = step.layer;
@@ -119,7 +158,19 @@ export function NeuralLayerEditor({
             "maxpool1d",
             "maxpool2d",
           ].includes(layer.type);
-          const hasActivation = hasUnits || hasFilters;
+          const isRecurrent = ["lstm", "gru"].includes(layer.type);
+          const hasActivation = layer.type === "dense" || hasFilters;
+          const hasTrainableWeights = hasUnits || hasFilters;
+          const normalizations = isRecurrent
+            ? [
+                { value: "none", label: "None" },
+                { value: "layer", label: "Layer normalization" },
+              ]
+            : [
+                { value: "none", label: "None" },
+                { value: "batch", label: "Batch normalization" },
+                { value: "layer", label: "Layer normalization" },
+              ];
           return (
             <article
               className={styles.layerCard}
@@ -128,7 +179,7 @@ export function NeuralLayerEditor({
             >
               <div className={styles.layerHeading}>
                 <span>Layer {index + 1}</span>
-                <span>
+                <span data-layer-shape>
                   {shapeLabel(step.inputShape)}
                   {" → "}
                   {shapeLabel(step.outputShape)}
@@ -161,6 +212,7 @@ export function NeuralLayerEditor({
                   <label>
                     <span>Units</span>
                     <input
+                      data-layer-field="units"
                       type="number"
                       min={1}
                       max={8192}
@@ -177,6 +229,7 @@ export function NeuralLayerEditor({
                     <label>
                       <span>Filters</span>
                       <input
+                        data-layer-field="filters"
                         type="number"
                         min={1}
                         max={2048}
@@ -190,6 +243,7 @@ export function NeuralLayerEditor({
                     <label>
                       <span>Kernel</span>
                       <input
+                        data-layer-field="kernel-size"
                         type="number"
                         min={1}
                         max={31}
@@ -210,6 +264,7 @@ export function NeuralLayerEditor({
                   <label>
                     <span>Pool size</span>
                     <input
+                      data-layer-field="pool-size"
                       type="number"
                       min={1}
                       max={16}
@@ -225,6 +280,7 @@ export function NeuralLayerEditor({
                   <label>
                     <span>Dropout rate</span>
                     <input
+                      data-layer-field="dropout-rate"
                       type="number"
                       min={0}
                       max={0.9}
@@ -241,6 +297,7 @@ export function NeuralLayerEditor({
                   <label>
                     <span>Activation</span>
                     <select
+                      data-layer-field="activation"
                       value={layer.activation}
                       onChange={(event) => patchLayer(
                         index,
@@ -259,6 +316,65 @@ export function NeuralLayerEditor({
                     </select>
                   </label>
                 ) : null}
+                {hasTrainableWeights ? (
+                  <>
+                    <label>
+                      <span>Initializer</span>
+                      <select
+                        data-layer-field="initializer"
+                        value={layer.initializer}
+                        onChange={(event) => patchLayer(
+                          index,
+                          { initializer: event.target.value },
+                        )}
+                      >
+                        <option value="framework-default">
+                          Framework default
+                        </option>
+                        <option value="glorot-uniform">
+                          Glorot uniform
+                        </option>
+                        <option value="he-normal">
+                          He normal
+                        </option>
+                        <option value="orthogonal">
+                          Orthogonal
+                        </option>
+                      </select>
+                    </label>
+                    <label>
+                      <span>Normalization</span>
+                      <select
+                        data-layer-field="normalization"
+                        value={layer.normalization}
+                        onChange={(event) => patchLayer(
+                          index,
+                          { normalization: event.target.value },
+                        )}
+                      >
+                        {normalizations.map(({ value, label }) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </>
+                ) : null}
+                {isRecurrent ? (
+                  <label className={styles.layerToggle}>
+                    <span>Return sequences</span>
+                    <input
+                      data-layer-field="return-sequences"
+                      type="checkbox"
+                      checked={layer.returnSequences}
+                      onChange={(event) => patchLayer(
+                        index,
+                        { returnSequences: event.target.checked },
+                      )}
+                    />
+                  </label>
+                ) : null}
               </div>
               {step.error ? (
                 <p className={styles.layerError}>{step.error}</p>
@@ -266,26 +382,22 @@ export function NeuralLayerEditor({
               <div className={styles.layerActions}>
                 <button
                   type="button"
-                  disabled={index === 0}
+                  disabled={!keepsValidStack(candidateMove(index, -1))}
                   onClick={() => moveLayer(index, -1)}
                 >
                   Move up
                 </button>
                 <button
                   type="button"
-                  disabled={index === config.layers.length - 1}
+                  disabled={!keepsValidStack(candidateMove(index, 1))}
                   onClick={() => moveLayer(index, 1)}
                 >
                   Move down
                 </button>
                 <button
                   type="button"
-                  disabled={config.layers.length === 1}
-                  onClick={() => onChange(
-                    config.layers.filter(
-                      (_, layerIndex) => layerIndex !== index,
-                    ),
-                  )}
+                  disabled={!keepsValidStack(candidateRemoval(index))}
+                  onClick={() => onChange(candidateRemoval(index))}
                 >
                   Remove
                 </button>
@@ -308,14 +420,16 @@ export function NeuralLayerEditor({
         </select>
         <button
           type="button"
-          onClick={() => onChange([
-            ...config.layers,
-            layerDefaults(newLayerType, config.layers.length),
-          ])}
+          disabled={!keepsValidStack(candidateAddition)}
+          onClick={() => onChange(candidateAddition)}
         >
           Add layer
         </button>
       </div>
+      <p className={styles.layerSafety}>
+        Move, remove, and add actions are enabled only when the resulting
+        input/output shape stack remains valid.
+      </p>
       {inference.errors.length > 0 ? (
         <div className={styles.errorBox}>
           <strong>Architecture needs attention</strong>

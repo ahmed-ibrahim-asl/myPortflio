@@ -10,6 +10,9 @@ import {
   inferLayerShapes,
   normalizeNeuralConfig,
 } from "../../lib/tools/ml-generator/workbench/neural-generator.js";
+import {
+  getMissionControls,
+} from "../../lib/tools/ml-generator/model-mission/control-registry.js";
 
 test("neural presets cover tabular, image, and sequence learning", () => {
   assert.ok(NEURAL_PRESETS.some(({ id }) => id === "tabular-mlp"));
@@ -42,6 +45,140 @@ test("shape inference blocks incompatible recurrent layers", () => {
 
   assert.equal(inference.errors.length, 1);
   assert.match(inference.errors[0], /LSTM expects \[timesteps, features\]/);
+});
+
+test("advanced neural UI metadata only makes normalized settings editable", () => {
+  const project = {
+    taskId: "neural-network",
+    learningLevel: "advanced",
+    data: {},
+    inspection: {},
+    split: {},
+    preparation: {},
+    model: {},
+    training: {},
+    evaluation: {},
+    output: {},
+  };
+  const controls = ["model", "train", "generate"].flatMap((stepId) =>
+    getMissionControls({
+      taskId: "neural-network",
+      stepId,
+      learningLevel: "advanced",
+      project,
+    })
+  );
+  const byId = new Map(controls.map((control) => [control.id, control]));
+  const normalized = normalizeNeuralConfig({
+    preset: "tabular-mlp",
+    framework: "pytorch",
+  });
+
+  for (const id of [
+    "scheduler",
+    "weightDecay",
+    "momentum",
+    "minimumDelta",
+    "gradientClip",
+    "mixedPrecision",
+    "device",
+    "workers",
+    "checkpointPath",
+  ]) {
+    const control = byId.get(id);
+    assert.ok(control, `${id} is available in Advanced`);
+    assert.equal(control.readOnly, undefined, `${id} remains editable`);
+    assert.ok(
+      (control.configKey ?? id) in normalized,
+      `${id} maps to the normalized neural contract`,
+    );
+  }
+  for (const id of ["deterministic"]) {
+    const control = byId.get(id);
+    assert.ok(control, `${id} is disclosed in Advanced`);
+    assert.equal(
+      control.readOnly,
+      true,
+      `${id} cannot imply an unsupported generator override`,
+    );
+  }
+});
+
+test("compatible layer settings preserve inferred shapes and generated effects", () => {
+  const layers = [
+    {
+      id: "conv",
+      type: "conv1d",
+      filters: 16,
+      kernelSize: 5,
+      activation: "gelu",
+      initializer: "he-normal",
+      normalization: "batch",
+    },
+    { id: "pool", type: "maxpool1d", poolSize: 2 },
+    {
+      id: "recurrent",
+      type: "lstm",
+      units: 8,
+      returnSequences: true,
+      initializer: "orthogonal",
+      normalization: "layer",
+    },
+    { id: "summary", type: "global-average-pool1d" },
+    { id: "dense", type: "dense", units: 4, activation: "tanh" },
+    { id: "dropout", type: "dropout", rate: 0.35 },
+  ];
+  const inference = inferLayerShapes([24, 6], layers);
+  const normalized = normalizeNeuralConfig({
+    framework: "pytorch",
+    preset: "sequence-conv1d",
+    inputShape: [24, 6],
+    layers,
+  });
+  const keras = generateNeuralScript({
+    framework: "keras",
+    preset: "sequence-conv1d",
+    inputShape: [24, 6],
+    layers,
+  }).code;
+  const pytorch = generateNeuralScript({
+    framework: "pytorch",
+    preset: "sequence-conv1d",
+    inputShape: [24, 6],
+    layers,
+  }).code;
+
+  assert.deepEqual(inference.errors, []);
+  assert.equal(normalized.layers[0].initializer, "he-normal");
+  assert.equal(normalized.layers[0].normalization, "batch");
+  assert.equal(normalized.layers[2].initializer, "orthogonal");
+  assert.equal(normalized.layers[2].normalization, "layer");
+  assert.deepEqual(
+    inference.steps.map(({ inputShape, outputShape }) => [
+      inputShape,
+      outputShape,
+    ]),
+    [
+      [[24, 6], [24, 16]],
+      [[24, 16], [12, 16]],
+      [[12, 16], [12, 8]],
+      [[12, 8], [8]],
+      [[8], [4]],
+      [[4], [4]],
+    ],
+  );
+  assert.match(keras, /layers\.Conv1D\(16, 5/);
+  assert.match(keras, /activation="gelu"/);
+  assert.match(keras, /layers\.MaxPooling1D\(pool_size=2\)/);
+  assert.match(keras, /layers\.LSTM\(8, return_sequences=True\)/);
+  assert.match(keras, /layers\.Dense\(4, activation="tanh"\)/);
+  assert.match(keras, /layers\.Dropout\(0\.35\)/);
+  assert.match(pytorch, /nn\.Conv1d\(6, 16, kernel_size=5/);
+  assert.match(pytorch, /nn\.MaxPool1d\(2\)/);
+  assert.match(pytorch, /nn\.LSTM\(input_size=16, hidden_size=8, batch_first=True/);
+  assert.match(pytorch, /nn\.Linear\(8, 4\)/);
+  assert.match(pytorch, /nn\.Tanh\(\)/);
+  assert.match(pytorch, /nn\.Dropout\(0\.35\)/);
 });
 
 test("neural normalization resolves a complete tabular training contract", () => {
