@@ -26,7 +26,8 @@ type MissionCodePanelProps = {
   error: Error | null;
   copyStatus: string;
   onCopy: () => void;
-  onDownload: () => void;
+  onDownloadPython: () => void;
+  onDownloadProject: () => void;
   onRetry: () => void;
 };
 
@@ -36,13 +37,17 @@ export function MissionCodePanel({
   error,
   copyStatus,
   onCopy,
-  onDownload,
+  onDownloadPython,
+  onDownloadProject,
   onRetry,
 }: MissionCodePanelProps) {
-  const ready = status === "ready" && Boolean(result?.code);
   const errors = Object.entries(
     result?.validationErrors ?? {},
   );
+  const ready =
+    status === "ready"
+    && Boolean(result?.code)
+    && errors.length === 0;
 
   return (
     <section
@@ -77,9 +82,16 @@ export function MissionCodePanel({
           <button
             type="button"
             disabled={!ready}
-            onClick={onDownload}
+            onClick={onDownloadPython}
           >
-            Download .py
+            Download Python
+          </button>
+          <button
+            type="button"
+            disabled={!ready}
+            onClick={onDownloadProject}
+          >
+            Download project (.zip)
           </button>
         </div>
       </header>

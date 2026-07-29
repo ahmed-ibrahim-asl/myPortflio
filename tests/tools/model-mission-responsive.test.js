@@ -206,11 +206,12 @@ test(
         returnByValue: true,
         expression: `(async () => {
           for (let attempt = 0; attempt < 100; attempt += 1) {
+            const panel = document.querySelector(
+              "[data-mission-code-panel]"
+            );
             if (
               document.querySelector("[data-model-mission]")
-              && document.querySelector(
-                '[data-mission-code-panel][data-load-state="ready"]'
-              )
+              && panel?.getAttribute("data-load-state") === "ready"
             ) return true;
             await new Promise((resolve) => setTimeout(resolve, 50));
           }
@@ -268,6 +269,165 @@ test(
         selectedModel: "random-forest",
         hasRegressor: true,
       });
+
+      const downloads = await client.send("Runtime.evaluate", {
+        awaitPromise: true,
+        returnByValue: true,
+        expression: `(async () => {
+          const originalCreateObjectURL = URL.createObjectURL;
+          const originalRevokeObjectURL = URL.revokeObjectURL;
+          const originalAnchorClick = HTMLAnchorElement.prototype.click;
+          const originalFetch = window.fetch;
+          const blobs = [];
+          const clicks = [];
+          const revoked = [];
+          let fetchCalls = 0;
+          try {
+            URL.createObjectURL = (blob) => {
+              const url = "blob:model-mission-" + blobs.length;
+              blobs.push(blob);
+              return url;
+            };
+            URL.revokeObjectURL = (url) => revoked.push(url);
+            HTMLAnchorElement.prototype.click = function () {
+              clicks.push({
+                download: this.download,
+                href: this.href,
+              });
+            };
+            window.fetch = (...args) => {
+              fetchCalls += 1;
+              return originalFetch(...args);
+            };
+            const buttons = [...document.querySelectorAll(
+              "[data-mission-code-panel] header button"
+            )];
+            const pythonButton = buttons.find(
+              (button) => button.textContent.trim() === "Download Python"
+            );
+            const projectButton = buttons.find(
+              (button) =>
+                button.textContent.trim() === "Download project (.zip)"
+            );
+            const initial = {
+              pythonDisabled: pythonButton?.disabled,
+              projectDisabled: projectButton?.disabled,
+            };
+            pythonButton.click();
+            projectButton.click();
+            const payloads = await Promise.all(blobs.map(async (blob) => ({
+              type: blob.type,
+              bytes: new Uint8Array(await blob.arrayBuffer()),
+            })));
+            const python = new TextDecoder().decode(payloads[0].bytes);
+            const zipBytes = payloads[1].bytes;
+            const zipView = new DataView(
+              zipBytes.buffer,
+              zipBytes.byteOffset,
+              zipBytes.byteLength,
+            );
+            const eocd = zipBytes.byteLength - 22;
+            if (zipView.getUint32(eocd, true) !== 0x06054b50) {
+              throw new Error("Project download is not a ZIP archive.");
+            }
+            const count = zipView.getUint16(eocd + 10, true);
+            let offset = zipView.getUint32(eocd + 16, true);
+            const entries = [];
+            for (let index = 0; index < count; index += 1) {
+              if (zipView.getUint32(offset, true) !== 0x02014b50) {
+                throw new Error("Invalid central directory record.");
+              }
+              const size = zipView.getUint32(offset + 24, true);
+              const nameLength = zipView.getUint16(offset + 28, true);
+              const extraLength = zipView.getUint16(offset + 30, true);
+              const commentLength = zipView.getUint16(offset + 32, true);
+              const localOffset = zipView.getUint32(offset + 42, true);
+              const name = new TextDecoder().decode(
+                zipBytes.slice(offset + 46, offset + 46 + nameLength)
+              );
+              const localNameLength =
+                zipView.getUint16(localOffset + 26, true);
+              const localExtraLength =
+                zipView.getUint16(localOffset + 28, true);
+              const dataOffset =
+                localOffset + 30 + localNameLength + localExtraLength;
+              entries.push({
+                name,
+                text: name === "src/train.py"
+                  ? new TextDecoder().decode(
+                      zipBytes.slice(dataOffset, dataOffset + size)
+                    )
+                  : "",
+              });
+              offset += 46 + nameLength + extraLength + commentLength;
+            }
+            return {
+              initial,
+              types: payloads.map(({ type }) => type),
+              clicks,
+              revoked,
+              fetchCalls,
+              python,
+              zipSignature: zipView.getUint32(0, true),
+              entries,
+            };
+          } finally {
+            URL.createObjectURL = originalCreateObjectURL;
+            URL.revokeObjectURL = originalRevokeObjectURL;
+            HTMLAnchorElement.prototype.click = originalAnchorClick;
+            window.fetch = originalFetch;
+          }
+        })()`,
+      });
+      assert.equal(
+        downloads.exceptionDetails,
+        undefined,
+        JSON.stringify(downloads.exceptionDetails),
+      );
+      const downloadResult = downloads.result.value;
+      assert.deepEqual(downloadResult.initial, {
+        pythonDisabled: false,
+        projectDisabled: false,
+      });
+      assert.deepEqual(downloadResult.types, [
+        "text/x-python;charset=utf-8",
+        "application/zip",
+      ]);
+      assert.deepEqual(
+        downloadResult.clicks.map(({ href }) => href),
+        ["blob:model-mission-0", "blob:model-mission-1"],
+      );
+      assert.match(downloadResult.clicks[0].download, /\.py$/);
+      assert.equal(
+        downloadResult.clicks[1].download,
+        "model-mission-project.zip",
+      );
+      assert.deepEqual(downloadResult.revoked, [
+        "blob:model-mission-0",
+        "blob:model-mission-1",
+      ]);
+      assert.equal(downloadResult.fetchCalls, 0);
+      assert.equal(downloadResult.zipSignature, 0x04034b50);
+      assert.equal(downloadResult.entries.length, 8);
+      assert.equal(
+        downloadResult.entries.find(({ name }) => name === "src/train.py")
+          .text,
+        downloadResult.python,
+      );
+      for (const required of [
+        ".gitignore",
+        "README.md",
+        "model_mission.json",
+        "requirements.txt",
+        "src/predict.py",
+        "src/train.py",
+        "tests/test_generated_project.py",
+      ]) {
+        assert.ok(
+          downloadResult.entries.some(({ name }) => name === required),
+          required,
+        );
+      }
 
       const progressiveControls = await client.send("Runtime.evaluate", {
         awaitPromise: true,
@@ -524,7 +684,24 @@ test(
             document.querySelector(
               '[data-mission-task="' + taskId + '"]'
             ).click();
+            await new Promise((resolve) =>
+              requestAnimationFrame(() => requestAnimationFrame(resolve))
+            );
+            const loadingPanel = document.querySelector(
+              '[data-mission-code-panel][data-load-state="loading"]'
+            );
+            if (loadingPanel) {
+              const downloadButtons = [...loadingPanel.querySelectorAll(
+                "button"
+              )].filter((button) =>
+                button.textContent.includes("Download")
+              );
+              loadingDownloadsDisabled =
+                downloadButtons.length === 2
+                && downloadButtons.every((button) => button.disabled);
+            }
           };
+          let loadingDownloadsDisabled = false;
           await chooseTask("object-detection");
           await chooseTask("sensor-classification");
           await chooseTask("object-detection");
@@ -555,6 +732,7 @@ test(
           return {
             yoloReady,
             friendlyError,
+            loadingDownloadsDisabled,
             recovered: recovered.textContent.includes(
               "train_edge_image_classifier.py"
             ),
@@ -569,6 +747,7 @@ test(
       assert.deepEqual(legacyRecovery.result.value, {
         yoloReady: true,
         friendlyError: true,
+        loadingDownloadsDisabled: true,
         recovered: true,
       });
 

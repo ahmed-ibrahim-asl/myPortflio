@@ -190,6 +190,43 @@ test("the code panel renders versioned dependency install text", async () => {
   );
 });
 
+test("Model Mission exposes separate executable Python and project downloads", async () => {
+  const [shellSource, codePanelSource] = await Promise.all([
+    readFile(
+      new URL(
+        "../../components/tools/model-mission/ModelMissionShell.tsx",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+    readFile(
+      new URL(
+        "../../components/tools/model-mission/MissionCodePanel.tsx",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  ]);
+  const executable = (source) => source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+  const shell = executable(shellSource);
+  const panel = executable(codePanelSource);
+
+  assert.match(shell, /buildMissionProjectBundle/);
+  assert.match(shell, /encodeStoredZip/);
+  assert.match(shell, /function downloadProjectBundle/);
+  assert.match(shell, /type: "application\/zip"/);
+  assert.match(shell, /`\$\{bundle\.rootName\}\.zip`/);
+  assert.match(shell, /try \{[\s\S]*anchor\.click\(\)[\s\S]*\} finally \{/);
+  assert.match(shell, /onDownloadPython=\{handleDownloadPython\}/);
+  assert.match(shell, /onDownloadProject=\{handleDownloadProject\}/);
+  assert.match(panel, /onDownloadPython: \(\) => void/);
+  assert.match(panel, /onDownloadProject: \(\) => void/);
+  assert.match(panel, />\s*Download Python\s*</);
+  assert.match(panel, />\s*Download project \(\.zip\)\s*</);
+});
+
 test("the public AI generator route renders one Model Mission builder", async (t) => {
   const routeUrl =
     process.env.AI_GENERATOR_TEST_URL

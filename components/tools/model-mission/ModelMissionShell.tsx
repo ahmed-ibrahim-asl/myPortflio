@@ -6,11 +6,42 @@ import { useModelMission } from "@/lib/hooks/useModelMission";
 import {
   MODEL_MISSION_STEPS,
 } from "@/lib/tools/ml-generator/model-mission/catalog";
+import {
+  buildMissionProjectBundle,
+} from "@/lib/tools/ml-generator/model-mission/project-bundle";
+import {
+  encodeStoredZip,
+} from "@/lib/tools/ml-generator/model-mission/stored-zip";
 
 import { MissionCodePanel } from "./MissionCodePanel";
 import { MissionStepPanel } from "./MissionStepPanel";
 import { WorkflowRail } from "./WorkflowRail";
 import styles from "./ModelMission.module.css";
+
+type MissionProjectBundle = ReturnType<
+  typeof buildMissionProjectBundle
+>;
+
+function downloadProjectBundle(
+  bundle: MissionProjectBundle,
+): void {
+  const archive = encodeStoredZip(bundle.files);
+  const archiveBuffer = new ArrayBuffer(archive.byteLength);
+  new Uint8Array(archiveBuffer).set(archive);
+  const blob = new Blob(
+    [archiveBuffer],
+    { type: "application/zip" },
+  );
+  const url = URL.createObjectURL(blob);
+  try {
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${bundle.rootName}.zip`;
+    anchor.click();
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
 
 export function ModelMissionShell() {
   const {
@@ -58,18 +89,39 @@ export function ModelMissionShell() {
     }, 1800);
   };
 
-  const handleDownload = () => {
-    if (!result?.code || !result.filename) return;
+  const handleDownloadPython = () => {
+    if (
+      status !== "ready"
+      || !result?.code
+      || !result.filename
+      || Object.keys(result.validationErrors).length > 0
+    ) return;
     const blob = new Blob(
       [result.code],
       { type: "text/x-python;charset=utf-8" },
     );
     const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = result.filename;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    try {
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = result.filename;
+      anchor.click();
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleDownloadProject = () => {
+    if (
+      status !== "ready"
+      || !result?.code
+      || Object.keys(result.validationErrors).length > 0
+    ) return;
+    downloadProjectBundle(buildMissionProjectBundle({
+      result,
+      project: result.resolvedConfig,
+      task,
+    }));
   };
 
   return (
@@ -242,7 +294,8 @@ export function ModelMissionShell() {
               error={error}
               copyStatus={state.copyStatus}
               onCopy={handleCopy}
-              onDownload={handleDownload}
+              onDownloadPython={handleDownloadPython}
+              onDownloadProject={handleDownloadProject}
               onRetry={retry}
             />
           </div>

@@ -603,7 +603,9 @@
 .codeActions {
   display: flex;
   flex: 0 1 auto;
+  flex-wrap: wrap;
   gap: 8px;
+  justify-content: flex-end;
 }
 
 .codeActions button:first-child {
@@ -894,6 +896,10 @@
     width: 100%;
   }
 
+  .codeActions button:last-child {
+    grid-column: 1 / -1;
+  }
+
   .stepActions {
     grid-template-columns: 1fr 1fr;
   }
@@ -920,6 +926,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .codeActions button:last-child,
   .stepActions span {
     grid-column: auto;
     grid-row: auto;
