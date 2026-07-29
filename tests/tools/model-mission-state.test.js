@@ -9,6 +9,10 @@ import {
 import {
   generateSynchronousMissionResult,
 } from "../../lib/tools/ml-generator/model-mission/adapters.js";
+import {
+  generateNeuralScript,
+  getNeuralControlOptions,
+} from "../../lib/tools/ml-generator/workbench/neural-generator.js";
 
 test("initial state starts with the simplest guided task", () => {
   const state = createModelMissionState();
@@ -169,6 +173,111 @@ test("neural primary-control changes refresh dependent data and framework paths"
     generateSynchronousMissionResult(state.project).validationErrors,
     {},
   );
+});
+
+test("neural preset switches keep controlled selections and generated scaling canonical", () => {
+  let state = {
+    ...createModelMissionState(),
+    project: createProjectForTask("neural-network"),
+  };
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "output",
+    patch: {
+      projectName: "canonical-neural-lab",
+      artifactDirectory: "build/models",
+    },
+  });
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "training",
+    patch: {
+      optimizer: "adamw",
+      weightDecay: 0.02,
+    },
+  });
+
+  const assertCanonicalSelections = (expectedScaling) => {
+    const controlledSelections = [
+      ["framework", state.project.model.framework],
+      ["preset", state.project.model.preset],
+      ["dataSource", state.project.data.dataSource],
+      ["splitStrategy", state.project.split.splitStrategy],
+      ["scaling", state.project.preparation.scaling],
+      ["optimizer", state.project.training.optimizer],
+      ["scheduler", state.project.training.scheduler],
+      ["device", state.project.training.device],
+    ];
+    for (const [controlId, value] of controlledSelections) {
+      assert.ok(
+        getNeuralControlOptions(controlId, state.project)
+          .some((option) => option.value === value),
+        `${controlId} keeps ${value} in its rendered options`,
+      );
+    }
+
+    const result = generateSynchronousMissionResult(state.project);
+    assert.deepEqual(result.validationErrors, {});
+    assert.equal(
+      result.resolvedConfig.preparation.scaling,
+      expectedScaling,
+    );
+    const generated = generateNeuralScript({
+      ...state.project.data,
+      ...state.project.split,
+      ...state.project.preparation,
+      ...state.project.model,
+      ...state.project.training,
+      ...state.project.output,
+    });
+    assert.equal(generated.config.scaling, expectedScaling);
+    assert.equal(state.project.preparation.scaling, expectedScaling);
+    assert.equal(state.project.output.projectName, "canonical-neural-lab");
+    assert.equal(state.project.output.artifactDirectory, "build/models");
+    assert.equal(state.project.training.optimizer, "adamw");
+    assert.equal(state.project.training.weightDecay, 0.02);
+  };
+
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "model",
+    patch: { preset: "image-cnn" },
+  });
+  assertCanonicalSelections("none");
+
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "model",
+    patch: { framework: "pytorch" },
+  });
+  assertCanonicalSelections("none");
+
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "model",
+    patch: { preset: "sequence-lstm" },
+  });
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "preparation",
+    patch: { scaling: "robust" },
+  });
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "data",
+    patch: { dataSource: "custom-npz" },
+  });
+  assertCanonicalSelections("robust");
+
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "model",
+    patch: {
+      framework: "keras",
+      preset: "tabular-mlp",
+    },
+  });
+  assertCanonicalSelections("robust");
 });
 
 test("task changes preserve only task-independent output preferences", () => {

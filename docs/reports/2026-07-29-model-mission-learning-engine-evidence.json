@@ -2155,9 +2155,9 @@
       "command": "npm run test:ml",
       "counts": {
         "fail": 0,
-        "pass": 126,
+        "pass": 127,
         "skipped": 0,
-        "tests": 126
+        "tests": 127
       },
       "exitCode": 0,
       "id": "ml-suite",
@@ -2174,9 +2174,9 @@
         "To eliminate this warning, add \"type\": \"module\" to <repo>\\package.json.",
         "(Use `node --trace-warnings ...` to show where the warning was created)",
         "✔ Model Mission uses the portfolio flat token system safely (<duration>)",
-        "ℹ tests 126",
+        "ℹ tests 127",
         "ℹ suites 0",
-        "ℹ pass 126",
+        "ℹ pass 127",
         "ℹ fail 0",
         "ℹ cancelled 0",
         "ℹ skipped 0",
@@ -2496,29 +2496,9 @@
       "command": "git diff --check -- scripts/build_model_mission_audit_artifacts.py tests/tools/model-mission-responsive.test.js tests/tools/test_model_mission_audit_builder.py",
       "exitCode": 0,
       "id": "diff-check",
-      "outputTail": [
-        "warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it",
-        "warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it",
-        "warning: in the working copy of 'tests/tools/test_model_mission_audit_builder.py', LF will be replaced by CRLF the next time Git touches it"
-      ],
+      "outputTail": [],
       "status": "passed",
-      "warnings": [
-        {
-          "classification": "non-failing tooling warning",
-          "kind": "git-line-ending",
-          "message": "warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it"
-        },
-        {
-          "classification": "non-failing tooling warning",
-          "kind": "git-line-ending",
-          "message": "warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it"
-        },
-        {
-          "classification": "non-failing tooling warning",
-          "kind": "git-line-ending",
-          "message": "warning: in the working copy of 'tests/tools/test_model_mission_audit_builder.py', LF will be replaced by CRLF the next time Git touches it"
-        }
-      ],
+      "warnings": [],
       "warningsOmitted": 0
     },
     {

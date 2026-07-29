@@ -17,7 +17,7 @@ Current runtime evidence records 3 unavailable, 5 not-applicable. Missing local 
 
 | Command | Outcome | Normalized evidence |
 | --- | --- | --- |
-| npm run test:ml | exit 0 (passed) | 126/126 pass |
+| npm run test:ml | exit 0 (passed) | 127/127 pass |
 | node --test tests/tools/ml-classical-generator-v2.test.js tests/tools/ml-neural-generator.test.js tests/tools/ml-project-config.test.js | exit 0 (passed) | 53/53 pass |
 | node --test tests/tools/ml-generator-baseline-contract.test.js tests/tools/ml-generator-parity.test.js | exit 0 (passed) | 10/10 pass |
 | npx tsc --noEmit | exit 0 (passed) | no command output |
@@ -26,7 +26,7 @@ Current runtime evidence records 3 unavailable, 5 not-applicable. Missing local 
 | git diff --check -- scripts/build_model_mission_audit_artifacts.py tests/tools/model-mission-responsive.test.js tests/tools/test_model_mission_audit_builder.py | exit 0 (passed) | no command output |
 | git diff --check -- docs/reports/2026-07-29-model-mission-learning-engine-audit.md docs/reports/2026-07-29-model-mission-learning-engine-evidence.json | exit 0 (passed) | no command output |
 
-Normalized verification warnings: `ml-suite`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `focused-generators`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `yolo-baseline-parity`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `diff-check`: warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `diff-check`: warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `diff-check`: warning: in the working copy of 'tests/tools/test_model_mission_audit_builder.py', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-audit.md', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-evidence.json', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning).
+Normalized verification warnings: `ml-suite`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `focused-generators`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `yolo-baseline-parity`: Node reparsed ES-module syntax because package.json does not declare a module type. (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-audit.md', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning); `final-artifact-diff-check`: warning: in the working copy of 'docs/reports/2026-07-29-model-mission-learning-engine-evidence.json', LF will be replaced by CRLF the next time Git touches it (non-failing tooling warning).
 
 ## Eight representative projects
 

@@ -86,3 +86,40 @@ Generated artifacts:
 
 - `docs/reports/2026-07-29-model-mission-learning-engine-audit.md`
 - `docs/reports/2026-07-29-model-mission-learning-engine-evidence.json`
+
+## Re-review extension: preset scaling synchronization
+
+Extension base: `6113e7ec67932fbb5279602e32f054095655bc4b`
+
+A final re-review found that changing the default tabular preset to
+`image-cnn` left `project.preparation.scaling` at `standard`. The image UI
+offered only `none`, while adapter and generator normalization silently repaired
+the mismatch later.
+
+The focused regression was written first and failed because `standard` was not
+present in the rendered image scaling options. Reducer synchronization now
+checks the selected preset's domain options immediately: compatible scaling
+values remain untouched, while an incompatible value changes to the supported
+neural default (`none` for image presets).
+
+The regression follows image, sequence, and tabular presets across data-source
+and Keras/PyTorch switches. It proves that:
+
+- every controlled neural select value remains present in its rendered options;
+- reducer state, adapter `resolvedConfig`, and generator config agree on
+  scaling;
+- compatible hidden optimizer and weight-decay choices survive;
+- project name and artifact-directory preferences survive;
+- incompatible scaling is reset without erasing compatible scaling.
+
+Extension verification:
+
+- Focused neural state/adapter/UI-option suite: 62/62 passed.
+- `npm run test:ml`: 127/127 passed.
+- Audit builder: 15/15 passed.
+- Responsive browser suite: 2/2 passed.
+- `npx tsc --noEmit`: passed.
+- `npm run build`: passed; 16/16 static pages generated.
+- The audit builder again reported 8/8 verification commands and 8/8 project
+  smoke checks. A second regeneration produced identical evidence and report
+  SHA-256 hashes.
