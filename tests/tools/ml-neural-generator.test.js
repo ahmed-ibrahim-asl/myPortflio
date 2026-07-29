@@ -7,6 +7,7 @@ import {
   NEURAL_PRESETS,
   buildNeuralDataSection,
   generateNeuralScript,
+  getNeuralControlOptions,
   inferLayerShapes,
   normalizeNeuralConfig,
 } from "../../lib/tools/ml-generator/workbench/neural-generator.js";
@@ -19,6 +20,112 @@ test("neural presets cover tabular, image, and sequence learning", () => {
   assert.ok(NEURAL_PRESETS.some(({ id }) => id === "image-cnn"));
   assert.ok(NEURAL_PRESETS.some(({ id }) => id === "sequence-conv1d"));
   assert.ok(NEURAL_PRESETS.some(({ id }) => id === "sequence-lstm"));
+});
+
+test("neural select options stay non-empty and compatible with the selected preset", () => {
+  const values = (controlId, project) =>
+    getNeuralControlOptions(controlId, project).map(({ value }) => value);
+
+  for (const preset of NEURAL_PRESETS) {
+    const project = {
+      model: {
+        framework: "keras",
+        preset: preset.id,
+        task: preset.task,
+      },
+    };
+    const dataSources = values("dataSource", project);
+
+    assert.ok(dataSources.length > 0, `${preset.id} has a data source`);
+    for (const dataSource of dataSources) {
+      assert.doesNotThrow(
+        () => normalizeNeuralConfig({
+          preset: preset.id,
+          task: preset.task,
+          dataSource,
+        }),
+        `${dataSource} is valid for ${preset.id}`,
+      );
+    }
+  }
+
+  assert.deepEqual(
+    values("dataSource", {
+      model: {
+        framework: "keras",
+        preset: "tabular-regression-mlp",
+        task: "tabular-regression",
+      },
+    }),
+    ["diabetes", "custom-csv"],
+  );
+  assert.deepEqual(
+    values("splitStrategy", {
+      model: { preset: "tabular-mlp", task: "tabular-classification" },
+    }),
+    ["train-validation-test"],
+  );
+  assert.deepEqual(
+    values("scaling", {
+      model: { preset: "sequence-lstm", task: "sequence-classification" },
+    }),
+    ["none", "standard", "minmax", "robust"],
+  );
+  assert.deepEqual(
+    values("scaling", {
+      model: { preset: "image-cnn", task: "image-classification" },
+    }),
+    ["none"],
+  );
+});
+
+test("neural registry hides framework-only and regression-only controls", () => {
+  const controlsFor = (project, stepId) =>
+    getMissionControls({
+      taskId: "neural-network",
+      stepId,
+      learningLevel: "advanced",
+      project: {
+        taskId: "neural-network",
+        learningLevel: "advanced",
+        data: {},
+        inspection: {},
+        split: {},
+        preparation: {},
+        training: {},
+        evaluation: {},
+        output: {},
+        ...project,
+      },
+    }).map(({ id }) => id);
+
+  const kerasTraining = controlsFor({
+    model: {
+      framework: "keras",
+      preset: "tabular-mlp",
+      task: "tabular-classification",
+    },
+  }, "train");
+  const pytorchTraining = controlsFor({
+    model: {
+      framework: "pytorch",
+      preset: "tabular-mlp",
+      task: "tabular-classification",
+    },
+  }, "train");
+  const regressionData = controlsFor({
+    model: {
+      framework: "keras",
+      preset: "tabular-regression-mlp",
+      task: "tabular-regression",
+    },
+  }, "data");
+
+  assert.equal(kerasTraining.includes("device"), false);
+  assert.equal(kerasTraining.includes("workers"), false);
+  assert.equal(pytorchTraining.includes("device"), true);
+  assert.equal(pytorchTraining.includes("workers"), true);
+  assert.equal(regressionData.includes("numClasses"), false);
 });
 
 test("shape inference explains every valid layer transition", () => {
@@ -45,6 +152,43 @@ test("shape inference blocks incompatible recurrent layers", () => {
 
   assert.equal(inference.errors.length, 1);
   assert.match(inference.errors[0], /LSTM expects \[timesteps, features\]/);
+});
+
+test("odd pooling dimensions match emitted Keras and PyTorch valid pooling", () => {
+  const sequenceLayers = [
+    { id: "pool", type: "maxpool1d", poolSize: 2 },
+    { id: "flatten", type: "flatten" },
+  ];
+  const imageLayers = [
+    { id: "pool", type: "maxpool2d", poolSize: 2 },
+    { id: "flatten", type: "flatten" },
+  ];
+
+  assert.deepEqual(
+    inferLayerShapes([5, 4], sequenceLayers).outputShape,
+    [8],
+  );
+  assert.deepEqual(
+    inferLayerShapes([5, 7, 3], imageLayers).outputShape,
+    [18],
+  );
+
+  const keras = generateNeuralScript({
+    framework: "keras",
+    preset: "sequence-conv1d",
+    inputShape: [5, 4],
+    layers: sequenceLayers,
+  }).code;
+  const pytorch = generateNeuralScript({
+    framework: "pytorch",
+    preset: "image-cnn",
+    inputShape: [5, 7, 3],
+    numClasses: 2,
+    layers: imageLayers,
+  }).code;
+
+  assert.match(keras, /# flatten: \[2, 4\] -> \[8\]/);
+  assert.match(pytorch, /self\.output = nn\.Linear\(18, 1\)/);
 });
 
 test("PyTorch Conv1D, pooling, recurrent, and global pooling preserve sequence layout", () => {
@@ -154,7 +298,10 @@ test("advanced neural UI metadata only makes normalized settings editable", () =
     inspection: {},
     split: {},
     preparation: {},
-    model: {},
+    model: {
+      framework: "pytorch",
+      preset: "tabular-mlp",
+    },
     training: {},
     evaluation: {},
     output: {},
@@ -485,6 +632,85 @@ test("neural normalization derives image-folder and sequence-array contracts", (
   assert.match(buildNeuralDataSection(sequence, "pytorch").join("\n"), /sequence-array/);
 });
 
+test("neural training requires an explicit validation split instead of relabeling training data", () => {
+  assert.throws(
+    () => normalizeNeuralConfig({
+      preset: "tabular-mlp",
+      splitStrategy: "train-test",
+      testRatio: 0.2,
+    }),
+    (error) => error instanceof NeuralConfigurationError
+      && error.section === "split"
+      && /validation/i.test(error.message),
+  );
+
+  for (const framework of ["keras", "pytorch"]) {
+    const code = generateNeuralScript({
+      framework,
+      preset: "tabular-mlp",
+      splitStrategy: "train-validation-test",
+      testRatio: 0.2,
+      validationRatio: 0.1,
+    }).code;
+
+    assert.doesNotMatch(
+      code,
+      /VALIDATION_RATIO if VALIDATION_RATIO > 0 else TEST_RATIO/,
+      `${framework} never invents a validation split`,
+    );
+  }
+});
+
+test("neural training persists preprocessing and label metadata beside every artifact", () => {
+  const cases = [
+    {
+      framework: "keras",
+      preset: "tabular-mlp",
+      dataSource: "breast-cancer",
+      expected: [
+        /PREPROCESSING_PATH = ARTIFACT_PATH\.with_suffix\("\.preprocessing\.joblib"\)/,
+        /"transformer": preprocessor/,
+        /"label_encoder": encoder/,
+      ],
+    },
+    {
+      framework: "pytorch",
+      preset: "sequence-lstm",
+      dataSource: "sequence-array",
+      expected: [
+        /"scaler": scaler/,
+        /"label_encoder": encoder/,
+      ],
+    },
+    {
+      framework: "keras",
+      preset: "image-cnn",
+      dataSource: "image-folder",
+      expected: [
+        /"class_names": expected_classes/,
+        /"pixel_scale_denominator": 255\.0/,
+      ],
+    },
+  ];
+
+  for (const item of cases) {
+    const result = generateNeuralScript(item);
+
+    assert.match(result.code, /import joblib/);
+    assert.match(
+      result.code,
+      /joblib\.dump\(preprocessing, PREPROCESSING_PATH\)/,
+    );
+    assert.ok(
+      result.dependencies.includes("joblib"),
+      `${item.framework}/${item.preset} declares joblib`,
+    );
+    for (const expected of item.expected) {
+      assert.match(result.code, expected);
+    }
+  }
+});
+
 test("neural contracts reject unsafe paths and invalid split totals with typed errors", () => {
   assert.throws(
     () => normalizeNeuralConfig({ dataPath: "../private/dataset.csv" }),
@@ -530,21 +756,21 @@ test("neural contracts reject incompatible preset, data, and output combinations
     }),
     (error) => error instanceof NeuralConfigurationError && error.section === "architecture",
   );
-  assert.throws(
-    () => normalizeNeuralConfig({
+  assert.equal(
+    normalizeNeuralConfig({
       preset: "tabular-regression-mlp",
       task: "tabular-regression",
       numClasses: 3,
-    }),
-    (error) => error instanceof NeuralConfigurationError && error.section === "architecture",
+    }).numClasses,
+    1,
   );
-  assert.throws(
-    () => normalizeNeuralConfig({
+  assert.equal(
+    normalizeNeuralConfig({
       preset: "tabular-mlp",
       task: "tabular-classification",
       numClasses: 1,
-    }),
-    (error) => error instanceof NeuralConfigurationError && error.section === "architecture",
+    }).numClasses,
+    2,
   );
 });
 
@@ -796,6 +1022,8 @@ preprocessing.StandardScaler = UnusedScaler
 sys.modules["sklearn"] = sklearn
 sys.modules["sklearn.model_selection"] = model_selection
 sys.modules["sklearn.preprocessing"] = preprocessing
+joblib = types.ModuleType("joblib")
+sys.modules["joblib"] = joblib
 
 namespace = {}
 exec(payload["code"], namespace)
@@ -815,8 +1043,9 @@ else:
     assert fit_calls == [payload["train"]]
     assert transform_calls == [payload["validation"], payload["test"]]
     expected = list(range(payload["num_classes"]))
-    for values in encoded:
+    for values in encoded[:3]:
         assert sorted(np.unique(values).tolist()) == expected
+    assert encoded[3].classes_.tolist() == sorted(set(payload["train"]))
     print("encoding-ok")
 `;
   const cases = [
@@ -895,13 +1124,19 @@ test("Keras workflow dependencies include every directly imported data package",
   });
 
   assert.deepEqual(tabular.dependencies, [
+    "joblib",
     "keras",
     "numpy",
     "pandas",
     "scikit-learn",
   ]);
-  assert.deepEqual(image.dependencies, ["keras", "numpy"]);
-  assert.deepEqual(sequence.dependencies, ["keras", "numpy", "scikit-learn"]);
+  assert.deepEqual(image.dependencies, ["joblib", "keras", "numpy"]);
+  assert.deepEqual(sequence.dependencies, [
+    "joblib",
+    "keras",
+    "numpy",
+    "scikit-learn",
+  ]);
 });
 
 test("PyTorch generator emits a sequence LSTM and training skeleton", () => {
@@ -990,6 +1225,7 @@ test("PyTorch tabular and image loaders preserve split and channel contracts", (
   assert.match(tabular.code, /BATCH_SIZE = 12/);
   assert.match(tabular.code, /WORKERS = 3/);
   assert.deepEqual(tabular.dependencies, [
+    "joblib",
     "numpy",
     "pandas",
     "scikit-learn",
@@ -1003,7 +1239,12 @@ test("PyTorch tabular and image loaders preserve split and channel contracts", (
   assert.match(image.code, /validation_base\.class_to_idx != expected_classes/);
   assert.match(image.code, /test_base\.class_to_idx != expected_classes/);
   assert.doesNotMatch(image.code, /x = x\.permute\(0, 3, 1, 2\)/);
-  assert.deepEqual(image.dependencies, ["numpy", "torch", "torchvision"]);
+  assert.deepEqual(image.dependencies, [
+    "joblib",
+    "numpy",
+    "torch",
+    "torchvision",
+  ]);
 });
 
 test("PyTorch image transforms are pickleable by spawn workers", () => {
@@ -1055,7 +1296,12 @@ selected = []
 for node in tree.body:
     if isinstance(node, ast.Assign):
         names = {target.id for target in node.targets if isinstance(target, ast.Name)}
-        if names & {"IMAGE_DIRECTORY", "INPUT_SHAPE", "NUM_CLASSES"}:
+        if names & {
+            "DATA_CONTRACT",
+            "IMAGE_DIRECTORY",
+            "INPUT_SHAPE",
+            "NUM_CLASSES",
+        }:
             selected.append(node)
     elif isinstance(node, ast.FunctionDef) and node.name in {
         "convert_image_mode",

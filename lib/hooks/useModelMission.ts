@@ -27,10 +27,6 @@ import {
   createModelMissionState,
   modelMissionReducer,
 } from "@/lib/tools/ml-generator/model-mission/state";
-import {
-  cloneProjectConfig,
-} from "@/lib/tools/ml-generator/workbench/project-config";
-
 export function useModelMission() {
   const [state, dispatch] = useReducer(
     modelMissionReducer,
@@ -123,15 +119,7 @@ export function useModelMission() {
     }),
     [legacy, state.project, task],
   );
-  const result = useMemo(
-    () => generation.result
-      ? {
-          ...generation.result,
-          resolvedConfig: cloneProjectConfig(state.project),
-        }
-      : null,
-    [generation.result, state.project],
-  );
+  const result = generation.result;
 
   const patchLegacyField = useCallback(
     (fieldId: string, value: unknown) => {

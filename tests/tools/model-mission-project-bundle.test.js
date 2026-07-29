@@ -426,6 +426,49 @@ test("classical prediction uses the emitted task artifact and inference CSV", ()
   );
 });
 
+test("classical bundled prediction loads and applies the exported decision threshold", () => {
+  const bundle = synchronousBundle("classification", {
+    evaluation: { decisionThreshold: 0.8 },
+  });
+  const prediction = bundle.files["src/predict.py"];
+
+  assert.match(prediction, /CONFIG_PATH = Path\("model_mission\.json"\)/);
+  assert.match(
+    prediction,
+    /decision_threshold = config\["evaluation"\]\["decisionThreshold"\]/,
+  );
+  assert.match(prediction, /pipeline\.predict_proba\(rows\)/);
+
+  const executed = executePredictor(bundle, {
+    "classification_pipeline.joblib": "",
+    "data/inference.csv": "feature\n1\n",
+    "src/joblib.py": `import numpy as np
+
+
+class Pipeline:
+    classes_ = [0, 1]
+
+    def predict(self, rows):
+        raise AssertionError("configured threshold was bypassed")
+
+    def predict_proba(self, rows):
+        assert rows == ["csv-rows"]
+        return np.asarray([[0.1, 0.9], [0.3, 0.7]])
+
+
+def load(path):
+    assert str(path).replace("\\\\", "/") == "classification_pipeline.joblib"
+    return Pipeline()
+`,
+    "src/pandas.py": `def read_csv(path):
+    assert str(path).replace("\\\\", "/") == "data/inference.csv"
+    return ["csv-rows"]
+`,
+  });
+
+  assertPredictorOutput(executed, /\[1 0\]/);
+});
+
 test("Keras project loads the configured artifact and documents image folders", () => {
   const bundle = synchronousBundle("neural-network", {
     data: {
@@ -436,8 +479,19 @@ test("Keras project loads the configured artifact and documents image folders", 
     model: {
       framework: "keras",
       preset: "image-cnn",
+      task: "image-classification",
       inputShape: [32, 32, 3],
       numClasses: 4,
+      layers: [
+        {
+          id: "conv2d-1",
+          type: "conv2d",
+          filters: 16,
+          kernelSize: 3,
+          activation: "relu",
+        },
+        { id: "global-pool2d", type: "global-average-pool2d" },
+      ],
     },
     output: {
       checkpointPath: "artifacts/best_products.keras",
@@ -455,6 +509,155 @@ test("Keras project loads the configured artifact and documents image folders", 
     /data\/product-images\/\s*\n\s*train\/\s*\n\s*class-name\//,
   );
   assert.match(bundle.files["README.md"], /artifacts\/products\.keras/);
+});
+
+test("neural predictors consume the preprocessing contract emitted by training", () => {
+  const tabular = synchronousBundle("neural-network", {
+    data: {
+      dataSource: "custom-csv",
+      dataPath: "data/patients.csv",
+      targetColumn: "diagnosis",
+    },
+    model: {
+      framework: "keras",
+      preset: "tabular-mlp",
+      numClasses: 2,
+    },
+    output: {
+      checkpointPath: "artifacts/best_patients.keras",
+      artifactPath: "artifacts/patients.keras",
+    },
+  });
+  const tabularPrediction = tabular.files["src/predict.py"];
+
+  assert.match(
+    tabular.files["src/train.py"],
+    /joblib\.dump\(preprocessing, PREPROCESSING_PATH\)/,
+  );
+  assert.match(
+    tabularPrediction,
+    /PREPROCESSING_PATH = Path\("artifacts\/patients\.preprocessing\.joblib"\)/,
+  );
+  assert.match(tabularPrediction, /preprocessing\["transformer"\]\.transform\(rows\)/);
+  assert.match(tabularPrediction, /label_encoder\.inverse_transform/);
+  assert.match(
+    tabular.files["data/README.md"],
+    /raw CSV rows[\s\S]*decoded target label/i,
+  );
+
+  const executed = executePredictor(tabular, {
+    "artifacts/patients.keras": "",
+    "artifacts/patients.preprocessing.joblib": "",
+    "data/inference.csv": "feature\n1\n",
+    "src/joblib.py": `import numpy as np
+
+
+class Transformer:
+    def transform(self, rows):
+        assert rows == ["raw-csv-rows"]
+        return np.asarray([[3.0, 4.0]], dtype=np.float32)
+
+
+class LabelEncoder:
+    def inverse_transform(self, labels):
+        assert list(labels) == [1]
+        return ["positive-diagnosis"]
+
+
+def load(path):
+    assert str(path).replace("\\\\", "/") == "artifacts/patients.preprocessing.joblib"
+    return {
+        "data_contract": "tabular",
+        "input_shape": (2,),
+        "transformer": Transformer(),
+        "label_encoder": LabelEncoder(),
+    }
+`,
+    "src/keras.py": `import numpy as np
+
+
+class Model:
+    def predict(self, batch, verbose=0):
+        assert batch.tolist() == [[3.0, 4.0]]
+        assert verbose == 0
+        return np.asarray([[2.0]], dtype=np.float32)
+
+
+class Models:
+    @staticmethod
+    def load_model(path):
+        assert str(path).replace("\\\\", "/") == "artifacts/patients.keras"
+        return Model()
+
+
+models = Models()
+`,
+    "src/pandas.py": `def read_csv(path):
+    assert str(path).replace("\\\\", "/") == "data/inference.csv"
+    return ["raw-csv-rows"]
+`,
+  });
+  assertPredictorOutput(executed, /positive-diagnosis/);
+
+  const sequence = synchronousBundle("neural-network", {
+    data: {
+      dataSource: "sequence-array",
+      dataPath: "data/sequences.npz",
+      targetColumn: "target",
+    },
+    model: {
+      framework: "pytorch",
+      preset: "sequence-lstm",
+      task: "sequence-classification",
+      numClasses: 2,
+      inputShape: [32, 4],
+      layers: [
+        {
+          id: "lstm-1",
+          type: "lstm",
+          units: 16,
+          activation: "tanh",
+        },
+      ],
+    },
+    output: {
+      checkpointPath: "artifacts/best_sequence.pt",
+      artifactPath: "artifacts/sequence.pt",
+    },
+  });
+  assert.match(
+    sequence.files["src/predict.py"],
+    /preprocessing\["scaler"\]\.transform\(flat\)/,
+  );
+
+  const image = synchronousBundle("neural-network", {
+    data: {
+      dataSource: "image-folder",
+      dataPath: "data/images",
+      targetColumn: "",
+    },
+    model: {
+      framework: "keras",
+      preset: "image-cnn",
+      task: "image-classification",
+      inputShape: [32, 32, 3],
+      numClasses: 2,
+      layers: [
+        {
+          id: "conv2d-1",
+          type: "conv2d",
+          filters: 16,
+          kernelSize: 3,
+          activation: "relu",
+        },
+        { id: "global-pool2d", type: "global-average-pool2d" },
+      ],
+    },
+  });
+  assert.match(
+    image.files["src/predict.py"],
+    /batch = batch \/ float\(preprocessing\["pixel_scale_denominator"\]\)/,
+  );
 });
 
 test("PyTorch project reconstructs the network from checkpoint metadata", () => {
@@ -606,12 +809,37 @@ def load(path):
   );
   const keras = executePredictor(kerasBundle, {
     "artifacts/products.keras": "",
-    "data/inference.npy": "stub",
-    "src/keras.py": `class Model:
-    def predict(self, batch, verbose=0):
-        assert batch == ["keras-input"]
-        assert verbose == 0
+    "artifacts/products.preprocessing.joblib": "",
+    "data/inference.csv": "feature\n1\n",
+    "src/joblib.py": `class Transformer:
+    def transform(self, rows):
+        assert rows == ["keras-input"]
+        return [[1.0] * 30]
+
+
+class LabelEncoder:
+    def inverse_transform(self, labels):
+        assert labels == [1]
         return ["keras-ok"]
+
+
+def load(path):
+    assert str(path).replace("\\\\", "/") == "artifacts/products.preprocessing.joblib"
+    return {
+        "data_contract": "tabular",
+        "input_shape": (30,),
+        "transformer": Transformer(),
+        "label_encoder": LabelEncoder(),
+    }
+`,
+    "src/keras.py": `import numpy as np
+
+
+class Model:
+    def predict(self, batch, verbose=0):
+        assert batch.tolist() == [[1.0] * 30]
+        assert verbose == 0
+        return np.asarray([[1.0]])
 
 
 class Models:
@@ -623,10 +851,9 @@ class Models:
 
 models = Models()
 `,
-    "src/numpy.py": `def load(path, allow_pickle=False):
-    assert str(path).replace("\\\\", "/") == "data/inference.npy"
-    assert allow_pickle is False
-    return ["keras-input", "unused"]
+    "src/pandas.py": `def read_csv(path):
+    assert str(path).replace("\\\\", "/") == "data/inference.csv"
+    return ["keras-input"]
 `,
   });
   assertPredictorOutput(keras, /keras-ok/);
@@ -650,11 +877,32 @@ test("executed PyTorch and YOLO predictors honor training artifact paths", async
   );
   const pytorch = executePredictor(pytorchBundle, {
     "artifacts/patients.pt": "",
-    "data/inference.npy": "stub",
-    "src/numpy.py": `def load(path, allow_pickle=False):
-    assert str(path).replace("\\\\", "/") == "data/inference.npy"
-    assert allow_pickle is False
-    return ["torch-input", "unused"]
+    "artifacts/patients.preprocessing.joblib": "",
+    "data/inference.csv": "feature\n1\n",
+    "src/joblib.py": `class Transformer:
+    def transform(self, rows):
+        assert rows == ["torch-input"]
+        return [[1.0] * 30]
+
+
+class LabelEncoder:
+    def inverse_transform(self, labels):
+        assert labels == [1]
+        return ["pytorch-ok"]
+
+
+def load(path):
+    assert str(path).replace("\\\\", "/") == "artifacts/patients.preprocessing.joblib"
+    return {
+        "data_contract": "tabular",
+        "input_shape": (30,),
+        "transformer": Transformer(),
+        "label_encoder": LabelEncoder(),
+    }
+`,
+    "src/pandas.py": `def read_csv(path):
+    assert str(path).replace("\\\\", "/") == "data/inference.csv"
+    return ["torch-input"]
 `,
     "src/torch.py": `class Tensor:
     def float(self):
@@ -674,7 +922,7 @@ def load(path, map_location, weights_only):
 
 
 def from_numpy(value):
-    assert value == ["torch-input"]
+    assert value.tolist() == [[1.0] * 30]
     return Tensor()
 
 
@@ -698,7 +946,16 @@ class ConfigurableNetwork:
         return None
 
     def __call__(self, sample):
-        return ["pytorch-ok"]
+        class Scalar:
+            def item(self):
+                return 1.0
+
+        class Prediction:
+            def __getitem__(self, key):
+                assert key == (0, 0)
+                return Scalar()
+
+        return Prediction()
 `,
   });
   assertPredictorOutput(pytorch, /pytorch-ok/);
@@ -799,6 +1056,7 @@ test("every task emits the exact base map and parseable prediction script", asyn
     } else {
       project = createProjectForTask(task.id);
       result = generateSynchronousMissionResult(project);
+      project = result.resolvedConfig;
     }
     const bundle = buildMissionProjectBundle({ result, project, task });
 

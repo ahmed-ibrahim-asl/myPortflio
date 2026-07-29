@@ -68,29 +68,6 @@ const STEP_COPY: Record<string, { title: string; description: string }> = {
   generate: { title: "Review the mission", description: "Your complete Python script updates in the code workspace as every decision changes." },
 };
 
-const NEURAL_SELECT_OPTIONS: Record<string, Array<{
-  value: string;
-  label: string;
-}>> = {
-  optimizer: [
-    { value: "adam", label: "Adam" },
-    { value: "adamw", label: "AdamW" },
-    { value: "sgd", label: "SGD" },
-    { value: "rmsprop", label: "RMSprop" },
-  ],
-  scheduler: [
-    { value: "none", label: "No schedule" },
-    { value: "reduce-on-plateau", label: "Reduce on plateau" },
-    { value: "cosine", label: "Cosine decay" },
-  ],
-  device: [
-    { value: "auto", label: "Automatic" },
-    { value: "cpu", label: "CPU" },
-    { value: "cuda", label: "CUDA GPU" },
-    { value: "mps", label: "Apple MPS" },
-  ],
-};
-
 function lessonFor(stepId: string) {
   if (stepId === "inspect") return "Use the displayed controls to inspect the data before making model choices.";
   if (stepId === "evaluate") return "The generated script reports task-compatible metrics while preserving the final test set.";
@@ -118,9 +95,6 @@ export function MissionStepPanel({
 
   const renderMissionControl = (control: (typeof controls)[number]) => {
     const recommendation = getMissionRecommendation(control.id, project);
-    const options = task.id === "neural-network"
-      ? NEURAL_SELECT_OPTIONS[control.id]
-      : undefined;
     const configKey = control.configKey ?? control.id;
     const section = control.section as ProjectSection;
     const value = project[section][configKey]
@@ -152,33 +126,6 @@ export function MissionStepPanel({
           <MissionExplanation
             id={control.id}
             explanation={control.explanation}
-          />
-        </div>
-      );
-    }
-
-    if (options) {
-      return (
-        <div
-          key={`${control.section}:${control.id}`}
-          data-control-id={control.id}
-          data-control-level={control.level}
-        >
-          <MissionField
-            id={control.id}
-            label={control.label}
-            technicalTerm={control.technicalTerm ?? control.id}
-            help={control.shortHelp}
-            type="select"
-            value={String(value)}
-            options={options}
-            recommended={Boolean(recommendation)}
-            explanation={control.explanation}
-            onChange={(nextValue) => dispatch({
-              type: "patch-section",
-              section: control.section,
-              patch: { [configKey]: nextValue },
-            })}
           />
         </div>
       );

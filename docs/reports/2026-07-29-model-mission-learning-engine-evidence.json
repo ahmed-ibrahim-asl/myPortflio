@@ -13,24 +13,19 @@
       "node_modules/next/dist/docs/01-app/03-api-reference/05-config/01-next-config-js/typescript.md"
     ],
     "productionApiSources": {
-      "lib/tools/ml-generator/model-mission/adapters.js": "48988bfa89e42e4510c934565d6acc3b485600da148374b9232ab564842dc476",
+      "lib/tools/ml-generator/model-mission/adapters.js": "2452eb2431556d788a83526eb5383eaaf2a3c49b79caca6cacc99a40214d9643",
       "lib/tools/ml-generator/model-mission/control-registry.js": "c4605c961140df1d6462469428a4be4d98bcb19f97cd881670a8df4390a8f4dc",
-      "lib/tools/ml-generator/model-mission/project-bundle.js": "c1fb03fc2473984a2b5603d56903cf5f00f12e2c019d7545439d649dfa5e1cbc",
+      "lib/tools/ml-generator/model-mission/project-bundle.js": "87ccdd460028ff22a0995d8c92ab01a58b5792dac8cfd213e88b8f48e40488e3",
       "lib/tools/ml-generator/model-mission/stored-zip.js": "30ee2303ee4ae2eb6550036bccd74b32c8ee9055e31eec9ab5273adc604214ad",
-      "lib/tools/ml-generator/workbench/classical-generator.js": "96eb447140068909df88925e459eeba1354e92e8c95666d409a3b706f5a5b674",
-      "lib/tools/ml-generator/workbench/neural-generator.js": "1f8fa12f691692813f86161e6ed77f832cacf17101a732084c4c61de5e69b79f",
-      "tests/tools/model-mission-responsive.test.js": "7340dbb2706d746911f3a99150b72403fa436a108f4864fd3e5737d79612af60"
+      "lib/tools/ml-generator/workbench/classical-generator.js": "7c288c0bfeb8bd6c49c1e305f1e71e0ec12d0c11f59c0a37e78eb3c0e84c9ca5",
+      "lib/tools/ml-generator/workbench/neural-generator.js": "413ef8366d7c299a32ad60bb98863b502f44e6f1a21209313c0e183a8f598dfa",
+      "tests/tools/model-mission-responsive.test.js": "5e5bbffe3e782d03064c89c7eb1bb1e158168f0cea1e1dc79ac2c3bf4903e55a"
     },
     "repository": ".",
     "title": "Model Mission Learning Engine Audit"
   },
   "deferredLedger": [
-    "accessible-explanation source test comment risk",
-    "CSV non-ISO time sorting before datetime parsing",
-    "unknown neural preset fallback",
-    "install-text test spacing coverage",
-    "project-bundle branch maintainability",
-    "stored-ZIP ambiguous-name example coverage"
+    "project-bundle branch maintainability"
   ],
   "education": {
     "controlCounts": [
@@ -71,7 +66,7 @@
         "taskId": "instance-segmentation"
       },
       {
-        "advanced": 29,
+        "advanced": 27,
         "customize": 19,
         "guided": 10,
         "taskId": "neural-network"
@@ -571,8 +566,8 @@
       },
       "generation": {
         "astParse": "passed",
-        "codeBytes": 3976,
-        "codeSha256": "8d8c93c03c75f84a5e9a04ccae95b096a4786a4454d1883c77b05d95e01037f5",
+        "codeBytes": 4423,
+        "codeSha256": "ee68b843b5ba1e960d9c4b9900e0ce473d8a00f879376ec3452b29168cbce03a",
         "filename": "classification_pipeline.py",
         "validationErrors": {},
         "warnings": []
@@ -627,7 +622,7 @@
           "evidence": [
             "X_test",
             "\"Final test\"",
-            "pipeline.predict(X_test.iloc[[0]])"
+            "predict_labels(pipeline, X_test.iloc[[0]])"
           ],
           "passed": true,
           "provenance": [
@@ -653,7 +648,7 @@
       },
       "taskId": "classification",
       "zip": {
-        "bytes": 10444,
+        "bytes": 11566,
         "contents": [
           ".gitignore",
           "README.md",
@@ -667,7 +662,7 @@
         "crcCheck": "passed",
         "exactBaseContract": true,
         "rootName": "guided-logistic-standard",
-        "sha256": "276503534ce2bb6a5d7cc9c985fdface6589be3c469d4eca231082eef7de4b5a"
+        "sha256": "0bf4d58fcb1bbf2cdd1f2f792fa76e5cd821122cf554e9f8131fa97e6e6202e7"
       }
     },
     {
@@ -812,7 +807,7 @@
       },
       "taskId": "regression",
       "zip": {
-        "bytes": 9783,
+        "bytes": 10458,
         "contents": [
           ".gitignore",
           "README.md",
@@ -826,7 +821,7 @@
         "crcCheck": "passed",
         "exactBaseContract": true,
         "rootName": "advanced-regression-group-power",
-        "sha256": "14d2bfa258ceb7aacb6ad71646040be8c7dc5e965c804176a3a738ac77c45aa5"
+        "sha256": "77a27dd0ee471964ff07d7ee8082ee44bfe86fe46d719cccdc2469d18af19168"
       }
     },
     {
@@ -982,7 +977,7 @@
       },
       "taskId": "object-detection",
       "zip": {
-        "bytes": 14901,
+        "bytes": 14902,
         "contents": [
           ".gitignore",
           "README.md",
@@ -996,7 +991,7 @@
         "crcCheck": "passed",
         "exactBaseContract": true,
         "rootName": "customized-yolo-detection-adamw",
-        "sha256": "11f66647bffb626a9b21c130cffef72856eedb26d19cf22350b100abb1116cc4"
+        "sha256": "ae89de34241bacd8d6ff8e3b8872b196c67a8c973511ea3d308ffb9e8b2412c6"
       }
     },
     {
@@ -1154,7 +1149,7 @@
       },
       "taskId": "instance-segmentation",
       "zip": {
-        "bytes": 15261,
+        "bytes": 15262,
         "contents": [
           ".gitignore",
           "README.md",
@@ -1168,7 +1163,7 @@
         "crcCheck": "passed",
         "exactBaseContract": true,
         "rootName": "advanced-yolo-segmentation-confidence",
-        "sha256": "4a80fe334de6bcf69ef1d8bd67765fa5a7525948ed93dc2861d79b2e440d520d"
+        "sha256": "c13946ac59a5ece7f2db0b229638fc158aff5de565be5f3808acae9dca84b6df"
       }
     },
     {
@@ -1180,6 +1175,7 @@
       "configRoundTrip": true,
       "configuration": {
         "data": {
+          "dataContract": "tabular",
           "dataPath": "data/dataset.csv",
           "dataSource": "breast-cancer",
           "targetColumn": "target"
@@ -1189,7 +1185,53 @@
         "learningLevel": "guided",
         "model": {
           "framework": "keras",
-          "preset": "tabular-mlp"
+          "inputShape": [
+            20
+          ],
+          "layers": [
+            {
+              "activation": "relu",
+              "filters": 32,
+              "id": "dense-1",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "dense",
+              "units": 64
+            },
+            {
+              "activation": "relu",
+              "filters": 32,
+              "id": "dropout-1",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "dropout",
+              "units": 64
+            },
+            {
+              "activation": "relu",
+              "filters": 32,
+              "id": "dense-2",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "dense",
+              "units": 32
+            }
+          ],
+          "numClasses": 2,
+          "preset": "tabular-mlp",
+          "task": "tabular-classification"
         },
         "output": {
           "artifactPath": "artifacts/neural_network.keras",
@@ -1225,8 +1267,8 @@
       },
       "generation": {
         "astParse": "passed",
-        "codeBytes": 7449,
-        "codeSha256": "c813c8c848b7d403ae291fae7c88e11ee990702a4130fd20ba0c54c21a8373fb",
+        "codeBytes": 7763,
+        "codeSha256": "31959149a8a7826efdd76f7f00f2a6e8a1e1e387ab64aebdb729562a39d5f4ab",
         "filename": "keras_tabular_classification_network.py",
         "validationErrors": {},
         "warnings": []
@@ -1235,6 +1277,11 @@
       "learningLevel": "guided",
       "requirements": {
         "dependencies": [
+          {
+            "package": "joblib",
+            "purpose": "model persistence",
+            "version": ">=1.4,<2"
+          },
           {
             "package": "keras",
             "purpose": "neural network API",
@@ -1263,6 +1310,7 @@
         ],
         "matchesStructuredDependencies": true,
         "text": [
+          "joblib>=1.4,<2",
           "keras>=3,<4",
           "numpy>=1.26,<3",
           "pandas>=2.2,<3",
@@ -1274,6 +1322,7 @@
         "artifactCreated": false,
         "attempted": false,
         "missingModules": [
+          "joblib",
           "keras",
           "pandas",
           "sklearn",
@@ -1286,7 +1335,7 @@
       "staticContracts": {
         "activeTrainingLifecycle": {
           "evidence": [
-            "train_data, validation_data, test_data = load_data()",
+            "train_data, validation_data, test_data, preprocessing = load_data()",
             "history = train_model(",
             "test_metrics = evaluate_model(model, test_data)",
             "model.save(ARTIFACT_PATH)",
@@ -1330,7 +1379,7 @@
       },
       "taskId": "neural-network",
       "zip": {
-        "bytes": 13812,
+        "bytes": 16906,
         "contents": [
           ".gitignore",
           "README.md",
@@ -1344,7 +1393,7 @@
         "crcCheck": "passed",
         "exactBaseContract": true,
         "rootName": "guided-keras-tabular",
-        "sha256": "57bcee15c663e24e49311c76d9562f898036c5cea5cf2c591d20c869b6c7cfca"
+        "sha256": "fba6413b19bd27281652ae01d4b167841e79128f902e629444a186c9024d7cb2"
       }
     },
     {
@@ -1356,6 +1405,7 @@
       "configRoundTrip": true,
       "configuration": {
         "data": {
+          "dataContract": "image-folder",
           "dataPath": "data/images",
           "dataSource": "image-folder",
           "targetColumn": ""
@@ -1370,8 +1420,37 @@
             32,
             3
           ],
+          "layers": [
+            {
+              "activation": "relu",
+              "filters": 16,
+              "id": "conv2d-1",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "conv2d",
+              "units": 64
+            },
+            {
+              "activation": "relu",
+              "filters": 32,
+              "id": "global-pool2d",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "global-average-pool2d",
+              "units": 64
+            }
+          ],
           "numClasses": 4,
-          "preset": "image-cnn"
+          "preset": "image-cnn",
+          "task": "image-classification"
         },
         "output": {
           "artifactPath": "artifacts/image.keras",
@@ -1379,7 +1458,7 @@
           "projectName": "advanced-keras-image"
         },
         "preparation": {
-          "scaling": "standard"
+          "scaling": "none"
         },
         "schemaVersion": 2,
         "split": {
@@ -1407,8 +1486,8 @@
       },
       "generation": {
         "astParse": "passed",
-        "codeBytes": 5734,
-        "codeSha256": "eb5ab3fcb4c7ee6064814fca21e37717fd88f5fc25fdf069c8a230874c40f499",
+        "codeBytes": 5695,
+        "codeSha256": "eab6f38d6981a1c759b1983e848dcc1bd1590b7cdfcd3c1e9840241c523995ce",
         "filename": "keras_image_classification_network.py",
         "validationErrors": {},
         "warnings": []
@@ -1417,6 +1496,11 @@
       "learningLevel": "advanced",
       "requirements": {
         "dependencies": [
+          {
+            "package": "joblib",
+            "purpose": "model persistence",
+            "version": ">=1.4,<2"
+          },
           {
             "package": "keras",
             "purpose": "neural network API",
@@ -1435,6 +1519,7 @@
         ],
         "matchesStructuredDependencies": true,
         "text": [
+          "joblib>=1.4,<2",
           "keras>=3,<4",
           "numpy>=1.26,<3",
           "tensorflow>=2.16,<3"
@@ -1450,7 +1535,7 @@
       "staticContracts": {
         "activeTrainingLifecycle": {
           "evidence": [
-            "train_data, validation_data, test_data = load_data()",
+            "train_data, validation_data, test_data, preprocessing = load_data()",
             "history = train_model(",
             "test_metrics = evaluate_model(model, test_data)",
             "model.save(ARTIFACT_PATH)",
@@ -1483,7 +1568,7 @@
       },
       "taskId": "neural-network",
       "zip": {
-        "bytes": 12002,
+        "bytes": 14653,
         "contents": [
           ".gitignore",
           "README.md",
@@ -1497,7 +1582,7 @@
         "crcCheck": "passed",
         "exactBaseContract": true,
         "rootName": "advanced-keras-image",
-        "sha256": "54ae0122fb5945ee56ee91dda2fff1d1b7f3b5dd4df71f6cffd283f98755ca05"
+        "sha256": "4d1fc1557429d1adb7ee84181f32aeb88016421b74b3dff403df8588675dabd5"
       }
     },
     {
@@ -1509,6 +1594,7 @@
       "configRoundTrip": true,
       "configuration": {
         "data": {
+          "dataContract": "sequence-array",
           "dataPath": "data/sequences.npz",
           "dataSource": "sequence-array",
           "targetColumn": "target"
@@ -1522,8 +1608,24 @@
             24,
             6
           ],
+          "layers": [
+            {
+              "activation": "tanh",
+              "filters": 32,
+              "id": "lstm-1",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "lstm",
+              "units": 32
+            }
+          ],
           "numClasses": 3,
-          "preset": "sequence-lstm"
+          "preset": "sequence-lstm",
+          "task": "sequence-classification"
         },
         "output": {
           "artifactPath": "artifacts/sequence.pt",
@@ -1559,8 +1661,8 @@
       },
       "generation": {
         "astParse": "passed",
-        "codeBytes": 16403,
-        "codeSha256": "fef7d74129a905c067ddc2d9eab7c3995d36335a9e609179df1e488636127631",
+        "codeBytes": 16607,
+        "codeSha256": "a64de44714398b0967fdf4dbf797b19cfbbe7f167560f093a8e0f683aea3d0e8",
         "filename": "pytorch_sequence_classification_network.py",
         "validationErrors": {},
         "warnings": []
@@ -1569,6 +1671,11 @@
       "learningLevel": "customize",
       "requirements": {
         "dependencies": [
+          {
+            "package": "joblib",
+            "purpose": "model persistence",
+            "version": ">=1.4,<2"
+          },
           {
             "package": "numpy",
             "purpose": "numerical operations",
@@ -1587,6 +1694,7 @@
         ],
         "matchesStructuredDependencies": true,
         "text": [
+          "joblib>=1.4,<2",
           "numpy>=1.26,<3",
           "scikit-learn>=1.5,<2",
           "torch>=2.3,<3"
@@ -1647,7 +1755,7 @@
       },
       "taskId": "neural-network",
       "zip": {
-        "bytes": 23413,
+        "bytes": 26019,
         "contents": [
           ".gitignore",
           "README.md",
@@ -1661,7 +1769,7 @@
         "crcCheck": "passed",
         "exactBaseContract": true,
         "rootName": "customized-pytorch-sequence-lstm",
-        "sha256": "f031dc7cbcd37915131852cebd7682c3d4f4229463b3ff8de69e17593afd8782"
+        "sha256": "317ecd5ad0a35d2afc8ee3721abbf6cc6bec06523a080fd4a4c518d8cafb7b0e"
       }
     },
     {
@@ -1673,6 +1781,7 @@
       "configRoundTrip": true,
       "configuration": {
         "data": {
+          "dataContract": "tabular",
           "dataPath": "data/dataset.csv",
           "dataSource": "breast-cancer",
           "targetColumn": "target"
@@ -1682,7 +1791,53 @@
         "learningLevel": "advanced",
         "model": {
           "framework": "pytorch",
-          "preset": "tabular-mlp"
+          "inputShape": [
+            20
+          ],
+          "layers": [
+            {
+              "activation": "relu",
+              "filters": 32,
+              "id": "dense-1",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "dense",
+              "units": 64
+            },
+            {
+              "activation": "relu",
+              "filters": 32,
+              "id": "dropout-1",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "dropout",
+              "units": 64
+            },
+            {
+              "activation": "relu",
+              "filters": 32,
+              "id": "dense-2",
+              "initializer": "framework-default",
+              "kernelSize": 3,
+              "normalization": "none",
+              "poolSize": 2,
+              "rate": 0.2,
+              "returnSequences": false,
+              "type": "dense",
+              "units": 32
+            }
+          ],
+          "numClasses": 2,
+          "preset": "tabular-mlp",
+          "task": "tabular-classification"
         },
         "output": {
           "artifactPath": "artifacts/tabular.pt",
@@ -1718,8 +1873,8 @@
       },
       "generation": {
         "astParse": "passed",
-        "codeBytes": 16863,
-        "codeSha256": "af705a0766dbecb730f5542a452ac6c9a4e438326a321cdac139e46eaac79ef9",
+        "codeBytes": 17295,
+        "codeSha256": "3b81d763b27287f4f139cc147c290bf3c91059fe198570d5a3a1df1f983004be",
         "filename": "pytorch_tabular_classification_network.py",
         "validationErrors": {},
         "warnings": []
@@ -1728,6 +1883,11 @@
       "learningLevel": "advanced",
       "requirements": {
         "dependencies": [
+          {
+            "package": "joblib",
+            "purpose": "model persistence",
+            "version": ">=1.4,<2"
+          },
           {
             "package": "numpy",
             "purpose": "numerical operations",
@@ -1751,6 +1911,7 @@
         ],
         "matchesStructuredDependencies": true,
         "text": [
+          "joblib>=1.4,<2",
           "numpy>=1.26,<3",
           "pandas>=2.2,<3",
           "scikit-learn>=1.5,<2",
@@ -1761,6 +1922,7 @@
         "artifactCreated": false,
         "attempted": false,
         "missingModules": [
+          "joblib",
           "pandas",
           "sklearn",
           "torch"
@@ -1818,7 +1980,7 @@
       },
       "taskId": "neural-network",
       "zip": {
-        "bytes": 23881,
+        "bytes": 27010,
         "contents": [
           ".gitignore",
           "README.md",
@@ -1832,7 +1994,7 @@
         "crcCheck": "passed",
         "exactBaseContract": true,
         "rootName": "advanced-pytorch-tabular",
-        "sha256": "3645af19f9110284906df9fdc9112082ca2afa2dd795241f0df4a675757d993f"
+        "sha256": "d33a102874c4c69c65235289b5c624b13358ba973445ca3257607ca0cca6908a"
       }
     }
   ],
@@ -1848,7 +2010,7 @@
       {
         "dimension": "Local runtime assurance",
         "maximum": 1.5,
-        "method": "Dependency-free smoke coverage earns 0.5 when every static project contract passes. Runtime evidence records 0/3 eligible workflows passed after 0 execution(s) (0 failed, 3 unavailable, 5 not-applicable); execution coverage and pass rate add up to 1.0.",
+        "method": "Dependency-free smoke coverage earns 0.5 when every static project contract passes. Runtime evidence records 0/3 eligible workflows passed after 0 execution(s) (0 failed, 3 unavailable, 5 not-applicable); execution coverage and pass rate are multiplied for up to 1.0.",
         "score": 0.5
       },
       {
@@ -1993,9 +2155,9 @@
       "command": "npm run test:ml",
       "counts": {
         "fail": 0,
-        "pass": 120,
+        "pass": 126,
         "skipped": 0,
-        "tests": 120
+        "tests": 126
       },
       "exitCode": 0,
       "id": "ml-suite",
@@ -2012,9 +2174,9 @@
         "To eliminate this warning, add \"type\": \"module\" to <repo>\\package.json.",
         "(Use `node --trace-warnings ...` to show where the warning was created)",
         "✔ Model Mission uses the portfolio flat token system safely (<duration>)",
-        "ℹ tests 120",
+        "ℹ tests 126",
         "ℹ suites 0",
-        "ℹ pass 120",
+        "ℹ pass 126",
         "ℹ fail 0",
         "ℹ cancelled 0",
         "ℹ skipped 0",
@@ -2036,9 +2198,9 @@
       "command": "node --test tests/tools/ml-classical-generator-v2.test.js tests/tools/ml-neural-generator.test.js tests/tools/ml-project-config.test.js",
       "counts": {
         "fail": 0,
-        "pass": 47,
+        "pass": 53,
         "skipped": 0,
-        "tests": 47
+        "tests": 53
       },
       "exitCode": 0,
       "id": "focused-generators",
@@ -2055,9 +2217,9 @@
         "✔ version zero configurations migrate through version two (<duration>)",
         "✔ future ProjectConfig versions are rejected (<duration>)",
         "✔ cloneProjectConfig creates a deep canonical clone (<duration>)",
-        "ℹ tests 47",
+        "ℹ tests 53",
         "ℹ suites 0",
-        "ℹ pass 47",
+        "ℹ pass 53",
         "ℹ fail 0",
         "ℹ cancelled 0",
         "ℹ skipped 0",
@@ -2336,6 +2498,7 @@
       "id": "diff-check",
       "outputTail": [
         "warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it",
+        "warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it",
         "warning: in the working copy of 'tests/tools/test_model_mission_audit_builder.py', LF will be replaced by CRLF the next time Git touches it"
       ],
       "status": "passed",
@@ -2344,6 +2507,11 @@
           "classification": "non-failing tooling warning",
           "kind": "git-line-ending",
           "message": "warning: in the working copy of 'scripts/build_model_mission_audit_artifacts.py', LF will be replaced by CRLF the next time Git touches it"
+        },
+        {
+          "classification": "non-failing tooling warning",
+          "kind": "git-line-ending",
+          "message": "warning: in the working copy of 'tests/tools/model-mission-responsive.test.js', LF will be replaced by CRLF the next time Git touches it"
         },
         {
           "classification": "non-failing tooling warning",

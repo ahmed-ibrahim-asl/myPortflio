@@ -31,7 +31,11 @@ function neuralControlsAt(level) {
       taskId: "neural-network",
       stepId,
       learningLevel: level,
-      project: { ...project, learningLevel: level },
+      project: {
+        ...project,
+        learningLevel: level,
+        model: { ...project.model, framework: "pytorch" },
+      },
     })
   );
 }
@@ -118,11 +122,10 @@ test("changing explanation levels preserves a selected neural optimizer", () => 
 });
 
 test("Model Mission sources expose advanced classical choices and model-aware recommendations", async () => {
-  const [stepPanelSource, rendererSource, recommendationSource, fieldSource, shellSource] = await Promise.all([
+  const [stepPanelSource, rendererSource, recommendationSource, shellSource] = await Promise.all([
     readFile(new URL("../../components/tools/model-mission/MissionStepPanel.tsx", import.meta.url), "utf8"),
     readFile(new URL("../../components/tools/model-mission/MissionControlRenderer.tsx", import.meta.url), "utf8"),
     readFile(new URL("../../components/tools/model-mission/MissionRecommendation.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../../components/tools/model-mission/MissionField.tsx", import.meta.url), "utf8"),
     readFile(new URL("../../components/tools/model-mission/ModelMissionShell.tsx", import.meta.url), "utf8"),
   ]);
 
@@ -147,8 +150,7 @@ test("Model Mission sources expose advanced classical choices and model-aware re
   assert.match(rendererSource, /control\.id === "calibration"/);
   assert.match(recommendationSource, /recommendation\.label/);
   assert.match(recommendationSource, /recommendation\.reason/);
-  assert.match(fieldSource, /Learn this choice/);
-  assert.match(fieldSource, /aria-expanded/);
+  assert.match(rendererSource, /technicalTerm=\{control\.technicalTerm \?\? control\.id\}/);
   assert.match(shellSource, /data-learning-level/);
 });
 
@@ -184,10 +186,8 @@ test("the code panel renders versioned dependency install text", async () => {
     executablePanelSource,
     /`\$\{dependency\.package\}\$\{dependency\.version\}`/,
   );
-  assert.match(
-    executableHookSource,
-    /resolvedConfig: cloneProjectConfig\(state\.project\)/,
-  );
+  assert.match(executableHookSource, /const result = generation\.result/);
+  assert.doesNotMatch(executableHookSource, /resolvedConfig:/);
 });
 
 test("Model Mission exposes separate executable Python and project downloads", async () => {

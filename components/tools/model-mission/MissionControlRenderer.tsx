@@ -2,7 +2,10 @@ import {
   CLASSICAL_DATASETS,
   CLASSICAL_MODELS,
 } from "@/lib/tools/ml-generator/workbench/classical-generator";
-import { NEURAL_PRESETS } from "@/lib/tools/ml-generator/workbench/neural-generator";
+import {
+  NEURAL_PRESETS,
+  getNeuralControlOptions,
+} from "@/lib/tools/ml-generator/workbench/neural-generator";
 
 import { MissionExplanation } from "./MissionExplanation";
 import { MissionField } from "./MissionField";
@@ -16,6 +19,7 @@ type MissionControl = {
   section: "data" | "inspection" | "split" | "preparation" | "model" | "training" | "evaluation" | "output";
   level: string;
   label: string;
+  technicalTerm?: string;
   controlType: string;
   defaultValue: string | number | boolean | string[] | null;
   shortHelp: string;
@@ -54,8 +58,11 @@ type MissionControlRendererProps = {
   } | null;
 };
 
-function selectOptions(control: MissionControl, taskId: string) {
-  const classicalTask = taskId === "regression" ? "regression" : "classification";
+function selectOptions(control: MissionControl, project: Project) {
+  if (project.taskId === "neural-network") {
+    return getNeuralControlOptions(control.id, project);
+  }
+  const classicalTask = project.taskId === "regression" ? "regression" : "classification";
   const options = (items: ReadonlyArray<{ id: string; label: string }>) =>
     items.map(({ id, label }) => ({ value: id, label }));
 
@@ -94,13 +101,6 @@ function selectOptions(control: MissionControl, taskId: string) {
     { value: "sigmoid", label: "Sigmoid calibration" },
     { value: "isotonic", label: "Isotonic calibration" },
   ];
-  if (control.id === "framework") {
-    return [
-      { value: "keras", label: "Keras / TensorFlow" },
-      { value: "pytorch", label: "PyTorch" },
-    ];
-  }
-  if (control.id === "preset") return options(NEURAL_PRESETS);
   return [];
 }
 
@@ -144,7 +144,7 @@ export function MissionControlRenderer({
     return (
       <div data-control-id={control.id} data-control-level={control.level}>
         <div className={styles.controlMeta}>
-          <span>{control.id}</span>
+          <span>{control.technicalTerm ?? control.id}</span>
           {recommendation ? <span className={styles.recommendedBadge}>Recommended</span> : null}
         </div>
         <NeuralLayerEditor
@@ -200,11 +200,11 @@ export function MissionControlRenderer({
       <MissionField
         id={control.id}
         label={control.label}
-        technicalTerm={control.id}
+        technicalTerm={control.technicalTerm ?? control.id}
         help={control.shortHelp}
         type={control.controlType as "text" | "number" | "select" | "toggle"}
         value={fieldValue}
-        options={selectOptions(control, project.taskId)}
+        options={selectOptions(control, project)}
         min={bounds?.[0]}
         max={bounds?.[1]}
         step={bounds?.[2]}
@@ -237,6 +237,7 @@ export function MissionControlRenderer({
                 task: preset.task,
                 inputShape: [...preset.inputShape],
                 layers: preset.layers.map((layer) => ({ ...layer })),
+                numClasses: preset.task === "tabular-regression" ? 1 : 2,
               },
             });
             return;

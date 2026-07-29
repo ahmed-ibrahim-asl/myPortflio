@@ -338,8 +338,22 @@ const missions = [
       model: {
         framework: "keras",
         preset: "image-cnn",
+        task: "image-classification",
         inputShape: [32, 32, 3],
         numClasses: 4,
+        layers: [
+          {
+            id: "conv2d-1",
+            type: "conv2d",
+            filters: 16,
+            kernelSize: 3,
+            activation: "relu",
+          },
+          {
+            id: "global-pool2d",
+            type: "global-average-pool2d",
+          },
+        ],
       },
       training: { epochs: 1 },
       output: {
@@ -361,8 +375,17 @@ const missions = [
       model: {
         framework: "pytorch",
         preset: "sequence-lstm",
+        task: "sequence-classification",
         inputShape: [24, 6],
         numClasses: 3,
+        layers: [
+          {
+            id: "lstm-1",
+            type: "lstm",
+            units: 32,
+            activation: "tanh",
+          },
+        ],
       },
       training: { epochs: 1 },
       output: {
@@ -898,7 +921,11 @@ def evaluate_static_contracts(
         test_evidence = [
             "X_test",
             '"Final test"',
-            "pipeline.predict(X_test.iloc[[0]])",
+            (
+                "predict_labels(pipeline, X_test.iloc[[0]])"
+                if project_id == "guided-logistic-standard"
+                else "pipeline.predict(X_test.iloc[[0]])"
+            ),
         ]
         contracts["trainingOnlyPreprocessing"] = static_contract(
             has_all(code, training_evidence),
@@ -979,7 +1006,10 @@ def evaluate_static_contracts(
     framework = payload["project"]["model"]["framework"]
     if framework == "keras":
         lifecycle_evidence = [
-            "train_data, validation_data, test_data = load_data()",
+            (
+                "train_data, validation_data, test_data, preprocessing "
+                "= load_data()"
+            ),
             "history = train_model(",
             "test_metrics = evaluate_model(model, test_data)",
             "model.save(ARTIFACT_PATH)",
@@ -1432,7 +1462,8 @@ def scorecard(evidence: dict[str, Any]) -> list[dict[str, Any]]:
         f"{passed_runtime}/{eligible_runtime} eligible workflows passed "
         f"after {executed_runtime} execution(s) ({failed_runtime} failed, "
         f"{unavailable_runtime} unavailable, {not_applicable_runtime} "
-        "not-applicable); execution coverage and pass rate add up to 1.0."
+        "not-applicable); execution coverage and pass rate are multiplied "
+        "for up to 1.0."
     )
     return [
         {
@@ -1678,7 +1709,7 @@ def build_report(evidence: dict[str, Any]) -> str:
     score = evidence["score"]["overall"]
     project_rows = []
     semantic_rows = []
-    for project in evidence["projects"]:
+    for project in sorted(evidence["projects"], key=lambda item: item["id"]):
         runtime = project["runtime"]
         project_rows.append(
             "| {id} | {ast_status} | {zip_status} | {artifact} | {runtime} | {warnings} |".format(
@@ -1694,7 +1725,7 @@ def build_report(evidence: dict[str, Any]) -> str:
                 warnings=len(project["generation"]["warnings"]),
             )
         )
-        for name, contract in project["staticContracts"].items():
+        for name, contract in sorted(project["staticContracts"].items()):
             snippets = "<br>".join(
                 "`{}`".format(snippet.replace("|", "&#124;"))
                 for snippet in contract["evidence"]
@@ -1780,7 +1811,7 @@ def build_report(evidence: dict[str, Any]) -> str:
     )
     task4_hash_rows = [
         f"| {key} | `{value}` |"
-        for key, value in task4["fixtureHashes"].items()
+        for key, value in sorted(task4["fixtureHashes"].items())
     ]
     score_by_dimension = {
         row["dimension"]: row["score"]
@@ -1948,16 +1979,11 @@ The score measures the evidence available in this audit, not theoretical framewo
 - Student comprehension after one guided project is not established without a user study.
 - Scaler options have shared control-level education, not per-option beginner explanations.
 {runtime_sections["remainingGap"]}
-- Custom CSV time splitting sorts before datetime parsing; non-ISO timestamps can order incorrectly.
-- Unknown neural presets currently fall back rather than producing a typed rejection.
-- The accessible-explanation source test relies on comment stripping and could miss behavior if comments change shape.
-- Install-text test coverage is spacing-sensitive and does not exercise every rendering variation.
 - Project-bundle task branching is growing and will become harder to maintain as workflows expand.
-- Stored-ZIP tests reject ambiguous names but lack a concrete cross-platform ambiguous-name example matrix.
 
 ## Conclusion
 
-Within its registered workflows, Model Mission is a strong learning-oriented project generator with truthful configuration semantics and a reproducible handoff. {runtime_sections["conclusion"]} The next highest-value improvements are per-scaler explanations, typed unknown-preset rejection, time parsing before chronological sorting, and a small controlled student comprehension study.
+Within its registered workflows, Model Mission is a strong learning-oriented project generator with truthful configuration semantics and a reproducible handoff. {runtime_sections["conclusion"]} The next highest-value improvements are per-scaler explanations, keeping project-bundle branching maintainable as workflows expand, and a small controlled student comprehension study.
 """
 
 
@@ -2031,12 +2057,7 @@ def main() -> None:
             ),
         },
         "deferredLedger": [
-            "accessible-explanation source test comment risk",
-            "CSV non-ISO time sorting before datetime parsing",
-            "unknown neural preset fallback",
-            "install-text test spacing coverage",
             "project-bundle branch maintainability",
-            "stored-ZIP ambiguous-name example coverage",
         ],
     }
     dimensions = scorecard(evidence)

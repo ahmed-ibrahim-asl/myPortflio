@@ -158,6 +158,14 @@ test("group and time splits reserve a final untouched test set", () => {
   assert.match(groupResult.code, /GroupShuffleSplit\(n_splits=1, test_size=TEST_RATIO, random_state=RANDOM_SEED\)/);
   assert.match(groupResult.code, /X_train, X_test = X\.iloc\[train_index\], X\.iloc\[test_index\]/);
   assert.match(timeResult.code, /TIME_COLUMN = "event_time"/);
+  assert.match(
+    timeResult.code,
+    /dataframe\[TIME_COLUMN\] = pd\.to_datetime\(dataframe\[TIME_COLUMN\], errors="raise"\)/,
+  );
+  assert.ok(
+    timeResult.code.indexOf("pd.to_datetime(")
+      < timeResult.code.indexOf("dataframe.sort_values(TIME_COLUMN)"),
+  );
   assert.match(timeResult.code, /dataframe = dataframe\.sort_values\(TIME_COLUMN\)/);
   assert.match(timeResult.code, /split_index = int\(len\(X\) \* \(1 - TEST_RATIO\)\)/);
   assert.match(timeResult.code, /X_train, X_test = X\.iloc\[:split_index\], X\.iloc\[split_index:\]/);
@@ -248,6 +256,29 @@ test("calibration and binary thresholds only apply to compatible classification 
   assert.equal(regression.validationErrors.calibration, "Calibration is available only for classification.");
   assert.equal(regression.validationErrors.decisionThreshold, "Decision thresholds are available only for binary classification probabilities.");
   assert.doesNotMatch(regression.code, /CalibratedClassifierCV|predict_proba/);
+});
+
+test("binary decision thresholds drive evaluation and generated sample inference", () => {
+  const result = generateClassicalScript({
+    task: "classification",
+    dataset: "breast-cancer",
+    decisionThreshold: 0.7,
+  });
+
+  assert.match(result.code, /DECISION_THRESHOLD = 0\.7/);
+  assert.match(result.code, /def predict_labels\(model, features\):/);
+  assert.match(
+    result.code,
+    /predictions = predict_labels\(model, features\)/,
+  );
+  assert.match(
+    result.code,
+    /sample_prediction = predict_labels\(pipeline, X_test\.iloc\[\[0\]\]\)/,
+  );
+  assert.doesNotMatch(
+    result.code,
+    /sample_prediction = pipeline\.predict/,
+  );
 });
 
 test("saved artifact names identify the task pipeline", () => {

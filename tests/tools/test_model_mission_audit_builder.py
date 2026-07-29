@@ -560,14 +560,15 @@ class NarrativeDerivationTests(unittest.TestCase):
             if row["dimension"] == "Local runtime assurance"
         )
         self.assertEqual(unavailable_runtime_score, 0.5)
-        self.assertGreater(
-            installed_runtime_score,
-            unavailable_runtime_score,
+        self.assertEqual(installed_runtime_score, 1.5)
+        self.assertEqual(installed["score"]["overall"], 9.7)
+        runtime_method = next(
+            row["method"]
+            for row in installed_dimensions
+            if row["dimension"] == "Local runtime assurance"
         )
-        self.assertGreater(
-            installed["score"]["overall"],
-            unavailable["score"]["overall"],
-        )
+        self.assertIn("multiplied", runtime_method)
+        self.assertNotIn("add up", runtime_method)
 
         unavailable_report = audit.build_report(unavailable)
         installed_report = audit.build_report(installed)
@@ -614,9 +615,40 @@ class NarrativeDerivationTests(unittest.TestCase):
             "Unavailable runtimes, user-supplied data",
             "No LLM or server-side execution was added",
             "Generated output remains deterministic and local.",
+            "Custom CSV time splitting sorts before datetime parsing",
+            "Unknown neural presets currently fall back",
+            "accessible-explanation source test relies on comment stripping",
+            "Install-text test coverage is spacing-sensitive",
+            "lack a concrete cross-platform ambiguous-name example matrix",
         ]:
             with self.subTest(stale_text=stale_text):
                 self.assertNotIn(stale_text, installed_report)
+
+    def test_report_rows_are_sorted_independently_of_evidence_order(
+        self,
+    ) -> None:
+        evidence = json.loads(
+            (
+                REPO_ROOT
+                / "docs/reports/"
+                "2026-07-29-model-mission-learning-engine-evidence.json"
+            ).read_text(encoding="utf-8")
+        )
+        shuffled = copy.deepcopy(evidence)
+        shuffled["projects"].reverse()
+        for project in shuffled["projects"]:
+            project["staticContracts"] = dict(
+                reversed(list(project["staticContracts"].items()))
+            )
+        fixture_hashes = shuffled["task4Parity"]["fixtureHashes"]
+        shuffled["task4Parity"]["fixtureHashes"] = dict(
+            reversed(list(fixture_hashes.items()))
+        )
+
+        self.assertEqual(
+            audit.build_report(shuffled),
+            audit.build_report(evidence),
+        )
 
 
 class StructuredBrowserEvidenceTests(unittest.TestCase):

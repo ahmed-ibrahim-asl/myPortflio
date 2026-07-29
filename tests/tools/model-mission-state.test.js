@@ -94,11 +94,35 @@ test("neural defaults are stored in normal project sections", () => {
   assert.equal(project.taskId, "neural-network");
   assert.equal(project.model.framework, "keras");
   assert.equal(project.model.preset, "tabular-mlp");
+  assert.equal(project.model.task, "tabular-classification");
+  assert.equal(project.model.numClasses, 2);
   assert.equal(project.training.epochs, 20);
   assert.equal(project.training.batchSize, 32);
 });
 
-test("neural primary-control changes refresh dependent defaults without overwriting custom values", () => {
+test("neural preset and built-in data changes keep class counts canonical", () => {
+  let state = {
+    ...createModelMissionState(),
+    project: createProjectForTask("neural-network"),
+  };
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "data",
+    patch: { dataSource: "wine" },
+  });
+  assert.equal(state.project.model.numClasses, 3);
+
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "model",
+    patch: { preset: "tabular-regression-mlp" },
+  });
+  assert.equal(state.project.model.task, "tabular-regression");
+  assert.equal(state.project.model.numClasses, 1);
+  assert.equal(state.project.data.dataSource, "diabetes");
+});
+
+test("neural primary-control changes refresh dependent data and framework paths", () => {
   let state = {
     ...createModelMissionState(),
     project: createProjectForTask("neural-network"),
@@ -139,8 +163,49 @@ test("neural primary-control changes refresh dependent defaults without overwrit
     patch: { framework: "keras" },
   });
 
-  assert.equal(state.project.output.artifactPath, "artifacts/custom_image.pt");
+  assert.equal(state.project.output.artifactPath, "artifacts/neural_network.keras");
   assert.equal(state.project.output.checkpointPath, "artifacts/best_neural_network.keras");
+  assert.deepEqual(
+    generateSynchronousMissionResult(state.project).validationErrors,
+    {},
+  );
+});
+
+test("task changes preserve only task-independent output preferences", () => {
+  let state = {
+    ...createModelMissionState(),
+    project: createProjectForTask("neural-network"),
+  };
+  state = modelMissionReducer(state, {
+    type: "patch-section",
+    section: "output",
+    patch: {
+      projectName: "vision-lab",
+      artifactDirectory: "build/artifacts",
+      checkpointPath: "artifacts/custom_best.keras",
+      artifactPath: "artifacts/custom.keras",
+    },
+  });
+  state = modelMissionReducer(state, {
+    type: "choose-task",
+    taskId: "classification",
+  });
+
+  assert.deepEqual(state.project.output, {
+    artifactDirectory: "build/artifacts",
+    projectName: "vision-lab",
+  });
+
+  state = modelMissionReducer(state, {
+    type: "choose-task",
+    taskId: "neural-network",
+  });
+  assert.deepEqual(state.project.output, {
+    artifactDirectory: "build/artifacts",
+    artifactPath: "artifacts/neural_network.keras",
+    checkpointPath: "artifacts/best_neural_network.keras",
+    projectName: "vision-lab",
+  });
 });
 
 test("retry increments a token without changing the project", () => {

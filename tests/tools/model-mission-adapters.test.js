@@ -8,6 +8,12 @@ import {
 import {
   createDefaultProjectConfig,
 } from "../../lib/tools/ml-generator/workbench/project-config.js";
+import {
+  buildMissionProjectBundle,
+} from "../../lib/tools/ml-generator/model-mission/project-bundle.js";
+import {
+  getModelMissionTask,
+} from "../../lib/tools/ml-generator/model-mission/catalog.js";
 
 test("classification and regression return one shared result contract", () => {
   const cases = [
@@ -112,6 +118,90 @@ test("neural adapter passes every project section into its complete contract", (
     result.code,
     /def build_optimizer\(model\):\n    return torch\.optim\.SGD\(model\.parameters\(\), lr=LEARNING_RATE, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY\)/,
   );
+});
+
+test("neural results export the normalized sectioned config used by generation", () => {
+  const project = {
+    ...createDefaultProjectConfig(),
+    taskId: "neural-network",
+    learningLevel: "advanced",
+    data: {
+      dataSource: "diabetes",
+      dataPath: "data/regression.csv",
+      targetColumn: "progression",
+    },
+    split: {
+      splitStrategy: "train-validation-test",
+      testRatio: 0.2,
+      validationRatio: 0.1,
+    },
+    preparation: { scaling: "robust" },
+    model: {
+      framework: "pytorch",
+      preset: "tabular-regression-mlp",
+      task: "tabular-regression",
+      numClasses: 9,
+    },
+    training: {
+      epochs: 2.6,
+      batchSize: 12.2,
+      optimizer: "adamw",
+    },
+    output: {
+      projectName: "regression-lab",
+      artifactDirectory: "artifacts",
+      checkpointPath: "artifacts/best_regression.pt",
+      artifactPath: "artifacts/regression.pt",
+    },
+  };
+
+  const result = generateSynchronousMissionResult(project);
+
+  assert.deepEqual(result.validationErrors, {});
+  assert.equal(result.resolvedConfig.schemaVersion, 2);
+  assert.equal(result.resolvedConfig.learningLevel, "advanced");
+  assert.deepEqual(result.resolvedConfig.data, {
+    dataContract: "tabular",
+    dataPath: "data/regression.csv",
+    dataSource: "diabetes",
+    targetColumn: "progression",
+  });
+  assert.equal(result.resolvedConfig.model.task, "tabular-regression");
+  assert.equal(result.resolvedConfig.model.numClasses, 1);
+  assert.equal(result.resolvedConfig.training.epochs, 3);
+  assert.equal(result.resolvedConfig.training.batchSize, 12);
+  assert.equal(result.resolvedConfig.output.projectName, "regression-lab");
+  assert.match(result.code, /NUM_CLASSES = 1/);
+
+  const regenerated = generateSynchronousMissionResult(
+    result.resolvedConfig,
+  );
+  assert.equal(regenerated.code, result.code);
+  assert.deepEqual(regenerated.resolvedConfig, result.resolvedConfig);
+
+  const bundle = buildMissionProjectBundle({
+    result,
+    project: result.resolvedConfig,
+    task: getModelMissionTask("neural-network"),
+  });
+  assert.deepEqual(
+    JSON.parse(bundle.files["model_mission.json"]),
+    result.resolvedConfig,
+  );
+});
+
+test("neural results reject unknown presets instead of exporting a different architecture", () => {
+  const result = generateSynchronousMissionResult({
+    ...createDefaultProjectConfig(),
+    taskId: "neural-network",
+    model: {
+      framework: "keras",
+      preset: "unknown-network",
+    },
+  });
+
+  assert.equal(result.code, "");
+  assert.match(result.validationErrors.architecture, /unknown-network/);
 });
 
 test("neural adapter returns typed configuration errors by section", () => {

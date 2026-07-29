@@ -915,6 +915,13 @@ test(
             element.dispatchEvent(new Event("change", { bubbles: true }));
           };
 
+          workflowButton("Prepare").click();
+          await pause();
+          setValue(
+            document.querySelector('[data-control-id="framework"] select'),
+            "pytorch",
+          );
+          await pause();
           workflowButton("Train").click();
           levelButton("Guided").click();
           await pause();
@@ -974,6 +981,21 @@ test(
           if (initializerExplanation) await pause();
           const initializerExplanationText =
             initializerExplanation?.textContent ?? "";
+          const explanationButton =
+            initializerExplanation?.querySelector("button");
+          const explanationPanelId =
+            explanationButton?.getAttribute("aria-controls");
+          const initializerExplanationA11y = {
+            expanded: explanationButton?.getAttribute("aria-expanded"),
+            controlsVisible: Boolean(
+              explanationPanelId
+              && document.getElementById(explanationPanelId)
+                ?.getClientRects().length
+            ),
+          };
+          const installCommand = document.querySelector(
+            "[data-mission-code-panel] code"
+          )?.textContent?.trim();
           const layerCards = [...document.querySelectorAll(
             '[data-control-id="layers"] article'
           )];
@@ -1028,6 +1050,8 @@ test(
             customizeLayerFields,
             restoredInitializer,
             initializerExplanationText,
+            initializerExplanationA11y,
+            installCommand,
             layerEvidence,
             invalidDownloadBlocked,
           };
@@ -1086,6 +1110,12 @@ test(
           new RegExp(heading),
         );
       }
+      assert.deepEqual(
+        neuralControlResult.initializerExplanationA11y,
+        { expanded: "true", controlsVisible: true },
+      );
+      assert.match(neuralControlResult.installCommand, /^pip install \S+( \S+)*$/);
+      assert.doesNotMatch(neuralControlResult.installCommand, /\s{2,}/);
       assert.ok(neuralControlResult.layerEvidence.count > 0);
       assert.equal(
         neuralControlResult.layerEvidence.shapes.every((shape) =>
