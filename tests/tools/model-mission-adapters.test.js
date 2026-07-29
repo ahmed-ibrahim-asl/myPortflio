@@ -24,17 +24,25 @@ test("classification and regression return one shared result contract", () => {
   ];
 
   for (const item of cases) {
-    const result = generateSynchronousMissionResult({
+    const project = {
       ...createDefaultProjectConfig(),
       taskId: item.taskId,
       model: item.model,
-    });
+    };
+    const result = generateSynchronousMissionResult(project);
 
     assert.match(result.filename, /\.py$/);
     assert.match(result.code, /train_test_split/);
     assert.match(result.code, new RegExp(item.expectedEstimator));
-    assert.ok(result.dependencies.includes("scikit-learn"));
+    assert.deepEqual(result.dependencies[0], {
+      package: "scikit-learn",
+      version: ">=1.5,<2",
+      purpose: "modeling and preprocessing",
+    });
     assert.deepEqual(result.validationErrors, {});
+    assert.equal(result.resolvedConfig.taskId, item.taskId);
+    assert.notEqual(result.resolvedConfig, project);
+    assert.notEqual(result.resolvedConfig.model, project.model);
   }
 });
 
@@ -56,7 +64,16 @@ test("neural output uses the same result contract", () => {
   assert.match(result.filename, /\.py$/);
   assert.match(result.code, /keras/);
   assert.match(result.code, /layers\.LSTM/);
-  assert.ok(result.dependencies.includes("tensorflow"));
+  assert.deepEqual(
+    result.dependencies.find(
+      (dependency) => dependency.package === "tensorflow",
+    ),
+    {
+      package: "tensorflow",
+      version: ">=2.16,<3",
+      purpose: "Keras runtime",
+    },
+  );
   assert.deepEqual(result.validationErrors, {});
 });
 
@@ -133,7 +150,12 @@ test("invalid neural architecture blocks generated code with a field error", () 
   assert.match(result.validationErrors.architecture, /expects/i);
 });
 
-test("legacy dependencies flatten without losing warnings or summary", () => {
+test("legacy dependency metadata survives adaptation with its project", () => {
+  const project = {
+    ...createDefaultProjectConfig(),
+    taskId: "object-detection",
+    model: { modelSize: "s" },
+  };
   const result = adaptLegacyMissionResult({
     filename: "train.py",
     code: "print('ready')\n",
@@ -146,12 +168,42 @@ test("legacy dependencies flatten without losing warnings or summary", () => {
     dataset: { title: "Sensor CSV" },
     metrics: ["F1"],
     deployment: ["TorchScript"],
-  });
+  }, project);
 
-  assert.deepEqual(result.dependencies, ["torch", "pandas"]);
+  assert.deepEqual(result.dependencies, [
+    { package: "torch", version: "2", purpose: "training" },
+    { package: "pandas", version: "2", purpose: "data" },
+  ]);
   assert.deepEqual(result.warnings, ["Check the dataset path."]);
   assert.equal(result.summary, "Sensor CSV · F1 · TorchScript");
   assert.equal(result.code, "print('ready')\n");
+  assert.deepEqual(result.resolvedConfig, project);
+  assert.notEqual(result.resolvedConfig, project);
+  assert.notEqual(result.resolvedConfig.model, project.model);
+});
+
+test("string dependencies receive defaults and unknown packages stay installable", () => {
+  const result = adaptLegacyMissionResult({
+    filename: "train.py",
+    code: "print('ready')\n",
+    dependencies: ["scikit-learn", "mission-private-runtime"],
+  }, {
+    ...createDefaultProjectConfig(),
+    taskId: "classification",
+  });
+
+  assert.deepEqual(result.dependencies, [
+    {
+      package: "scikit-learn",
+      version: ">=1.5,<2",
+      purpose: "modeling and preprocessing",
+    },
+    {
+      package: "mission-private-runtime",
+      version: "",
+      purpose: "runtime",
+    },
+  ]);
 });
 
 test("unsupported synchronous tasks return a blocking task error", () => {

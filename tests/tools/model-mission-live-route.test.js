@@ -152,6 +152,44 @@ test("Model Mission sources expose advanced classical choices and model-aware re
   assert.match(shellSource, /data-learning-level/);
 });
 
+test("the code panel renders versioned dependency install text", async () => {
+  const [codePanelSource, hookSource] = await Promise.all([
+    readFile(
+      new URL(
+        "../../components/tools/model-mission/MissionCodePanel.tsx",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+    readFile(
+      new URL(
+        "../../lib/hooks/useModelMission.ts",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  ]);
+  const executablePanelSource = codePanelSource
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+  const executableHookSource = hookSource
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+
+  assert.match(
+    executablePanelSource,
+    /pip install \{result\.dependencies/,
+  );
+  assert.match(
+    executablePanelSource,
+    /`\$\{dependency\.package\}\$\{dependency\.version\}`/,
+  );
+  assert.match(
+    executableHookSource,
+    /resolvedConfig: cloneProjectConfig\(state\.project\)/,
+  );
+});
+
 test("the public AI generator route renders one Model Mission builder", async (t) => {
   const routeUrl =
     process.env.AI_GENERATOR_TEST_URL

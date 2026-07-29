@@ -97,5 +97,11 @@ test("synchronous and active legacy tasks share one result contract", () => {
   });
   assert.equal(detection.status, "ready");
   assert.equal(detection.result.filename, "train_yolo.py");
-  assert.deepEqual(detection.result.dependencies, ["ultralytics"]);
+  assert.deepEqual(detection.result.dependencies, [
+    {
+      package: "ultralytics",
+      version: "",
+      purpose: "runtime",
+    },
+  ]);
 });

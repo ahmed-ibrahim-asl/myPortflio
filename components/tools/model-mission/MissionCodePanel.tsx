@@ -1,12 +1,23 @@
 import styles from "./ModelMission.module.css";
 
+import type {
+  ProjectConfig,
+} from "@/lib/tools/ml-generator/workbench/types";
+
+type MissionDependency = {
+  package: string;
+  version: string;
+  purpose: string;
+};
+
 type MissionResult = {
   filename: string;
   code: string;
-  dependencies: string[];
+  dependencies: MissionDependency[];
   warnings: string[];
   summary: string;
   validationErrors: Record<string, string>;
+  resolvedConfig: ProjectConfig;
 };
 
 type MissionCodePanelProps = {
@@ -115,7 +126,11 @@ export function MissionCodePanel({
         <div className={styles.installBox}>
           <span>Install dependencies</span>
           <code>
-            pip install {result.dependencies.join(" ")}
+            pip install {result.dependencies
+              .map((dependency) =>
+                `${dependency.package}${dependency.version}`
+              )
+              .join(" ")}
           </code>
         </div>
       ) : null}
