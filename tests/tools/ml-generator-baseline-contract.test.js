@@ -14,17 +14,17 @@ const BASELINE_COMMIT = "23ef28c";
 
 const BASELINE_HASHES = Object.freeze({
   "yolo-detection-training/manifest":
-    "bac70166ef21eb386b76ace6e2e82127e0cd0a016ec70692585a7a7f000a1d05",
+    "ee9f74c1c003caeaa8827c036b09282928678940586be661b49bc4a2ff78e95f",
   "yolo-detection-training/starter/contract":
-    "3a9516e92e66c2ec415f411eda4d43d74ab1bd5e9785cff033112afe251e526a",
+    "436f7b20489d1e573ce600d6dfdb05696fdaf1194d450d408024bc82fabbfbf0",
   "yolo-detection-training/production/contract":
-    "a12dd0275da38b6ced6c733ed7e786ad7b61b0c1e8a278fc386d21c5086cc6f7",
+    "db3e86a83c004b030aa1d9a46ad58f46239a5780cd984eee9bde5853050844b9",
   "yolo-segmentation-training/manifest":
-    "e76327ae59cbaa49e5588925e96571a5060b83c8bf203474b7ac266503030194",
+    "3d754f05f63d151c8c369deba3d24394349ead3c82ca5cf77cc03f4197a0755c",
   "yolo-segmentation-training/starter/contract":
-    "d286719ab41e591e1e628be2a298289ae00abf13466e831705218b3ae1e809ae",
+    "237b8cdffcd89e400fdbac6b447b33070818a3ac66d76473b83aa0fb7bd0994e",
   "yolo-segmentation-training/production/contract":
-    "9b7592a7cf60d0b4f635ab07b7e8d9bf6f898080e9e623584065f9feb613344f",
+    "610526859d58469aa52fe89e8bd15e6ccd8efaf727bfa6c2216b2f5b27bfe8e8",
   "sensor-timeseries-classification/manifest":
     "985008d3c0a1e7258708dc67572a723dec8e5939969517914a5b66ed8035ea39",
   "sensor-timeseries-classification/starter/contract":
@@ -38,7 +38,7 @@ const BASELINE_HASHES = Object.freeze({
   "edge-image-classification/production/contract":
     "fce1af34810a1460e628c1cc6d07c85667b9755ce956d524681b5750b82c043b",
   "scenario/detection-jetson":
-    "8f5e54edfd2488050a16361318ba8eb1077cb6d8cac33bf4d9ffa51aa8ea31c6",
+    "7ab6721692b3dedb3ff1fe1ab9ad232533568642b421104f4a05a814ea3b39b8",
   "scenario/sensor-splits":
     "4f8a537e12263c86801fbcbee93b9e7591bf9f10a6a78dda28c6e87c405e76aa",
   "scenario/sensor-columns":
