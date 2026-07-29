@@ -47,6 +47,105 @@ test("shape inference blocks incompatible recurrent layers", () => {
   assert.match(inference.errors[0], /LSTM expects \[timesteps, features\]/);
 });
 
+test("PyTorch Conv1D, pooling, recurrent, and global pooling preserve sequence layout", () => {
+  const code = generateNeuralScript({
+    framework: "pytorch",
+    preset: "sequence-conv1d",
+    inputShape: [24, 6],
+    numClasses: 3,
+    layers: [
+      {
+        id: "conv",
+        type: "conv1d",
+        filters: 16,
+        kernelSize: 3,
+        activation: "relu",
+      },
+      { id: "pool", type: "maxpool1d", poolSize: 2 },
+      {
+        id: "recurrent",
+        type: "lstm",
+        units: 8,
+        returnSequences: true,
+      },
+      { id: "summary", type: "global-average-pool1d" },
+    ],
+  }).code;
+  const runtime = spawnSync(
+    "python",
+    ["-c", String.raw`
+import ast
+import math
+import sys
+
+source = sys.stdin.read()
+tree = ast.parse(source)
+network = next(
+    node for node in tree.body
+    if isinstance(node, ast.ClassDef) and node.name == "ConfigurableNetwork"
+)
+forward = next(
+    node for node in network.body
+    if isinstance(node, ast.FunctionDef) and node.name == "forward"
+)
+module = ast.Module(body=[forward], type_ignores=[])
+ast.fix_missing_locations(module)
+namespace = {}
+exec(compile(module, "<generated-forward>", "exec"), namespace)
+
+class FakeTensor:
+    def __init__(self, shape):
+        self.shape = tuple(shape)
+
+    def transpose(self, first, second):
+        shape = list(self.shape)
+        shape[first], shape[second] = shape[second], shape[first]
+        return FakeTensor(shape)
+
+    def flatten(self, start_dim):
+        return FakeTensor(
+            self.shape[:start_dim]
+            + (math.prod(self.shape[start_dim:]),)
+        )
+
+class ShapeModule:
+    def __init__(self, name, expected, output):
+        self.name = name
+        self.expected = tuple(expected)
+        self.output = tuple(output)
+
+    def __call__(self, inputs):
+        if inputs.shape != self.expected:
+            raise AssertionError(
+                f"{self.name} expected {self.expected}, received {inputs.shape}"
+            )
+        return FakeTensor(self.output)
+
+class RecurrentModule(ShapeModule):
+    def __call__(self, inputs):
+        return super().__call__(inputs), None
+
+class FakeNetwork:
+    layer_0 = ShapeModule("Conv1D", (2, 6, 24), (2, 16, 24))
+    layer_1 = ShapeModule("MaxPool1D", (2, 16, 24), (2, 16, 12))
+    layer_2 = RecurrentModule("LSTM", (2, 12, 16), (2, 12, 8))
+    layer_3 = ShapeModule(
+        "GlobalAveragePool1D",
+        (2, 8, 12),
+        (2, 8, 1),
+    )
+    output = ShapeModule("Output", (2, 8), (2, 3))
+
+result = namespace["forward"](FakeNetwork(), FakeTensor((2, 24, 6)))
+print(result.shape)
+`],
+    { input: code, encoding: "utf8" },
+  );
+
+  assert.equal(runtime.status, 0, runtime.stderr);
+  assert.equal(runtime.stdout.trim(), "(2, 3)");
+});
+
 test("advanced neural UI metadata only makes normalized settings editable", () => {
   const project = {
     taskId: "neural-network",
@@ -270,11 +369,14 @@ test("compatible layer settings preserve inferred shapes and generated effects",
   ]) {
     const parsed = spawnSync(
       "python",
-      ["-c", "import ast, sys; ast.parse(sys.stdin.read()); print('ast-ok')"],
+      [
+        "-c",
+        "import ast, sys; source = sys.stdin.read(); ast.parse(source); compile(source, '<generated>', 'exec'); print('compile-ok')",
+      ],
       { input: code, encoding: "utf8" },
     );
     assert.equal(parsed.status, 0, `${framework}: ${parsed.stderr}`);
-    assert.match(parsed.stdout, /ast-ok/, framework);
+    assert.match(parsed.stdout, /compile-ok/, framework);
   }
 });
 

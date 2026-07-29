@@ -32,6 +32,7 @@ type MissionControl = {
 
 type Project = {
   taskId: string;
+  learningLevel: string;
   data: Record<string, unknown>;
   inspection: Record<string, unknown>;
   split: Record<string, unknown>;
@@ -147,6 +148,7 @@ export function MissionControlRenderer({
           {recommendation ? <span className={styles.recommendedBadge}>Recommended</span> : null}
         </div>
         <NeuralLayerEditor
+          learningLevel={project.learningLevel}
           model={project.model}
           training={project.training}
           onChange={(layers) => dispatch({

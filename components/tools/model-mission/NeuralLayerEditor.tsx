@@ -8,6 +8,7 @@ import {
   normalizeNeuralConfig,
 } from "@/lib/tools/ml-generator/workbench/neural-generator";
 
+import { MissionExplanation } from "./MissionExplanation";
 import styles from "./ModelMission.module.css";
 
 type NeuralLayer = {
@@ -25,9 +26,19 @@ type NeuralLayer = {
 };
 
 type NeuralLayerEditorProps = {
+  learningLevel: string;
   model: Record<string, unknown>;
   training: Record<string, unknown>;
   onChange: (layers: NeuralLayer[]) => void;
+};
+
+const INITIALIZER_EXPLANATION = {
+  what: "An initializer chooses the layer's trainable weight values before the first optimization step.",
+  why: "Its scale and structure affect signal flow, gradient stability, and how quickly useful learning begins.",
+  useWhen: "Keep the framework default unless the architecture calls for Glorot on balanced activations, He with ReLU-like activations, or orthogonal recurrent weights.",
+  avoidWhen: "Avoid overriding initialization while comparing framework defaults or when the selected strategy does not match the layer's activation and architecture.",
+  tradeoff: "A matched initializer can stabilize early training, but it couples the model to another specialist choice and a poor match can slow or destabilize convergence.",
+  codeEffect: "Keras sets kernel_initializer and recurrent_initializer where applicable; PyTorch applies the matching nn.init strategy after deterministic seeding.",
 };
 
 function layerDefaults(type: string, index: number): NeuralLayer {
@@ -51,6 +62,7 @@ function shapeLabel(shape: number[]) {
 }
 
 export function NeuralLayerEditor({
+  learningLevel,
   model,
   training,
   onChange,
@@ -318,30 +330,40 @@ export function NeuralLayerEditor({
                 ) : null}
                 {hasTrainableWeights ? (
                   <>
-                    <label>
-                      <span>Initializer</span>
-                      <select
-                        data-layer-field="initializer"
-                        value={layer.initializer}
-                        onChange={(event) => patchLayer(
-                          index,
-                          { initializer: event.target.value },
-                        )}
-                      >
-                        <option value="framework-default">
-                          Framework default
-                        </option>
-                        <option value="glorot-uniform">
-                          Glorot uniform
-                        </option>
-                        <option value="he-normal">
-                          He normal
-                        </option>
-                        <option value="orthogonal">
-                          Orthogonal
-                        </option>
-                      </select>
-                    </label>
+                    {learningLevel === "advanced" ? (
+                      <>
+                        <label>
+                          <span>Initializer</span>
+                          <select
+                            data-layer-field="initializer"
+                            value={layer.initializer}
+                            onChange={(event) => patchLayer(
+                              index,
+                              { initializer: event.target.value },
+                            )}
+                          >
+                            <option value="framework-default">
+                              Framework default
+                            </option>
+                            <option value="glorot-uniform">
+                              Glorot uniform
+                            </option>
+                            <option value="he-normal">
+                              He normal
+                            </option>
+                            <option value="orthogonal">
+                              Orthogonal
+                            </option>
+                          </select>
+                        </label>
+                        <div data-layer-explanation="initializer">
+                          <MissionExplanation
+                            id={`${layer.id}-initializer`}
+                            explanation={INITIALIZER_EXPLANATION}
+                          />
+                        </div>
+                      </>
+                    ) : null}
                     <label>
                       <span>Normalization</span>
                       <select

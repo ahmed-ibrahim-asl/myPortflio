@@ -693,6 +693,33 @@ test(
           await pause();
           workflowButton("Model").click();
           await pause();
+          const advancedInitializer = document.querySelector(
+            '[data-layer-field="initializer"]'
+          );
+          setValue(advancedInitializer, "orthogonal");
+          await pause();
+          levelButton("Customize").click();
+          await pause();
+          const customizeLayerFields = {
+            initializerVisible: Boolean(document.querySelector(
+              '[data-layer-field="initializer"]'
+            )),
+            normalizationVisible: Boolean(document.querySelector(
+              '[data-layer-field="normalization"]'
+            )),
+          };
+          levelButton("Advanced").click();
+          await pause();
+          const restoredInitializer = document.querySelector(
+            '[data-layer-field="initializer"]'
+          )?.value;
+          const initializerExplanation = document.querySelector(
+            '[data-layer-explanation="initializer"]'
+          );
+          initializerExplanation?.querySelector("button")?.click();
+          if (initializerExplanation) await pause();
+          const initializerExplanationText =
+            initializerExplanation?.textContent ?? "";
           const layerCards = [...document.querySelectorAll(
             '[data-control-id="layers"] article'
           )];
@@ -744,6 +771,9 @@ test(
             customize,
             advanced,
             optimizerRestored,
+            customizeLayerFields,
+            restoredInitializer,
+            initializerExplanationText,
             layerEvidence,
             invalidDownloadBlocked,
           };
@@ -781,6 +811,27 @@ test(
           > neuralControlResult.customize.length,
       );
       assert.equal(neuralControlResult.optimizerRestored, "adamw");
+      assert.deepEqual(
+        neuralControlResult.customizeLayerFields,
+        {
+          initializerVisible: false,
+          normalizationVisible: true,
+        },
+      );
+      assert.equal(neuralControlResult.restoredInitializer, "orthogonal");
+      for (const heading of [
+        "What it is:",
+        "Why it matters:",
+        "Use it when:",
+        "Avoid it when:",
+        "Trade-off:",
+        "Python effect:",
+      ]) {
+        assert.match(
+          neuralControlResult.initializerExplanationText,
+          new RegExp(heading),
+        );
+      }
       assert.ok(neuralControlResult.layerEvidence.count > 0);
       assert.equal(
         neuralControlResult.layerEvidence.shapes.every((shape) =>
