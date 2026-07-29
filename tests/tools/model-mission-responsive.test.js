@@ -6,6 +6,24 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 
+const EXPECTED_MISSION_PROJECT_PATHS = [
+  ".gitignore",
+  "README.md",
+  "data/README.md",
+  "model_mission.json",
+  "requirements.txt",
+  "src/predict.py",
+  "src/train.py",
+  "tests/test_generated_project.py",
+];
+
+function assertExactMissionProjectPaths(entries) {
+  assert.deepEqual(
+    entries.map(({ name }) => name).sort(),
+    EXPECTED_MISSION_PROJECT_PATHS,
+  );
+}
+
 const chromeCandidates = [
   process.env.CHROME_PATH,
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -133,6 +151,27 @@ async function createClient(port, url) {
 
   return { socket, send, waitForEvent };
 }
+
+test("archive path assertion rejects an unexpected eighth entry", () => {
+  const tamperedEntries = [
+    ".gitignore",
+    "README.md",
+    "model_mission.json",
+    "requirements.txt",
+    "src/predict.py",
+    "src/train.py",
+    "tests/test_generated_project.py",
+    "unexpected.txt",
+  ].map((name) => ({ name }));
+
+  assert.throws(
+    () => assertExactMissionProjectPaths(tamperedEntries),
+    (error) =>
+      error instanceof assert.AssertionError
+      && /data\/README\.md/u.test(error.message)
+      && /unexpected\.txt/u.test(error.message),
+  );
+});
 
 test(
   "Model Mission stays contained and preserves one project across responsive tabs",
@@ -408,26 +447,12 @@ test(
       ]);
       assert.equal(downloadResult.fetchCalls, 0);
       assert.equal(downloadResult.zipSignature, 0x04034b50);
-      assert.equal(downloadResult.entries.length, 8);
+      assertExactMissionProjectPaths(downloadResult.entries);
       assert.equal(
         downloadResult.entries.find(({ name }) => name === "src/train.py")
           .text,
         downloadResult.python,
       );
-      for (const required of [
-        ".gitignore",
-        "README.md",
-        "model_mission.json",
-        "requirements.txt",
-        "src/predict.py",
-        "src/train.py",
-        "tests/test_generated_project.py",
-      ]) {
-        assert.ok(
-          downloadResult.entries.some(({ name }) => name === required),
-          required,
-        );
-      }
 
       const progressiveControls = await client.send("Runtime.evaluate", {
         awaitPromise: true,
