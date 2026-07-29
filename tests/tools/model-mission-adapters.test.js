@@ -182,6 +182,49 @@ test("legacy dependency metadata survives adaptation with its project", () => {
   assert.notEqual(result.resolvedConfig.model, project.model);
 });
 
+test("sensor ONNX adaptation adds its truthful inference runtime only when selected", () => {
+  const baseProject = {
+    ...createDefaultProjectConfig(),
+    taskId: "sensor-classification",
+  };
+  const legacyResult = {
+    filename: "train_sensor.py",
+    code: "print('ready')\n",
+    dependencies: [
+      {
+        package: "onnx",
+        version: ">=1.16,<2",
+        purpose: "ONNX export",
+      },
+    ],
+  };
+  const onnx = adaptLegacyMissionResult(legacyResult, {
+    ...baseProject,
+    output: { exportFormat: "onnx" },
+  });
+  const torchscript = adaptLegacyMissionResult(legacyResult, {
+    ...baseProject,
+    output: { exportFormat: "torchscript" },
+  });
+
+  assert.deepEqual(
+    onnx.dependencies.find(
+      ({ package: packageName }) => packageName === "onnxruntime",
+    ),
+    {
+      package: "onnxruntime",
+      version: ">=1.18,<2",
+      purpose: "ONNX inference",
+    },
+  );
+  assert.equal(
+    torchscript.dependencies.some(
+      ({ package: packageName }) => packageName === "onnxruntime",
+    ),
+    false,
+  );
+});
+
 test("string dependencies receive defaults and unknown packages stay installable", () => {
   const result = adaptLegacyMissionResult({
     filename: "train.py",

@@ -61,23 +61,72 @@ function mergeProject(project, overrides = {}) {
   };
 }
 
-function synchronousBundle(taskId, overrides = {}) {
+function synchronousMission(taskId, overrides = {}) {
   const project = mergeProject(createProjectForTask(taskId), overrides);
   const result = generateSynchronousMissionResult(project);
   assert.deepEqual(result.validationErrors, {});
-  return buildMissionProjectBundle({
-    result,
+  return {
     project: result.resolvedConfig,
+    result,
     task: getModelMissionTask(taskId),
+  };
+}
+
+function synchronousBundle(taskId, overrides = {}) {
+  const mission = synchronousMission(taskId, overrides);
+  return buildMissionProjectBundle({
+    ...mission,
   });
 }
 
-async function legacyMission(taskId, overrides = {}) {
+function executePredictor(bundle, extraFiles = {}) {
+  const temporaryRoot = mkdtempSync(
+    join(tmpdir(), "model-mission-predictor-"),
+  );
+  try {
+    writeBundle(temporaryRoot, {
+      ...bundle.files,
+      ...extraFiles,
+    });
+    return spawnSync(
+      "python",
+      ["src/predict.py"],
+      { cwd: temporaryRoot, encoding: "utf8" },
+    );
+  } finally {
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+}
+
+function assertPredictorOutput(executed, expected) {
+  assert.equal(executed.status, 0, executed.stderr || executed.stdout);
+  assert.match(executed.stdout, expected);
+}
+
+function bundleMission(mission) {
+  return buildMissionProjectBundle({
+    result: mission.result,
+    project: mission.project,
+    task: mission.task,
+  });
+}
+
+async function legacyMission(taskId, overrides = {}, mode = "starter") {
   const task = getModelMissionTask(taskId);
   const recipe = await loadRecipe(task.recipeId);
-  const defaults = getRecipeDefaultConfig(recipe, "starter");
+  const defaults = getRecipeDefaultConfig(recipe, mode);
   const config = { ...defaults, ...overrides };
-  const sections = legacyDefaultsToSections(task.recipeId, config);
+  const generated = buildRecipeResult(
+    recipe,
+    task.recipeId,
+    config,
+    mode,
+  );
+  assert.deepEqual(generated.validationErrors, {});
+  const sections = legacyDefaultsToSections(
+    task.recipeId,
+    generated.config,
+  );
   const initialProject = createProjectForTask(taskId);
   const project = {
     ...initialProject,
@@ -87,13 +136,6 @@ async function legacyMission(taskId, overrides = {}) {
       ...sections.output,
     },
   };
-  const generated = buildRecipeResult(
-    recipe,
-    task.recipeId,
-    config,
-    "starter",
-  );
-  assert.deepEqual(generated.validationErrors, {});
   return {
     project,
     result: adaptLegacyMissionResult(generated, project),
@@ -184,6 +226,80 @@ test("bundle output is deterministic and configuration has no live alias", () =>
   assert.equal(JSON.parse(serialized).model.model, "logistic-regression");
 });
 
+test("resolved MissionResult configuration is authoritative", () => {
+  const mission = synchronousMission("classification");
+  const mismatchedProject = mergeProject(mission.project, {
+    model: { model: "decision-tree" },
+  });
+
+  assert.throws(
+    () => buildMissionProjectBundle({
+      ...mission,
+      project: mismatchedProject,
+    }),
+    /project must match result\.resolvedConfig/i,
+  );
+  assert.throws(
+    () => buildMissionProjectBundle({
+      ...mission,
+      task: getModelMissionTask("regression"),
+    }),
+    /task must match result\.resolvedConfig/i,
+  );
+  assert.throws(
+    () => buildMissionProjectBundle({
+      ...mission,
+      result: {
+        ...mission.result,
+        resolvedConfig: undefined,
+      },
+    }),
+    /resolvedConfig is required/i,
+  );
+});
+
+test("bundle validates required structured inputs before generation", () => {
+  assert.throws(
+    () => buildMissionProjectBundle(),
+    /MissionResult, resolved ProjectConfig, and task are required/i,
+  );
+
+  const mission = synchronousMission("classification");
+  assert.throws(
+    () => buildMissionProjectBundle({
+      ...mission,
+      result: {
+        ...mission.result,
+        dependencies: ["numpy"],
+      },
+    }),
+    /dependencies must contain structured records/i,
+  );
+});
+
+test("forged task identifiers cannot become artifact paths", () => {
+  const mission = synchronousMission("classification");
+  const resolvedConfig = {
+    ...mission.result.resolvedConfig,
+    taskId: "../escape",
+  };
+
+  assert.throws(
+    () => buildMissionProjectBundle({
+      result: {
+        ...mission.result,
+        resolvedConfig,
+      },
+      project: resolvedConfig,
+      task: {
+        ...mission.task,
+        id: "../escape",
+      },
+    }),
+    /supported Model Mission task/i,
+  );
+});
+
 test("project names normalize safely and path-shaped names are rejected", () => {
   const project = mergeProject(createProjectForTask("classification"), {
     output: { projectName: "  Factory Vision_Project!  " },
@@ -212,7 +328,10 @@ test("project names normalize safely and path-shaped names are rejected", () => 
     });
     assert.throws(
       () => buildMissionProjectBundle({
-        result,
+        result: {
+          ...result,
+          resolvedConfig: unsafeProject,
+        },
         project: unsafeProject,
         task: getModelMissionTask("classification"),
       }),
@@ -235,12 +354,16 @@ test("internal paths reject traversal, absolute paths, and Windows bypasses", ()
   ];
 
   for (const artifactPath of unsafePaths) {
+    const unsafeProject = mergeProject(result.resolvedConfig, {
+      output: { artifactPath },
+    });
     assert.throws(
       () => buildMissionProjectBundle({
-        result,
-        project: mergeProject(result.resolvedConfig, {
-          output: { artifactPath },
-        }),
+        result: {
+          ...result,
+          resolvedConfig: unsafeProject,
+        },
+        project: unsafeProject,
         task: getModelMissionTask("neural-network"),
       }),
       /safe relative path/i,
@@ -370,6 +493,7 @@ test("YOLO project loads the actual best checkpoint and configured source", asyn
       projectDirectory: "./runs/factory",
       runName: "bearing_check",
     },
+    "production",
   );
   const bundle = buildMissionProjectBundle({ result, project, task });
   const prediction = bundle.files["src/predict.py"];
@@ -389,6 +513,222 @@ test("YOLO project loads the actual best checkpoint and configured source", asyn
     bundle.files["requirements.txt"],
     /ultralytics>=8\.3,<9/,
   );
+});
+
+test("ONNX sensor prediction loads documented input and executes inference", async () => {
+  const mission = await legacyMission("sensor-classification", {
+    exportFormat: "onnx",
+  }, "production");
+  const bundle = bundleMission(mission);
+
+  assert.match(
+    bundle.files["requirements.txt"],
+    /onnxruntime>=1\.18,<2/,
+  );
+  assert.match(bundle.files["README.md"], /data\/inference\.npy/);
+  assert.match(bundle.files["data/README.md"], /data\/inference\.npy/);
+  assert.match(
+    mission.result.code,
+    /output_path = checkpoint\.with_suffix\("\.onnx"\)/,
+  );
+
+  const executed = executePredictor(bundle, {
+    "artifacts/sensor_classifier.onnx": "",
+    "data/inference.npy": "stub",
+    "src/numpy.py": `class Batch:
+    pass
+
+
+def load(path, allow_pickle=False):
+    assert str(path).replace("\\\\", "/") == "data/inference.npy"
+    assert allow_pickle is False
+    return Batch()
+`,
+    "src/onnxruntime.py": `class Input:
+    name = "sensor_input"
+
+
+class InferenceSession:
+    def __init__(self, path, providers):
+        assert str(path).replace("\\\\", "/") == "artifacts/sensor_classifier.onnx"
+        assert providers == ["CPUExecutionProvider"]
+
+    def get_inputs(self):
+        return [Input()]
+
+    def run(self, output_names, inputs):
+        assert output_names is None
+        assert list(inputs) == ["sensor_input"]
+        return [["onnx-ok"]]
+`,
+  });
+
+  assertPredictorOutput(executed, /onnx-ok/);
+});
+
+test("executed classical and Keras predictors honor training artifact paths", () => {
+  const classicalMission = synchronousMission("classification");
+  const classicalBundle = bundleMission(classicalMission);
+  assert.match(
+    classicalMission.result.code,
+    /MODEL_PATH = "classification_pipeline\.joblib"/,
+  );
+  const classical = executePredictor(classicalBundle, {
+    "classification_pipeline.joblib": "",
+    "data/inference.csv": "feature\n1\n",
+    "src/joblib.py": `class Pipeline:
+    def predict(self, rows):
+        assert rows == ["csv-rows"]
+        return ["classical-ok"]
+
+
+def load(path):
+    assert str(path).replace("\\\\", "/") == "classification_pipeline.joblib"
+    return Pipeline()
+`,
+    "src/pandas.py": `def read_csv(path):
+    assert str(path).replace("\\\\", "/") == "data/inference.csv"
+    return ["csv-rows"]
+`,
+  });
+  assertPredictorOutput(classical, /classical-ok/);
+
+  const kerasMission = synchronousMission("neural-network", {
+    output: {
+      checkpointPath: "artifacts/best_products.keras",
+      artifactPath: "artifacts/products.keras",
+    },
+  });
+  const kerasBundle = bundleMission(kerasMission);
+  assert.match(
+    kerasMission.result.code,
+    /ARTIFACT_PATH = Path\("artifacts\/products\.keras"\)/,
+  );
+  const keras = executePredictor(kerasBundle, {
+    "artifacts/products.keras": "",
+    "data/inference.npy": "stub",
+    "src/keras.py": `class Model:
+    def predict(self, batch, verbose=0):
+        assert batch == ["keras-input"]
+        assert verbose == 0
+        return ["keras-ok"]
+
+
+class Models:
+    @staticmethod
+    def load_model(path):
+        assert str(path).replace("\\\\", "/") == "artifacts/products.keras"
+        return Model()
+
+
+models = Models()
+`,
+    "src/numpy.py": `def load(path, allow_pickle=False):
+    assert str(path).replace("\\\\", "/") == "data/inference.npy"
+    assert allow_pickle is False
+    return ["keras-input", "unused"]
+`,
+  });
+  assertPredictorOutput(keras, /keras-ok/);
+});
+
+test("executed PyTorch and YOLO predictors honor training artifact paths", async () => {
+  const pytorchMission = synchronousMission("neural-network", {
+    model: {
+      framework: "pytorch",
+      preset: "tabular-mlp",
+    },
+    output: {
+      checkpointPath: "artifacts/best_patients.pt",
+      artifactPath: "artifacts/patients.pt",
+    },
+  });
+  const pytorchBundle = bundleMission(pytorchMission);
+  assert.match(
+    pytorchMission.result.code,
+    /ARTIFACT_PATH = Path\("artifacts\/patients\.pt"\)/,
+  );
+  const pytorch = executePredictor(pytorchBundle, {
+    "artifacts/patients.pt": "",
+    "data/inference.npy": "stub",
+    "src/numpy.py": `def load(path, allow_pickle=False):
+    assert str(path).replace("\\\\", "/") == "data/inference.npy"
+    assert allow_pickle is False
+    return ["torch-input", "unused"]
+`,
+    "src/torch.py": `class Tensor:
+    def float(self):
+        return self
+
+
+def load(path, map_location, weights_only):
+    assert str(path).replace("\\\\", "/") == "artifacts/patients.pt"
+    assert map_location == "cpu"
+    assert weights_only is True
+    return {
+        "model_state": {"weight": "ready"},
+        "input_shape": (30,),
+        "num_classes": 2,
+        "task": "tabular-classification",
+    }
+
+
+def from_numpy(value):
+    assert value == ["torch-input"]
+    return Tensor()
+
+
+class inference_mode:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
+`,
+    "src/train.py": `INPUT_SHAPE = (30,)
+NUM_CLASSES = 2
+TASK = "tabular-classification"
+
+
+class ConfigurableNetwork:
+    def load_state_dict(self, state):
+        assert state == {"weight": "ready"}
+
+    def eval(self):
+        return None
+
+    def __call__(self, sample):
+        return ["pytorch-ok"]
+`,
+  });
+  assertPredictorOutput(pytorch, /pytorch-ok/);
+
+  const yoloMission = await legacyMission("object-detection", {
+    sourcePath: "./examples/conveyor.jpg",
+    projectDirectory: "./runs/factory",
+    runName: "bearing_check",
+  }, "production");
+  const yoloBundle = bundleMission(yoloMission);
+  assert.match(
+    yoloMission.result.code,
+    /"project_directory": "\.\/runs\/factory"/,
+  );
+  assert.match(yoloMission.result.code, /"run_name": "bearing_check"/);
+  const yolo = executePredictor(yoloBundle, {
+    "runs/factory/bearing_check/weights/best.pt": "",
+    "examples/conveyor.jpg": "",
+    "src/ultralytics.py": `class YOLO:
+    def __init__(self, path):
+        assert str(path).replace("\\\\", "/") == "runs/factory/bearing_check/weights/best.pt"
+
+    def predict(self, source, conf, iou):
+        assert source.replace("\\\\", "/") == "examples/conveyor.jpg"
+        assert conf == 0.25
+        assert iou == 0.7
+        print("yolo-ok")
+`,
+  });
+  assertPredictorOutput(yolo, /yolo-ok/);
 });
 
 test("legacy adapter preserves recipe data structure for the bundle guide", async () => {
