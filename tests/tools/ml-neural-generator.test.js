@@ -173,7 +173,173 @@ test("Keras generator emits an editable multiclass CNN", () => {
   assert.match(result.code, /layers\.GlobalAveragePooling2D/);
   assert.match(result.code, /layers\.Dense\(num_classes\)/);
   assert.match(result.code, /SparseCategoricalCrossentropy\(from_logits=True\)/);
-  assert.match(result.code, /epochs=20/);
+  assert.match(result.code, /EPOCHS = 20/);
+});
+
+test("Keras generator trains, validates, tests, saves, and predicts", () => {
+  const result = generateNeuralScript({
+    framework: "keras",
+    preset: "tabular-mlp",
+    task: "tabular-classification",
+    dataSource: "breast-cancer",
+    epochs: 4,
+    batchSize: 16,
+    optimizer: "adamw",
+    scheduler: "reduce-on-plateau",
+    patience: 2,
+    weightDecay: 0.0004,
+    gradientClip: 1.5,
+  });
+
+  assert.match(result.code, /def load_data\(\):/);
+  assert.match(result.code, /train_test_split/);
+  assert.match(result.code, /model\.fit\(/);
+  assert.doesNotMatch(result.code, /# history = model\.fit/);
+  assert.match(result.code, /keras\.callbacks\.EarlyStopping\(/);
+  assert.match(result.code, /keras\.callbacks\.ModelCheckpoint\(/);
+  assert.match(result.code, /keras\.callbacks\.ReduceLROnPlateau\(/);
+  assert.equal(result.code.match(/model\.evaluate\(test_/g)?.length, 1);
+  assert.match(result.code, /model\.save\(ARTIFACT_PATH\)/);
+  assert.match(result.code, /def predict_sample\(/);
+  assert.match(result.code, /if __name__ == "__main__":/);
+  assert.match(result.code, /EPOCHS = 4/);
+  assert.match(result.code, /BATCH_SIZE = 16/);
+  assert.match(result.code, /PATIENCE = 2/);
+  assert.match(result.code, /WEIGHT_DECAY = 0\.0004/);
+  assert.match(result.code, /CLIPNORM = 1\.5/);
+  assert.match(
+    result.code,
+    /AdamW\(learning_rate=LEARNING_RATE, weight_decay=WEIGHT_DECAY, clipnorm=CLIPNORM\)/,
+  );
+});
+
+test("Keras tabular preprocessing learns only from training rows", () => {
+  const result = generateNeuralScript({
+    framework: "keras",
+    preset: "tabular-mlp",
+    dataSource: "custom-csv",
+    dataPath: "data/customer-churn.csv",
+    targetColumn: "churned",
+    scaling: "robust",
+    randomSeed: 73,
+  });
+
+  assert.match(result.code, /pd\.read_csv\(DATA_PATH\)/);
+  assert.match(result.code, /if TARGET_COLUMN not in frame\.columns:/);
+  assert.match(result.code, /if features\.shape\[1\] == 0:/);
+  assert.ok(
+    result.code.indexOf("train_test_split(")
+      < result.code.indexOf("preprocessor.fit_transform(X_train)"),
+  );
+  assert.match(result.code, /preprocessor\.transform\(X_validation\)/);
+  assert.match(result.code, /preprocessor\.transform\(X_test\)/);
+  assert.doesNotMatch(result.code, /fit_transform\(X_validation\)|fit_transform\(X_test\)/);
+  assert.match(result.code, /RobustScaler\(\)/);
+  assert.match(result.code, /RANDOM_SEED = 73/);
+});
+
+test("Keras classification and regression heads use compatible losses and metrics", () => {
+  const binary = generateNeuralScript({
+    framework: "keras",
+    preset: "tabular-mlp",
+    dataSource: "breast-cancer",
+    numClasses: 2,
+  }).code;
+  const multiclass = generateNeuralScript({
+    framework: "keras",
+    preset: "tabular-mlp",
+    dataSource: "iris",
+    numClasses: 3,
+  }).code;
+  const regression = generateNeuralScript({
+    framework: "keras",
+    preset: "tabular-regression-mlp",
+    task: "tabular-regression",
+    dataSource: "diabetes",
+  }).code;
+
+  assert.match(binary, /layers\.Dense\(1\)/);
+  assert.match(binary, /BinaryCrossentropy\(from_logits=True\)/);
+  assert.match(binary, /BinaryAccuracy\(name="accuracy", threshold=0\.0\)/);
+  assert.match(multiclass, /layers\.Dense\(num_classes\)/);
+  assert.match(multiclass, /SparseCategoricalCrossentropy\(from_logits=True\)/);
+  assert.match(multiclass, /SparseCategoricalAccuracy\(name="accuracy"\)/);
+  assert.match(regression, /layers\.Dense\(1\)/);
+  assert.match(regression, /MeanSquaredError\(\)/);
+  assert.match(regression, /MeanAbsoluteError\(name="mae"\)/);
+  assert.match(regression, /stratify=None/);
+});
+
+test("Keras image folders load explicit train, validation, and test datasets", () => {
+  const code = generateNeuralScript({
+    framework: "keras",
+    preset: "image-cnn",
+    task: "image-classification",
+    dataPath: "datasets/animals",
+    inputShape: [48, 48, 3],
+    numClasses: 4,
+  }).code;
+
+  assert.match(code, /IMAGE_DIRECTORY = "datasets\/animals"/);
+  assert.match(code, /train_directory = Path\(IMAGE_DIRECTORY\) \/ "train"/);
+  assert.match(code, /validation_directory = Path\(IMAGE_DIRECTORY\) \/ "validation"/);
+  assert.match(code, /test_directory = Path\(IMAGE_DIRECTORY\) \/ "test"/);
+  assert.equal(
+    code.match(/keras\.utils\.image_dataset_from_directory\(/g)?.length,
+    3,
+  );
+  assert.match(code, /image_size=INPUT_SHAPE\[:2\]/);
+  assert.match(code, /layers\.Rescaling\(1\.0 \/ 255\.0\)/);
+  assert.match(code, /model\.fit\(\s*train_data,/);
+});
+
+test("Keras sequence arrays validate shape, split deterministically, and scale train-only", () => {
+  const code = generateNeuralScript({
+    framework: "keras",
+    preset: "sequence-lstm",
+    task: "sequence-classification",
+    dataPath: "data/windows.npz",
+    inputShape: [64, 8],
+    numClasses: 5,
+    scaling: "minmax",
+    scheduler: "cosine",
+    randomSeed: 19,
+  }).code;
+
+  assert.match(code, /with np\.load\(SEQUENCE_PATH\) as arrays:/);
+  assert.match(code, /"features" not in arrays or "targets" not in arrays/);
+  assert.match(code, /features\.shape\[1:\] != INPUT_SHAPE/);
+  assert.ok(
+    code.indexOf("train_test_split(")
+      < code.indexOf("scaler.fit_transform(train_flat)"),
+  );
+  assert.match(code, /MinMaxScaler\(\)/);
+  assert.match(code, /keras\.callbacks\.LearningRateScheduler\(/);
+  assert.match(code, /RANDOM_SEED = 19/);
+});
+
+test("Keras workflow dependencies include every directly imported data package", () => {
+  const tabular = generateNeuralScript({
+    framework: "keras",
+    preset: "tabular-mlp",
+  });
+  const image = generateNeuralScript({
+    framework: "keras",
+    preset: "image-cnn",
+  });
+  const sequence = generateNeuralScript({
+    framework: "keras",
+    preset: "sequence-conv1d",
+  });
+
+  assert.deepEqual(tabular.dependencies, [
+    "keras",
+    "numpy",
+    "pandas",
+    "scikit-learn",
+  ]);
+  assert.deepEqual(image.dependencies, ["keras", "numpy"]);
+  assert.deepEqual(sequence.dependencies, ["keras", "numpy", "scikit-learn"]);
 });
 
 test("PyTorch generator emits a sequence LSTM and training skeleton", () => {
