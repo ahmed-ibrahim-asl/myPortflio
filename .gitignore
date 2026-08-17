@@ -8,5 +8,6 @@ out/
 *.zip
 portfolio_codebase.*
 start.sh
+start.bat
 .ease/
 .gemini/
