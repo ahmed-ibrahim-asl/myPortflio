@@ -1,0 +1,259 @@
+<style>
+  .direction-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 26px;
+  }
+
+  .direction-card {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .ui-frame {
+    min-height: 360px;
+    padding: 12px;
+    color: #dfe9ff;
+    background: #070a18;
+    border: 1px solid #344164;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+  }
+
+  .ui-top {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 9px;
+    color: #72dfe2;
+    border-bottom: 1px solid #263353;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+
+  .ui-chip-row,
+  .ui-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .ui-chip {
+    padding: 4px 6px;
+    color: #aab5d4;
+    border: 1px solid #344164;
+  }
+
+  .ui-chip.active {
+    color: #071014;
+    background: #72dfe2;
+    border-color: #72dfe2;
+  }
+
+  .ui-layout {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 9px;
+    margin-top: 10px;
+  }
+
+  .ui-panel,
+  .ui-code,
+  .ui-card {
+    padding: 9px;
+    background: #0d1226;
+    border: 1px solid #2c385b;
+  }
+
+  .ui-label {
+    margin: 0 0 5px;
+    color: #f6cf72;
+    font-size: 8px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .ui-field {
+    padding: 6px;
+    margin-bottom: 7px;
+    color: #cad5f0;
+    background: #070a18;
+    border: 1px solid #344164;
+  }
+
+  .ui-code {
+    min-height: 168px;
+    color: #8bcf9a;
+    line-height: 1.55;
+  }
+
+  .ui-metrics > div {
+    flex: 1 1 66px;
+    padding: 7px;
+    color: #cad5f0;
+    background: #0d1226;
+    border-top: 2px solid #72dfe2;
+  }
+
+  .ui-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-top: 10px;
+  }
+
+  .ui-gallery .ui-card {
+    min-height: 65px;
+  }
+
+  .ui-gallery .selected {
+    border-color: #72dfe2;
+    box-shadow: inset 3px 0 #72dfe2;
+  }
+
+  .ui-step {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 8px;
+    padding: 9px 0;
+    border-bottom: 1px solid #263353;
+  }
+
+  .ui-step-number {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    color: #071014;
+    background: #72dfe2;
+  }
+
+  .recommendation {
+    display: inline-flex;
+    padding: 4px 7px;
+    margin-left: 7px;
+    color: #071014;
+    background: #f6cf72;
+    font-size: 10px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 980px) {
+    .direction-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ui-frame {
+      min-height: 0;
+    }
+  }
+</style>
+
+<h2>How should the expanded AI/ML generator work?</h2>
+<p class="subtitle">All three support Starter / Production modes and embedded-robotics templates. Choose the interaction model that feels most useful on desktop and mobile.</p>
+
+<div class="cards direction-grid">
+  <div class="card direction-card" data-choice="control-room" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="ui-frame">
+        <div class="ui-top"><span>ML Pipeline Builder</span><span>12 templates</span></div>
+        <div class="ui-chip-row">
+          <span class="ui-chip active">Starter</span>
+          <span class="ui-chip">Production</span>
+          <span class="ui-chip">Edge ready</span>
+        </div>
+        <div class="ui-layout">
+          <div class="ui-panel">
+            <p class="ui-label">Configure</p>
+            <div class="ui-field">Sensor anomaly</div>
+            <div class="ui-field">PyTorch</div>
+            <div class="ui-field">ESP32 / TFLite</div>
+          </div>
+          <div>
+            <div class="ui-code">import torch<br>from pipeline import SensorWindow<br><br>model = AutoEncoder(...)<br>metrics = evaluate(model)<br>export_tflite(model)</div>
+            <div class="ui-metrics">
+              <div>DATA<br><strong>CSV windows</strong></div>
+              <div>METRIC<br><strong>F1 + latency</strong></div>
+              <div>DEVICE<br><strong>Edge CPU</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Control room <span class="recommendation">Recommended</span></h3>
+      <p>A sticky configuration rail updates code and practical guidance together. On mobile, controls stack above the output with compact tabs.</p>
+    </div>
+  </div>
+
+  <div class="card direction-card" data-choice="template-gallery" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="ui-frame">
+        <div class="ui-top"><span>Choose a pipeline</span><span>Filter: Edge AI</span></div>
+        <div class="ui-chip-row">
+          <span class="ui-chip active">All</span>
+          <span class="ui-chip">Vision</span>
+          <span class="ui-chip">Sensors</span>
+          <span class="ui-chip">Forecasting</span>
+        </div>
+        <div class="ui-gallery">
+          <div class="ui-card selected"><p class="ui-label">Sensors</p>Anomaly detection<br><small>Autoencoder · Edge</small></div>
+          <div class="ui-card"><p class="ui-label">Vision</p>Object detection<br><small>YOLO · Camera</small></div>
+          <div class="ui-card"><p class="ui-label">Forecast</p>Motor health<br><small>LSTM · Timeseries</small></div>
+          <div class="ui-card"><p class="ui-label">Audio</p>Keyword spotting<br><small>CNN · Microphone</small></div>
+        </div>
+        <div class="ui-code" style="min-height:102px;margin-top:9px">Selected template preview<br><br>Dataset · Hardware · Metrics · Export path</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Template gallery</h3>
+      <p>Users browse by task and hardware before opening a template. Excellent discoverability, but adds a selection step before reaching code.</p>
+    </div>
+  </div>
+
+  <div class="card direction-card" data-choice="guided-wizard" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="ui-frame">
+        <div class="ui-top"><span>Build a pipeline</span><span>Step 2 of 3</span></div>
+        <div class="ui-step">
+          <span class="ui-step-number">✓</span>
+          <div><p class="ui-label">Goal</p>Detect unusual vibration</div>
+        </div>
+        <div class="ui-step">
+          <span class="ui-step-number">2</span>
+          <div><p class="ui-label">Data and device</p><div class="ui-field">Accelerometer time series</div><div class="ui-field">Low-power edge board</div></div>
+        </div>
+        <div class="ui-step">
+          <span class="ui-step-number" style="background:#344164;color:#9ca7ca">3</span>
+          <div><p class="ui-label">Output</p>Starter or production package</div>
+        </div>
+        <div class="ui-card" style="margin-top:10px;border-color:#72dfe2">Next: choose framework →</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Guided wizard</h3>
+      <p>The clearest learning path for beginners and small screens. It explains each choice, but experienced users must move through several steps.</p>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top:24px">
+  <div class="pros">
+    <h4>My recommendation</h4>
+    <ul>
+      <li>Use A as the working interface.</li>
+      <li>Add a compact template picker from B inside the task control.</li>
+      <li>Keep every selected combination valid—no dead-end error states.</li>
+    </ul>
+  </div>
+  <div class="cons">
+    <h4>Responsive rule</h4>
+    <ul>
+      <li>Desktop: sticky controls + wide output.</li>
+      <li>Tablet: balanced two-column layout.</li>
+      <li>Mobile: one column, full-width controls, horizontally scrollable code.</li>
+    </ul>
+  </div>
+</div>

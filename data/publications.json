@@ -1,0 +1,43 @@
+{
+    "schemaVersion":  1,
+    "profileId":  "o72gFwkAAAAJ",
+    "profileUrl":  "https://scholar.google.com/citations?user=o72gFwkAAAAJ\u0026hl=en",
+    "source":  "user-verified-google-scholar-profile",
+    "lastSyncedAt":  null,
+    "publications":  [
+                         {
+                             "id":  "o72gFwkAAAAJ:unet-aerial-images-egypt",
+                             "title":  "An Enhanced U-Net Architecture for Semantic Segmentation of Aerial Images from Egypt",
+                             "authors":  "BM El-Den, AIME Asl",
+                             "venue":  "2026 43rd National Radio Science Conference (NRSC), 200-207",
+                             "year":  "2026",
+                             "citedBy":  0,
+                             "href":  "https://scholar.google.com/citations?user=o72gFwkAAAAJ\u0026hl=en",
+                             "citesHref":  null,
+                             "tags":  [
+                                          "Image Processing",
+                                          "Machine Learning",
+                                          "Conference Paper"
+                                      ],
+                             "publicationType":  "Conference Paper",
+                             "ranking":  null
+                         },
+                         {
+                             "id":  "o72gFwkAAAAJ:smart-rouv-suez-canal",
+                             "title":  "Smart ROUV advances for enhanced navigation in the Suez Canal",
+                             "authors":  "K Oqda, KM Ibrahim, AI Mustafa, RG Allam, MA Saad, AI Asl, et al.",
+                             "venue":  "Scientific Reports 15 (1), 39011",
+                             "year":  "2025",
+                             "citedBy":  2,
+                             "href":  "https://www.nature.com/articles/s41598-025-23281-8",
+                             "citesHref":  null,
+                             "tags":  [
+                                          "ROUV",
+                                          "Navigation",
+                                          "Scientific Reports"
+                                      ],
+                             "publicationType":  "Journal Paper",
+                             "ranking":  "Q1"
+                         }
+                     ]
+}

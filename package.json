@@ -2,9 +2,11 @@
   "name": "ahmed-asl-portfolio",
   "version": "2.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test": "node --test --test-concurrency=1 tests/tools/*.test.js",
     "test:ml": "node --test tests/tools/ml-generator-catalog.test.js tests/tools/ml-generator-engine.test.js tests/tools/ml-generator-loader.test.js tests/tools/ml-generator-loader-validation.test.js tests/tools/ml-generator-baseline-contract.test.js tests/tools/ml-generator-parity.test.js tests/tools/ml-generator-sensor-parity.test.js tests/tools/ml-generator-edge-parity.test.js tests/tools/ml-generator.test.js tests/tools/model-mission-*.test.js",
     "test:ml:model-mission": "node --test tests/tools/model-mission-*.test.js",
     "test:ml:responsive": "node --no-warnings --test tests/tools/model-mission-responsive.test.js",
@@ -19,6 +21,7 @@
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "7.2.0",
     "gray-matter": "4.0.3",
+    "impeccable": "^3.5.0",
     "marked": "18.0.6",
     "next": "16.2.10",
     "postcss": "8.5.20",

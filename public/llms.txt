@@ -1,0 +1,33 @@
+# Ahmed Asl
+
+> Portfolio of Ahmed Asl, an IoT and embedded systems engineer, teaching assistant, and technical educator based in Egypt.
+
+## Core pages
+
+- [Home](https://ahmed-ibrahim-asl.github.io/myPortfolio/): Overview of Ahmed's embedded systems, IoT, robotics, research, and teaching work.
+- [Work](https://ahmed-ibrahim-asl.github.io/myPortfolio/work/): Embedded firmware, robotics, IoT telemetry, secure hardware, OTA management, Flutter, and interface projects.
+- [About](https://ahmed-ibrahim-asl.github.io/myPortfolio/about/): Experience, university teaching, technical capabilities, publications, CV, and workshops.
+- [Writing](https://ahmed-ibrahim-asl.github.io/myPortfolio/writing/): Engineering field notes, Linux and cybersecurity walkthroughs, and the Learn With Me series.
+- [Contact](https://ahmed-ibrahim-asl.github.io/myPortfolio/contact/): Email and professional profiles.
+
+## Areas of work
+
+- Embedded firmware in C and C++ for ESP32, ESP8266, Arduino, and AVR systems.
+- IoT architecture, device connectivity, telemetry, networking, Linux, and Python.
+- Robotics, sensor integration, secure access systems, and remotely operated vehicles.
+- Flutter control interfaces, UI and UX design, and technical communication.
+- University teaching in satellite communication, acoustics, digital and logic circuits, measurement, and sensors.
+
+## Writing series
+
+- OverTheWire Bandit walkthroughs: Linux, SSH, files, permissions, processes, and networking.
+- Learn With Me: Linux, Python, Dart and Flutter, and Git.
+
+## Identity and references
+
+- [GitHub](https://github.com/ahmed-ibrahim-asl)
+- [LinkedIn](https://www.linkedin.com/in/ahmed-ibrahim-asl/)
+- [Google Scholar](https://scholar.google.com/citations?user=o72gFwkAAAAJ&hl=en)
+- [TryHackMe](https://tryhackme.com/p/MRH0N3Y)
+- [Behance](https://www.behance.net/ahmedassal3)
+- [YouTube](https://www.youtube.com/@ahmedassal8710)

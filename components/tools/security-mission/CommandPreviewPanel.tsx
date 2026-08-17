@@ -145,6 +145,14 @@ export function CommandPreviewPanel({
       {generatedCommand?.evidenceId && (
         <p className={styles.evidenceLine}>
           Evidence record: <code>{generatedCommand.evidenceId}</code>
+          {generatedCommand.sourceUrls?.[0] && (
+            <>
+              {" · "}
+              <a href={generatedCommand.sourceUrls[0]} target="_blank" rel="noreferrer">
+                Verified against official docs
+              </a>
+            </>
+          )}
         </p>
       )}
     </div>

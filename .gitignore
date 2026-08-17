@@ -1,4 +1,12 @@
 node_modules/
-get_thumb.py
-yt_playlist.html
+.next/
+out/
 .DS_Store
+*.log
+.env*
+!.env.example
+*.zip
+portfolio_codebase.*
+start.sh
+.ease/
+.gemini/

@@ -1,0 +1,587 @@
+{
+  "audit_date": "2026-07-28",
+  "route": "/tools/ai-script-generator/",
+  "tool_name": "Model Mission",
+  "overall_score": 7.3,
+  "estimated_project_completion_rate": 0.62,
+  "generated_variants": 8,
+  "runtime_passes": 8,
+  "end_to_end_variants": 6,
+  "automated_tests_passed": 57,
+  "http_load_seconds": [
+    0.07366,
+    0.056853,
+    0.061668,
+    0.053616,
+    0.116042
+  ],
+  "task_results": [
+    {
+      "task": "Classification",
+      "variant": "scikit-learn + SMOTE",
+      "dataset": "UCI Adult",
+      "dataset_size": "32,561 rows",
+      "compile_status": "pass",
+      "runtime_status": "pass",
+      "scope": "end-to-end",
+      "duration_seconds": 4.156,
+      "primary_metric": "test accuracy",
+      "metric_value": 0.7898,
+      "artifact": "trained_pipeline.joblib",
+      "audit_note": "Training-only preprocessing and SMOTE executed successfully."
+    },
+    {
+      "task": "Regression",
+      "variant": "scikit-learn random forest",
+      "dataset": "UCI Auto MPG",
+      "dataset_size": "398 rows",
+      "compile_status": "pass",
+      "runtime_status": "pass",
+      "scope": "end-to-end",
+      "duration_seconds": 1.422,
+      "primary_metric": "test R\u00b2",
+      "metric_value": 0.923,
+      "artifact": "trained_pipeline.joblib",
+      "audit_note": "Missing-value handling, train/validation/test split, evaluation, and save completed."
+    },
+    {
+      "task": "Sensor classification",
+      "variant": "PyTorch LSTM",
+      "dataset": "UCI HAR",
+      "dataset_size": "7,352 windows",
+      "compile_status": "pass",
+      "runtime_status": "pass",
+      "scope": "end-to-end",
+      "duration_seconds": 9.14,
+      "primary_metric": "test accuracy",
+      "metric_value": 0.3236627379873073,
+      "artifact": "sensor_classifier.torchscript.pt",
+      "audit_note": "Training, evaluation, TorchScript export, and sample inference completed."
+    },
+    {
+      "task": "Image classification",
+      "variant": "TensorFlow MobileNetV3Small",
+      "dataset": "TensorFlow Flowers mini subset",
+      "dataset_size": "100 images / 5 classes",
+      "compile_status": "pass",
+      "runtime_status": "pass",
+      "scope": "end-to-end",
+      "duration_seconds": 22.422,
+      "primary_metric": "validation accuracy",
+      "metric_value": 0.0,
+      "artifact": "edge_classifier_tflite-fp32.tflite",
+      "audit_note": "Training, conversion, TFLite evaluation, and sample inference completed."
+    },
+    {
+      "task": "Object detection",
+      "variant": "Ultralytics YOLOv8n",
+      "dataset": "COCO8",
+      "dataset_size": "4 train / 4 validation images",
+      "compile_status": "pass",
+      "runtime_status": "pass",
+      "scope": "end-to-end",
+      "duration_seconds": 20.328,
+      "primary_metric": "explicit validation mAP50-95",
+      "metric_value": 0.2919583333333333,
+      "artifact": "best.pt + prediction output",
+      "audit_note": "Training, validation, checkpoint reload, and inference completed."
+    },
+    {
+      "task": "Instance segmentation",
+      "variant": "Ultralytics YOLOv8n-seg",
+      "dataset": "COCO8-Seg",
+      "dataset_size": "4 train / 4 validation images",
+      "compile_status": "pass",
+      "runtime_status": "pass",
+      "scope": "end-to-end",
+      "duration_seconds": 20.141,
+      "primary_metric": "explicit mask mAP50-95",
+      "metric_value": 0.2033333333333333,
+      "artifact": "best.pt + prediction output",
+      "audit_note": "Training, mask validation, checkpoint reload, and inference completed."
+    },
+    {
+      "task": "Neural network",
+      "variant": "Keras tabular MLP",
+      "dataset": "Digits-shaped configuration",
+      "dataset_size": "64 inputs / 10 classes",
+      "compile_status": "pass",
+      "runtime_status": "pass",
+      "scope": "architecture-only",
+      "duration_seconds": 3.859,
+      "primary_metric": "trainable parameters",
+      "metric_value": 6570,
+      "artifact": "configured_network.keras",
+      "audit_note": "Build and save completed; data loading, fit, and evaluation remain comments."
+    },
+    {
+      "task": "Neural network",
+      "variant": "PyTorch tabular MLP",
+      "dataset": "Digits-shaped configuration",
+      "dataset_size": "64 inputs / 10 classes",
+      "compile_status": "pass",
+      "runtime_status": "pass",
+      "scope": "architecture-only",
+      "duration_seconds": 2.406,
+      "primary_metric": "training epochs executed",
+      "metric_value": 0,
+      "artifact": "configured_network.pt",
+      "audit_note": "Build and save completed; DataLoaders and training loop remain comments."
+    }
+  ],
+  "level_comparison": [
+    {
+      "task_id": "classification",
+      "guided_equals_customize": false,
+      "customize_equals_advanced": true,
+      "guided_control_count": 5,
+      "customize_control_count": 15,
+      "advanced_control_count": 15
+    },
+    {
+      "task_id": "regression",
+      "guided_equals_customize": true,
+      "customize_equals_advanced": true,
+      "guided_control_count": 14,
+      "customize_control_count": 14,
+      "advanced_control_count": 14
+    },
+    {
+      "task_id": "sensor-classification",
+      "guided_equals_customize": false,
+      "customize_equals_advanced": true,
+      "guided_control_count": 9,
+      "customize_control_count": 22,
+      "advanced_control_count": 22
+    },
+    {
+      "task_id": "image-classification",
+      "guided_equals_customize": false,
+      "customize_equals_advanced": true,
+      "guided_control_count": 6,
+      "customize_control_count": 16,
+      "advanced_control_count": 16
+    },
+    {
+      "task_id": "object-detection",
+      "guided_equals_customize": false,
+      "customize_equals_advanced": true,
+      "guided_control_count": 6,
+      "customize_control_count": 19,
+      "advanced_control_count": 19
+    },
+    {
+      "task_id": "instance-segmentation",
+      "guided_equals_customize": false,
+      "customize_equals_advanced": true,
+      "guided_control_count": 6,
+      "customize_control_count": 19,
+      "advanced_control_count": 19
+    },
+    {
+      "task_id": "neural-network",
+      "guided_equals_customize": true,
+      "customize_equals_advanced": true,
+      "guided_control_count": 16,
+      "customize_control_count": 16,
+      "advanced_control_count": 16
+    }
+  ],
+  "responsive_results": [
+    {
+      "viewport": "phone-360",
+      "width_px": 360,
+      "horizontal_overflow_px": 0,
+      "config_visible": true,
+      "code_visible": false,
+      "config_code_overlap_area": 0,
+      "offscreen_workflow_steps": 6,
+      "small_touch_targets": 3
+    },
+    {
+      "viewport": "phone-390",
+      "width_px": 390,
+      "horizontal_overflow_px": 0,
+      "config_visible": true,
+      "code_visible": false,
+      "config_code_overlap_area": 0,
+      "offscreen_workflow_steps": 6,
+      "small_touch_targets": 3
+    },
+    {
+      "viewport": "tablet-768",
+      "width_px": 768,
+      "horizontal_overflow_px": 0,
+      "config_visible": true,
+      "code_visible": false,
+      "config_code_overlap_area": 0,
+      "offscreen_workflow_steps": 3,
+      "small_touch_targets": 3
+    },
+    {
+      "viewport": "reported-1128",
+      "width_px": 1128,
+      "horizontal_overflow_px": 0,
+      "config_visible": true,
+      "code_visible": true,
+      "config_code_overlap_area": 0,
+      "offscreen_workflow_steps": 0,
+      "small_touch_targets": 5
+    },
+    {
+      "viewport": "desktop-1440",
+      "width_px": 1440,
+      "horizontal_overflow_px": 0,
+      "config_visible": true,
+      "code_visible": true,
+      "config_code_overlap_area": 0,
+      "offscreen_workflow_steps": 0,
+      "small_touch_targets": 5
+    }
+  ],
+  "scorecard": [
+    {
+      "dimension": "Generated-code executability",
+      "score": 8.5,
+      "weight": 0.16,
+      "evidence": "8/8 generated variants completed their coded scope."
+    },
+    {
+      "dimension": "Configuration depth",
+      "score": 7.4,
+      "weight": 0.14,
+      "evidence": "Strong task-specific controls, but several user choices are missing or ineffective."
+    },
+    {
+      "dimension": "Workflow breadth",
+      "score": 7.0,
+      "weight": 0.12,
+      "evidence": "Seven student-facing tasks cover classical, vision, sensor, and architecture workflows."
+    },
+    {
+      "dimension": "Learning design",
+      "score": 7.4,
+      "weight": 0.12,
+      "evidence": "Linear workflow and field help are strong; level differentiation and outcome interpretation lag."
+    },
+    {
+      "dimension": "Data handling",
+      "score": 7.0,
+      "weight": 0.12,
+      "evidence": "Classical inspection/cleaning is useful; group/time-aware and CV-specific validation is incomplete."
+    },
+    {
+      "dimension": "Evaluation correctness",
+      "score": 6.2,
+      "weight": 0.12,
+      "evidence": "Metrics run, but YOLO validation thresholding and inconsistent final-test semantics reduce trust."
+    },
+    {
+      "dimension": "Reproducibility",
+      "score": 7.0,
+      "weight": 0.08,
+      "evidence": "Seeds and exports are present; install commands omit recipe version constraints."
+    },
+    {
+      "dimension": "Responsive usability",
+      "score": 8.5,
+      "weight": 0.08,
+      "evidence": "No page overflow or panel overlap across five measured widths."
+    },
+    {
+      "dimension": "Project packaging",
+      "score": 5.5,
+      "weight": 0.06,
+      "evidence": "The handoff is still a .py file, not a complete runnable project bundle."
+    }
+  ],
+  "issues": [
+    {
+      "priority": "High",
+      "severity_order": 3,
+      "finding": "Neural builder saves untrained models",
+      "affected_tasks": 1,
+      "confidence": "High",
+      "evidence": "Both Keras and PyTorch scripts comment out data loading, fitting, and evaluation, then save weights.",
+      "risk": "Students may mistake an architecture artifact for a trained model.",
+      "recommendation": "Connect dataset, split, preprocessing, training, evaluation, and export to the layer builder."
+    },
+    {
+      "priority": "High",
+      "severity_order": 3,
+      "finding": "YOLO learning-rate control is ignored",
+      "affected_tasks": 2,
+      "confidence": "High",
+      "evidence": "Ultralytics logged optimizer=auto and explicitly ignored lr0=0.001 for detection and segmentation.",
+      "risk": "The UI suggests a configuration changed when the framework discards it.",
+      "recommendation": "Expose optimizer choice or set a concrete optimizer whenever learning rate is configurable."
+    },
+    {
+      "priority": "High",
+      "severity_order": 3,
+      "finding": "YOLO validation uses inference confidence",
+      "affected_tasks": 2,
+      "confidence": "High",
+      "evidence": "The explicit val call passes conf=0.25, producing lower mAP than training-time validation.",
+      "risk": "Reported metrics are not comparable to standard YOLO validation defaults.",
+      "recommendation": "Separate inference confidence from validation confidence; default validation to the framework metric threshold."
+    },
+    {
+      "priority": "High",
+      "severity_order": 3,
+      "finding": "Final-test semantics are inconsistent",
+      "affected_tasks": 5,
+      "confidence": "High",
+      "evidence": "Classical and sensor flows use test sets; image uses validation only; YOLO relies on YAML validation.",
+      "risk": "Students can compare numbers that have different evidentiary meaning.",
+      "recommendation": "Use one split contract with task-specific group/time/test options and label every metric by split."
+    },
+    {
+      "priority": "Medium",
+      "severity_order": 2,
+      "finding": "Advanced is identical to Customize",
+      "affected_tasks": 7,
+      "confidence": "High",
+      "evidence": "Captured control trees are exactly equal for Customize and Advanced in all seven tasks.",
+      "risk": "Progressive disclosure promises depth that is not currently delivered.",
+      "recommendation": "Merge the levels until Advanced adds genuinely advanced controls and explanations."
+    },
+    {
+      "priority": "Medium",
+      "severity_order": 2,
+      "finding": "Dependency constraints are dropped",
+      "affected_tasks": 6,
+      "confidence": "High",
+      "evidence": "Recipes declare version ranges, while displayed pip commands contain package names only.",
+      "risk": "Future installs can generate incompatibilities that the tested recipes did not cover.",
+      "recommendation": "Render pinned compatible ranges and include requirements.txt in downloads."
+    },
+    {
+      "priority": "Medium",
+      "severity_order": 2,
+      "finding": "Classical output filenames collide",
+      "affected_tasks": 2,
+      "confidence": "High",
+      "evidence": "Classification and regression both save trained_pipeline.joblib in the current directory.",
+      "risk": "One project run can overwrite another without warning.",
+      "recommendation": "Expose output directory and run name, and generate task-specific artifact names."
+    },
+    {
+      "priority": "Medium",
+      "severity_order": 2,
+      "finding": "SMOTE follows dense one-hot encoding",
+      "affected_tasks": 1,
+      "confidence": "Medium",
+      "evidence": "The tested classification pipeline encodes categories densely before ordinary SMOTE.",
+      "risk": "Synthetic fractional one-hot categories can be hard to interpret and memory use scales poorly.",
+      "recommendation": "Offer class weights first, SMOTENC for mixed data, and sparse-safe alternatives with guidance."
+    },
+    {
+      "priority": "Medium",
+      "severity_order": 2,
+      "finding": "Sensor splitting lacks subject/time safeguards",
+      "affected_tasks": 1,
+      "confidence": "High",
+      "evidence": "The generated sensor workflow randomly splits windows without group identifiers or timestamp ordering controls.",
+      "risk": "Related windows can cross partitions and inflate evaluation on real sensor projects.",
+      "recommendation": "Add group-aware, chronological, gap-aware, and label-window policy controls."
+    },
+    {
+      "priority": "Medium",
+      "severity_order": 2,
+      "finding": "Download is not a full project",
+      "affected_tasks": 7,
+      "confidence": "High",
+      "evidence": "The interface downloads one .py file and shows a pip command.",
+      "risk": "Beginners still assemble environment, folders, configuration, and run documentation manually.",
+      "recommendation": "Download a zip with script, config, requirements, README, data schema, and smoke test."
+    },
+    {
+      "priority": "Low",
+      "severity_order": 1,
+      "finding": "Workflow rail relies on hidden horizontal scrolling",
+      "affected_tasks": 7,
+      "confidence": "High",
+      "evidence": "At 360\u2013768 px the selected step is centered and neighboring steps are off-screen, though page overflow remains zero.",
+      "risk": "Students may not realize earlier or later steps can be swiped.",
+      "recommendation": "Add edge fades, arrows, or a compact step counter on narrow screens."
+    }
+  ],
+  "dataset_inventory": [
+    {
+      "workflow": "Classification",
+      "dataset": "UCI Adult",
+      "grain": "one person per row",
+      "size": "32,561 rows / 15 columns",
+      "quality_check": "4,262 missing values deliberately exercised",
+      "license_or_terms": "UCI dataset terms",
+      "status": "executed"
+    },
+    {
+      "workflow": "Regression",
+      "dataset": "UCI Auto MPG",
+      "grain": "one car per row",
+      "size": "398 rows / 9 columns",
+      "quality_check": "6 missing horsepower values deliberately exercised",
+      "license_or_terms": "UCI dataset terms",
+      "status": "executed"
+    },
+    {
+      "workflow": "Sensor classification",
+      "dataset": "UCI HAR",
+      "grain": "128-sample accelerometer window",
+      "size": "7,352 windows / 6 activities",
+      "quality_check": "Class coverage and window shape checked",
+      "license_or_terms": "UCI dataset terms",
+      "status": "executed"
+    },
+    {
+      "workflow": "Image classification",
+      "dataset": "TensorFlow Flowers",
+      "grain": "one labeled image",
+      "size": "100-image deterministic mini subset / 5 classes",
+      "quality_check": "20 images per class",
+      "license_or_terms": "Dataset-specific source terms",
+      "status": "executed"
+    },
+    {
+      "workflow": "Object detection",
+      "dataset": "COCO8",
+      "grain": "one annotated image",
+      "size": "4 train / 4 validation images",
+      "quality_check": "Ultralytics parser found 17 validation instances",
+      "license_or_terms": "AGPL-3.0 code; COCO image/annotation terms",
+      "status": "executed"
+    },
+    {
+      "workflow": "Instance segmentation",
+      "dataset": "COCO8-Seg",
+      "grain": "one polygon-annotated image",
+      "size": "4 train / 4 validation images",
+      "quality_check": "Ultralytics parser found 17 validation instances",
+      "license_or_terms": "AGPL-3.0 code; COCO image/annotation terms",
+      "status": "executed"
+    },
+    {
+      "workflow": "Neural architecture",
+      "dataset": "Digits-shaped metadata",
+      "grain": "64 numeric inputs / one digit label",
+      "size": "1,797 public rows available but not loaded by scripts",
+      "quality_check": "Used only to verify compatible input/output shapes",
+      "license_or_terms": "scikit-learn bundled dataset terms",
+      "status": "not connected"
+    }
+  ],
+  "source_hashes": {
+    "adult": {
+      "path": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\prepared\\adult.csv",
+      "rows": 32561,
+      "columns": 15,
+      "missing": 4262,
+      "classes": {
+        "<=50K": 24720,
+        ">50K": 7841
+      }
+    },
+    "auto_mpg": {
+      "path": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\prepared\\auto_mpg.csv",
+      "rows": 398,
+      "columns": 9,
+      "missing": 6,
+      "target_min": 9.0,
+      "target_max": 46.6
+    },
+    "sensor_har": {
+      "path": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\prepared\\uci_har_sensor.csv",
+      "rows": 941056,
+      "columns": 4,
+      "classes": {
+        "LAYING": 180096,
+        "STANDING": 175872,
+        "SITTING": 164608,
+        "WALKING": 156928,
+        "WALKING_UPSTAIRS": 137344,
+        "WALKING_DOWNSTAIRS": 126208
+      },
+      "window_source_count": 7352,
+      "samples_per_source_window": 128,
+      "note": "UCI provides overlapping 128-sample windows. This audit preserves their order and flattens them to the row-wise CSV contract."
+    },
+    "flowers": {
+      "path": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\prepared\\flowers-mini",
+      "classes": {
+        "daisy": 20,
+        "dandelion": 20,
+        "roses": 20,
+        "sunflowers": 20,
+        "tulips": 20
+      },
+      "images": 100,
+      "sample": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\prepared\\flowers-mini\\daisy\\100080576_f52e8ee070_n.jpg"
+    },
+    "coco8": {
+      "path": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\prepared\\coco8-local.yaml",
+      "dataset_root": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\raw\\coco8-package\\coco8",
+      "sample": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\raw\\coco8-package\\coco8\\images\\val\\000000000036.jpg",
+      "train_images": 4,
+      "validation_images": 4
+    },
+    "coco8_seg": {
+      "path": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\prepared\\coco8-seg-local.yaml",
+      "dataset_root": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\raw\\coco8-seg-package\\coco8-seg",
+      "sample": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\raw\\coco8-seg-package\\coco8-seg\\images\\val\\000000000036.jpg",
+      "train_images": 4,
+      "validation_images": 4
+    },
+    "digits": {
+      "path": "C:\\tmp\\model-mission-e2e-audit-20260728\\datasets\\prepared\\digits.csv",
+      "rows": 1797,
+      "features": 64,
+      "classes": 10
+    }
+  },
+  "methodology": {
+    "claim_type": "descriptive product and runtime audit; no causal claims",
+    "runtime_environment": "Windows, CPU smoke runs, one epoch for deep-learning recipes",
+    "execution_definition": "exit code zero and intended artifact or model construction completed",
+    "end_to_end_definition": "data load, training, evaluation, and artifact or inference path all executed",
+    "responsive_definition": "no document-level horizontal overflow and zero configuration/code panel intersection area",
+    "limitations": [
+      "Smoke datasets and one epoch validate integration, not production model quality.",
+      "COCO8 and COCO8-Seg are intentionally tiny and unsuitable for performance conclusions.",
+      "The audit used representative configurations, not every Cartesian combination.",
+      "The public datasets were downloaded for testing; they are not shipped with the site.",
+      "The responsive smoke used Chromium, not Safari, Firefox, touch hardware, or assistive technology."
+    ]
+  },
+  "public_sources": [
+    {
+      "name": "UCI Adult",
+      "url": "https://archive.ics.uci.edu/dataset/2/adult"
+    },
+    {
+      "name": "UCI Auto MPG",
+      "url": "https://archive.ics.uci.edu/dataset/9/auto+mpg"
+    },
+    {
+      "name": "UCI Human Activity Recognition",
+      "url": "https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones"
+    },
+    {
+      "name": "TensorFlow transfer learning tutorial and flower data",
+      "url": "https://www.tensorflow.org/tutorials/images/transfer_learning_with_hub"
+    },
+    {
+      "name": "Ultralytics COCO8",
+      "url": "https://docs.ultralytics.com/datasets/detect/coco8/"
+    },
+    {
+      "name": "Ultralytics COCO8-Seg",
+      "url": "https://docs.ultralytics.com/datasets/segment/coco8-seg/"
+    },
+    {
+      "name": "scikit-learn data leakage guidance",
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html#data-leakage"
+    }
+  ]
+}

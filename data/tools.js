@@ -1,11 +1,21 @@
 export const engineeringTools = [
   {
-    id: "battery-estimator",
-    title: "ESP32 Battery Life & Power Estimator",
+    id: "ai-script-generator",
+    title: "AI Script Generator",
     description:
-      "Calculate ESP32 battery life from sleep and active duty cycles. Estimates total runtime and average current draw.",
-    href: "/tools/battery-estimator",
-    icon: "BATTERY_SYS"
+      "A guided, step-by-step builder that generates a complete, runnable Python training project — not a snippet — for YOLO detection, sensor time-series, and edge image classification.",
+    href: "/tools/ai-script-generator",
+    icon: "AI_GEN",
+    highlight: "Most substantial"
+  },
+  {
+    id: "security-command-builder",
+    title: "Security Mission",
+    description:
+      "Build, validate, and learn security-tool commands for authorized labs — 22/22 eCPPT objectives covered, with safe shell quoting and secret redaction built in.",
+    href: "/tools/security-command-builder",
+    icon: "SECURITY_CLI",
+    highlight: "Most substantial"
   },
   {
     id: "pid-simulator",
@@ -24,19 +34,11 @@ export const engineeringTools = [
     icon: "CODE_GEN"
   },
   {
-    id: "ai-script-generator",
-    title: "AI Script Generator",
+    id: "battery-estimator",
+    title: "ESP32 Battery Life & Power Estimator",
     description:
-      "Configure and generate runnable Python scripts for YOLO, sensor intelligence, and edge AI workflows.",
-    href: "/tools/ai-script-generator",
-    icon: "AI_GEN"
-  },
-  {
-    id: "security-command-builder",
-    title: "Security Mission",
-    description:
-      "Build, validate, and learn security-tool commands for authorized labs without memorizing every flag.",
-    href: "/tools/security-command-builder",
-    icon: "SECURITY_CLI"
+      "Calculate ESP32 battery life from sleep and active duty cycles. Estimates total runtime and average current draw.",
+    href: "/tools/battery-estimator",
+    icon: "BATTERY_SYS"
   }
 ];

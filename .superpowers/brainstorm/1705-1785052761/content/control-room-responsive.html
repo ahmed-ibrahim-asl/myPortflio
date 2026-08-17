@@ -1,0 +1,349 @@
+<style>
+  .responsive-preview {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(250px, .55fr);
+    gap: 22px;
+    margin: 26px 0;
+    align-items: start;
+  }
+
+  .device-label {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 11px;
+    color: #8e9abb;
+    background: #0a0e1c;
+    border: 1px solid #2d3959;
+    border-bottom: 0;
+    font: 10px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .app-shell {
+    min-width: 0;
+    padding: 13px;
+    color: #dfe8ff;
+    background: #070a18;
+    border: 1px solid #2d3959;
+    font: 10px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  .app-header,
+  .result-head,
+  .mode-switch,
+  .tab-row,
+  .readiness-strip {
+    display: flex;
+    align-items: center;
+  }
+
+  .app-header {
+    justify-content: space-between;
+    gap: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #263353;
+  }
+
+  .app-kicker,
+  .tiny-label {
+    color: #72dfe2;
+    font-size: 8px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+
+  .app-title {
+    margin-top: 2px;
+    color: #f4f7ff;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .template-count {
+    padding: 5px 7px;
+    color: #f6cf72;
+    border: 1px solid #5b5270;
+  }
+
+  .workbench {
+    display: grid;
+    grid-template-columns: 145px minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 11px;
+  }
+
+  .config-panel,
+  .result-panel {
+    min-width: 0;
+    padding: 10px;
+    background: #0d1226;
+    border: 1px solid #2d3959;
+  }
+
+  .panel-title {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 7px;
+    margin-bottom: 9px;
+    color: #f6cf72;
+    border-bottom: 1px solid #263353;
+    font-size: 8px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .mode-switch {
+    gap: 3px;
+    padding: 3px;
+    margin-bottom: 10px;
+    background: #070a18;
+    border: 1px solid #344164;
+  }
+
+  .mode-switch span {
+    flex: 1;
+    padding: 5px 3px;
+    color: #8490ad;
+    text-align: center;
+  }
+
+  .mode-switch .active {
+    color: #071014;
+    background: #72dfe2;
+  }
+
+  .field {
+    margin-top: 8px;
+  }
+
+  .field div:last-child {
+    padding: 6px 7px;
+    margin-top: 3px;
+    overflow: hidden;
+    color: #d7e0f6;
+    background: #070a18;
+    border: 1px solid #344164;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .result-head {
+    justify-content: space-between;
+    gap: 9px;
+  }
+
+  .result-title {
+    color: #f4f7ff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .edge-badge {
+    padding: 4px 6px;
+    color: #9be5a8;
+    background: #14231d;
+    border: 1px solid #2d6042;
+    white-space: nowrap;
+  }
+
+  .tab-row {
+    gap: 3px;
+    margin-top: 10px;
+    overflow-x: auto;
+    border-bottom: 1px solid #344164;
+  }
+
+  .tab-row span {
+    flex: 0 0 auto;
+    padding: 6px 8px;
+    color: #8e9abb;
+  }
+
+  .tab-row .active {
+    color: #72dfe2;
+    border-bottom: 2px solid #72dfe2;
+  }
+
+  .code-window {
+    min-height: 172px;
+    padding: 10px;
+    overflow: hidden;
+    color: #9bd5a6;
+    background:
+      linear-gradient(90deg, #10162b 1px, transparent 1px) 0 0 / 22px 100%,
+      #080b17;
+    border: 1px solid #263353;
+    border-top: 0;
+    line-height: 1.55;
+    white-space: nowrap;
+  }
+
+  .code-muted {
+    color: #687593;
+  }
+
+  .readiness-strip {
+    gap: 5px;
+    margin-top: 9px;
+  }
+
+  .readiness-strip > div {
+    flex: 1;
+    min-width: 0;
+    padding: 6px;
+    background: #0a0f20;
+    border-top: 2px solid #72dfe2;
+  }
+
+  .readiness-strip strong {
+    display: block;
+    margin-top: 2px;
+    overflow: hidden;
+    color: #dfe8ff;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile .app-shell {
+    max-width: 310px;
+    min-height: 570px;
+    margin: 0 auto;
+  }
+
+  .mobile .app-header {
+    align-items: flex-start;
+  }
+
+  .mobile .workbench {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile .config-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .mobile .panel-title,
+  .mobile .mode-switch {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  .mobile .field {
+    min-width: 0;
+    margin-top: 0;
+  }
+
+  .mobile .code-window {
+    min-height: 145px;
+    overflow-x: hidden;
+  }
+
+  .mobile .readiness-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .signature-note {
+    padding: 13px 15px;
+    color: #b8c3de;
+    background: #0c1122;
+    border-left: 4px solid #72dfe2;
+  }
+
+  @media (max-width: 900px) {
+    .responsive-preview {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<h2>Direction A refined: responsive control room</h2>
+<p class="subtitle">One live workbench, two complexity modes, and practical pipeline guidance beside the generated code.</p>
+
+<div class="responsive-preview">
+  <div>
+    <div class="device-label"><span>Desktop / tablet</span><span>Two-column workbench</span></div>
+    <div class="app-shell">
+      <div class="app-header">
+        <div><div class="app-kicker">Engineering utility</div><div class="app-title">Embedded AI Pipeline Builder</div></div>
+        <div class="template-count">12 VALID PIPELINES</div>
+      </div>
+      <div class="workbench">
+        <aside class="config-panel">
+          <div class="panel-title"><span>Configure</span><span>01</span></div>
+          <div class="mode-switch"><span class="active">Starter</span><span>Production</span></div>
+          <div class="field"><div class="tiny-label">Domain</div><div>Sensor intelligence</div></div>
+          <div class="field"><div class="tiny-label">Task</div><div>Anomaly detection</div></div>
+          <div class="field"><div class="tiny-label">Framework</div><div>PyTorch</div></div>
+          <div class="field"><div class="tiny-label">Target</div><div>Edge / TFLite</div></div>
+        </aside>
+        <main class="result-panel">
+          <div class="result-head">
+            <div><div class="tiny-label">Selected pipeline</div><div class="result-title">Vibration anomaly autoencoder</div></div>
+            <div class="edge-badge">EDGE READY</div>
+          </div>
+          <div class="tab-row"><span class="active">Code</span><span>Setup</span><span>Data</span><span>Evaluate</span><span>Deploy</span></div>
+          <div class="code-window"><span class="code-muted">01</span> import torch<br><span class="code-muted">02</span> from edge_pipeline import SensorWindow<br><br><span class="code-muted">05</span> model = AutoEncoder(input_size=128)<br><span class="code-muted">06</span> history = train(model, train_loader)<br><span class="code-muted">07</span> report = evaluate(model, test_loader)<br><span class="code-muted">08</span> export_tflite(model, "anomaly.tflite")</div>
+          <div class="readiness-strip">
+            <div><span class="tiny-label">Data</span><strong>CSV windows</strong></div>
+            <div><span class="tiny-label">Metric</span><strong>F1 + latency</strong></div>
+            <div><span class="tiny-label">Compute</span><strong>CPU / small GPU</strong></div>
+            <div><span class="tiny-label">Deploy</span><strong>TFLite</strong></div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile">
+    <div class="device-label"><span>Mobile</span><span>Single-column flow</span></div>
+    <div class="app-shell">
+      <div class="app-header">
+        <div><div class="app-kicker">Engineering utility</div><div class="app-title">Embedded AI Builder</div></div>
+        <div class="template-count">12</div>
+      </div>
+      <div class="workbench">
+        <div class="config-panel">
+          <div class="panel-title"><span>Configure pipeline</span><span>01</span></div>
+          <div class="mode-switch"><span class="active">Starter</span><span>Production</span></div>
+          <div class="field"><div class="tiny-label">Task</div><div>Anomaly detection</div></div>
+          <div class="field"><div class="tiny-label">Target</div><div>Edge / TFLite</div></div>
+        </div>
+        <div class="result-panel">
+          <div class="result-head">
+            <div><div class="tiny-label">Pipeline</div><div class="result-title">Vibration anomaly</div></div>
+            <div class="edge-badge">EDGE</div>
+          </div>
+          <div class="tab-row"><span class="active">Code</span><span>Setup</span><span>Data</span><span>Test</span><span>Deploy</span></div>
+          <div class="code-window"><span class="code-muted">01</span> import torch<br><span class="code-muted">02</span> from edge_pipeline import ...<br><br><span class="code-muted">05</span> model = AutoEncoder(128)<br><span class="code-muted">06</span> train(model, loader)<br><span class="code-muted">07</span> export_tflite(model)</div>
+          <div class="readiness-strip">
+            <div><span class="tiny-label">Data</span><strong>CSV windows</strong></div>
+            <div><span class="tiny-label">Metric</span><strong>F1 + latency</strong></div>
+            <div><span class="tiny-label">Compute</span><strong>CPU</strong></div>
+            <div><span class="tiny-label">Deploy</span><strong>TFLite</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="signature-note">
+  <strong>Signature element: Pipeline Readiness Strip.</strong>
+  The four live readouts—data, metric, compute, and deployment—turn the generator from a code vending machine into an engineering decision tool.
+</div>
+
+<div class="options" style="margin-top:22px">
+  <div class="option" data-choice="approve-responsive-structure" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content"><h3>Approve this structure</h3><p>Continue to the template catalog, data model, and behavior specification.</p></div>
+  </div>
+  <div class="option" data-choice="revise-responsive-structure" onclick="toggleSelect(this)">
+    <div class="letter">↺</div>
+    <div class="content"><h3>Revise the structure</h3><p>Tell me what should move, disappear, or become more prominent.</p></div>
+  </div>
+</div>

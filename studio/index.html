@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolio Studio</title>
+    <link rel="stylesheet" href="/studio.css" />
+  </head>
+  <body>
+    <div class="studio-shell">
+      <aside class="sidebar">
+        <header class="sidebar-header">
+          <div class="studio-brand">
+            <span class="brand-mark">A/</span>
+            <div>
+              <strong>Portfolio Studio</strong>
+              <span>Local writing room</span>
+            </div>
+          </div>
+          <button id="new-post" class="icon-button" type="button" title="New article">
+            ＋
+          </button>
+        </header>
+
+        <label class="sidebar-search">
+          <span>⌕</span>
+          <input id="post-search" placeholder="Search articles" />
+        </label>
+
+        <div class="sidebar-label">
+          <span>Articles</span>
+          <span id="post-count">0</span>
+        </div>
+        <div id="post-list" class="post-list" aria-live="polite"></div>
+
+        <footer class="sidebar-footer">
+          <div class="repository-status">
+            <span class="status-dot"></span>
+            Files remain in your repository
+          </div>
+          <ol class="publish-flow" aria-label="Publishing workflow">
+            <li><strong>Save draft</strong> writes Markdown locally.</li>
+            <li><strong>Publish</strong> commits the article and pushes Git.</li>
+            <li><strong>GitHub Pages</strong> rebuilds the live website.</li>
+          </ol>
+        </footer>
+      </aside>
+
+      <main class="workspace">
+        <header class="workspace-header">
+          <div>
+            <span id="save-status" class="save-status">Select an article</span>
+          </div>
+          <div class="header-actions">
+            <button id="archive-post" class="quiet-button" type="button" disabled>
+              Unpublish
+            </button>
+            <button id="save-post" class="quiet-button" type="button" disabled>
+              Save draft
+            </button>
+            <button id="publish-post" class="publish-button" type="button" disabled>
+              Publish to GitHub ↗
+            </button>
+          </div>
+        </header>
+
+        <div id="empty-editor" class="empty-editor">
+          <span class="empty-index">A–WRITING</span>
+          <h1>Open a note or start a new one.</h1>
+          <p>
+            Draft locally, preview the real structure, and publish only when the
+            article is ready.
+          </p>
+          <button id="empty-new-post" class="publish-button" type="button">
+            Create article
+          </button>
+        </div>
+
+        <section id="editor" class="editor hidden">
+          <div class="editor-scroll">
+            <div class="document-header">
+              <div class="field-row compact-row">
+                <label>
+                  <span>Category</span>
+                  <input id="category" list="category-options" />
+                </label>
+                <label>
+                  <span>Difficulty</span>
+                  <select id="difficulty">
+                    <option>All levels</option>
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Published</span>
+                  <input id="published-at" type="date" />
+                </label>
+              </div>
+
+              <textarea
+                id="title"
+                class="title-input"
+                rows="2"
+                placeholder="Untitled article"
+              ></textarea>
+              <textarea
+                id="summary"
+                class="summary-input"
+                rows="2"
+                placeholder="A useful one-sentence promise for the reader."
+              ></textarea>
+
+              <div class="field-row">
+                <label class="wide">
+                  <span>Slug</span>
+                  <input id="slug" />
+                </label>
+                <label>
+                  <span>Tags · comma separated</span>
+                  <input id="tags" placeholder="Linux, SSH, Wargame" />
+                </label>
+                <label>
+                  <span>Series</span>
+                  <input id="series" placeholder="Optional" />
+                </label>
+                <label class="small">
+                  <span>Part</span>
+                  <input id="part" placeholder="1" />
+                </label>
+              </div>
+            </div>
+
+            <div class="composer">
+              <div class="composer-tabs">
+                <button class="active" data-view="write" type="button">Write</button>
+                <button data-view="split" type="button">Split preview</button>
+                <button data-view="preview" type="button">Preview</button>
+                <span class="word-count" id="word-count">0 words</span>
+              </div>
+
+              <div class="toolbar" aria-label="Formatting controls">
+                <button type="button" data-wrap="**" title="Bold"><strong>B</strong></button>
+                <button type="button" data-wrap="_" title="Italic"><em>I</em></button>
+                <button type="button" data-prefix="## " title="Heading 2">H2</button>
+                <button type="button" data-prefix="### " title="Heading 3">H3</button>
+                <button type="button" data-prefix="> " title="Callout">❯</button>
+                <button type="button" data-code title="Code block">&lt;/&gt;</button>
+                <button type="button" data-link title="Link">↗ Link</button>
+                <button type="button" id="image-button" title="Upload image">▧ Image</button>
+                <input id="image-input" type="file" accept="image/*" hidden />
+              </div>
+
+              <div id="composer-panels" class="composer-panels write">
+                <textarea
+                  id="body"
+                  spellcheck="true"
+                  placeholder="Begin with the problem you are solving…"
+                ></textarea>
+                <article id="preview" class="preview prose"></article>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="new-dialog">
+      <form id="new-form" method="dialog">
+        <div class="dialog-header">
+          <div>
+            <span class="dialog-kicker">New article</span>
+            <h2>Choose a useful starting structure.</h2>
+          </div>
+          <button class="icon-button" value="cancel" aria-label="Close">×</button>
+        </div>
+        <label>
+          <span>Article title</span>
+          <input id="new-title" required autofocus placeholder="What are we explaining?" />
+        </label>
+        <div id="template-list" class="template-list"></div>
+        <div class="dialog-actions">
+          <button class="quiet-button" value="cancel">Cancel</button>
+          <button id="create-post" class="publish-button" value="default">
+            Create draft →
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <datalist id="category-options">
+      <option value="Cybersecurity"></option>
+      <option value="Linux"></option>
+      <option value="Python"></option>
+      <option value="Dart / Flutter"></option>
+      <option value="Git"></option>
+      <option value="Flutter"></option>
+      <option value="Embedded Systems"></option>
+      <option value="AI & Machine Learning"></option>
+      <option value="Case Study"></option>
+      <option value="Notes"></option>
+    </datalist>
+
+    <script type="module" src="/studio.js"></script>
+  </body>
+</html>

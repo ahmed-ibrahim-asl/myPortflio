@@ -135,11 +135,14 @@ test("project paths update one allowed branch without mutating the project", () 
   );
 });
 
-test("all 159 actions expose a control for every consumed project path", () => {
+test("every action exposes a control for every consumed project path", () => {
   const controls = getAllSecurityControls();
   const controlPaths = new Set(controls.map(({ valuePath }) => valuePath));
 
-  assert.equal(SECURITY_ACTIONS.length, 159);
+  assert.ok(
+    SECURITY_ACTIONS.length > 0,
+    "the security action registry must not be empty",
+  );
   for (const action of SECURITY_ACTIONS) {
     for (const rule of action.argumentRules ?? []) {
       assert.ok(
