@@ -2,12 +2,9 @@
 
 import React, { useEffect } from "react";
 import { useScrollProgress } from "@/lib/hooks/useScrollProgress";
-import { useMissionObserver } from "@/lib/hooks/useMissionObserver";
-import { MissionRail } from "@/components/MissionRail";
 
 export function MotionSystem() {
   useScrollProgress();
-  const { activeMission, completedMissions, hasMissions } = useMissionObserver();
 
   // Bounded pointer parallax effect for hero elements
   useEffect(() => {
@@ -39,7 +36,5 @@ export function MotionSystem() {
     return () => window.removeEventListener("pointermove", handlePointerMove);
   }, []);
 
-  return hasMissions ? (
-    <MissionRail activeMission={activeMission} completedMissions={completedMissions} />
-  ) : null;
+  return null;
 }

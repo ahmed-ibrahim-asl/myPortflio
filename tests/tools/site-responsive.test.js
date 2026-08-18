@@ -228,6 +228,14 @@ test(
             awaitPromise: true,
             returnByValue: true,
             expression: `(async () => {
+              const auditRoute = ${JSON.stringify(route)};
+              if (auditRoute === "/writing/") {
+                for (let attempt = 0; attempt < 100; attempt += 1) {
+                  if (document.querySelector(".post-list .indexed-badge")
+                    ?.getClientRects().length) break;
+                  await new Promise((resolve) => setTimeout(resolve, 25));
+                }
+              }
               await new Promise((resolve) =>
                 requestAnimationFrame(() => requestAnimationFrame(resolve))
               );
@@ -397,7 +405,8 @@ test(
           if (route === "/writing/" && viewport.width === 1440) {
             if (badgeWidth < 52 || badgeHeight < 52 || badgeSpans !== 2) {
               failures.push(
-                `${route} @ ${viewport.label}: indexed badge is not a centered 52px two-part badge`
+                `${route} @ ${viewport.label}: indexed badge is not a centered 52px two-part badge `
+                + `(width=${badgeWidth}, height=${badgeHeight}, spans=${badgeSpans})`
               );
             }
             if (destinationCardCount < 1 || invalidDestinationCards !== 0) {
@@ -501,10 +510,6 @@ test(
             }
             throw new Error("Timed out waiting for " + label);
           };
-          await waitFor(
-            () => visible(document.querySelector(".mission-rail")),
-            "home mission rail"
-          );
           const homeHasMissionUi = visible(document.querySelector(".mission-rail"));
           const toolsLink = [...document.querySelectorAll("a")].find((link) =>
             new URL(link.href).pathname.endsWith("/tools/")
@@ -521,8 +526,7 @@ test(
           document.querySelector("a.brand")?.click();
           await waitFor(
             () => location.pathname.endsWith("/")
-              && document.querySelectorAll("[data-mission]").length > 0
-              && visible(document.querySelector(".mission-rail")),
+              && document.querySelectorAll("[data-mission]").length > 0,
             "client navigation back home"
           );
           return {
@@ -533,14 +537,14 @@ test(
         })()`
       });
       const navigation = navigationResult.result.value;
-      if (!navigation.homeHasMissionUi) {
-        failures.push("client navigation: mission UI missing on initial home route");
+      if (navigation.homeHasMissionUi) {
+        failures.push("client navigation: floating mission UI covers the initial home route");
       }
       if (navigation.toolsHasMissionUi) {
         failures.push("client navigation: mission UI remains visible after home → tools");
       }
-      if (!navigation.returnHomeHasMissionUi) {
-        failures.push("client navigation: mission UI does not return after tools → home");
+      if (navigation.returnHomeHasMissionUi) {
+        failures.push("client navigation: floating mission UI returns after tools → home");
       }
     } finally {
       if (client?.socket) client.socket.close();
