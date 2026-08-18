@@ -16,7 +16,8 @@
 
 .root button,
 .root input,
-.root select {
+.root select,
+.root textarea {
   font: inherit;
 }
 
@@ -1662,6 +1663,29 @@ button.traceToken {
   .commandActions button {
     width: 100%;
   }
+}
+
+/* Readability and touch-target floor across the command workspace. */
+.root button {
+  min-height: 44px;
+  font-size: 0.875rem;
+}
+
+.root button strong,
+.root button span {
+  font-size: inherit;
+}
+
+.root input,
+.root select,
+.root textarea {
+  min-height: 44px;
+  font-size: 1rem;
+}
+
+.root p,
+.root label {
+  font-size: max(0.875rem, 14px);
 }
 
 @media (prefers-reduced-motion: reduce) {

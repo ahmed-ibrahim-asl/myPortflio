@@ -380,8 +380,19 @@ test(
               : [];
             const controls = root
               ? [...root.querySelectorAll(
-                  "input, select, button:not([data-step-id]):not([data-workflow-step])"
+                  "input, select, textarea, button"
                 )].filter(visible)
+              : [];
+            const containedControls = root
+              ? [...root.querySelectorAll(
+                  "input, select, textarea, button:not([data-step-id]):not([data-workflow-step])"
+                )].filter(visible)
+              : [];
+            const textControls = controls.filter((element) =>
+              element.matches("input, select, textarea")
+            );
+            const readingText = root
+              ? [...root.querySelectorAll("p, label")].filter(visible)
               : [];
             const railRect = document.querySelector(
               'nav[aria-label="Security Mission progress"]'
@@ -389,7 +400,7 @@ test(
             const workflowRailRect = document.querySelector(
               "[data-workflow-step-rail]"
             )?.getBoundingClientRect();
-            const overflowingControls = controls
+            const overflowingControls = containedControls
               .map((element) => {
                 const rect = element.getBoundingClientRect();
                 return {
@@ -413,6 +424,32 @@ test(
               gradients: gradientElements.length,
               controlsContained: overflowingControls.length === 0,
               overflowingControls,
+              undersizedControls: controls
+                .filter((element) => {
+                  const rect = element.getBoundingClientRect();
+                  const fontSize = parseFloat(getComputedStyle(element).fontSize);
+                  return rect.height < 43.5 || fontSize < 13.9;
+                })
+                .map((element) => ({
+                  label: element.getAttribute("aria-label")
+                    || element.textContent?.trim().slice(0, 50)
+                    || element.tagName,
+                  height: Math.round(element.getBoundingClientRect().height),
+                  fontSize: parseFloat(getComputedStyle(element).fontSize),
+                }))
+                .slice(0, 12),
+              undersizedTextControls: textControls
+                .filter((element) =>
+                  parseFloat(getComputedStyle(element).fontSize) < 15.9
+                )
+                .map((element) => element.tagName)
+                .slice(0, 8),
+              undersizedReadingText: readingText
+                .filter((element) =>
+                  parseFloat(getComputedStyle(element).fontSize) < 13.9
+                )
+                .map((element) => element.textContent?.trim().slice(0, 50))
+                .slice(0, 8),
               railContained: !railRect
                 || (
                   railRect.left >= -1
@@ -456,6 +493,21 @@ test(
           `controls contained at ${viewport.width}px: ${
             JSON.stringify(layout.overflowingControls)
           }`,
+        );
+        assert.deepEqual(
+          layout.undersizedControls,
+          [],
+          `controls meet the 44px/14px floor at ${viewport.width}px`,
+        );
+        assert.deepEqual(
+          layout.undersizedTextControls,
+          [],
+          `form controls meet the 16px font floor at ${viewport.width}px`,
+        );
+        assert.deepEqual(
+          layout.undersizedReadingText,
+          [],
+          `reading text meets the 14px font floor at ${viewport.width}px`,
         );
       }
     } finally {

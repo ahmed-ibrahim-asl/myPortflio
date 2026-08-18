@@ -303,6 +303,7 @@ test(
               const embeddedLabel = document.querySelector(".embedded-workbench label > span, .embedded-workbench .tool-input > label");
               const embeddedLabelFontSize = embeddedLabel ? parseFloat(getComputedStyle(embeddedLabel).fontSize) : 0;
               return {
+                bodyFontSize: parseFloat(getComputedStyle(document.body).fontSize),
                 overflowPx,
                 clientWidth: doc.clientWidth,
                 worstSelector,
@@ -339,6 +340,7 @@ test(
           });
 
           const {
+            bodyFontSize,
             overflowPx,
             worstSelector,
             worstRight,
@@ -368,6 +370,11 @@ test(
             embeddedExamples,
             embeddedLabelFontSize
           } = result.result.value;
+          if (bodyFontSize < 16) {
+            failures.push(
+              `${route} @ ${viewport.label}: base text remains below the 16px readability floor`
+            );
+          }
           if (overflowPx > 1) {
             failures.push(
               `${route} @ ${viewport.label}: overflows by ${overflowPx.toFixed(0)}px` +
