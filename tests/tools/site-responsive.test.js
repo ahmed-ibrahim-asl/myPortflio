@@ -287,6 +287,17 @@ test(
               const calculatorResultText = document.querySelector(".calculator-results-count")?.textContent ?? "";
               const calculatorFinder = document.querySelector(".calculator-finder");
               const calculatorFinderSearch = calculatorFinder?.querySelector("input[type='search']");
+              const destinationCards = [...document.querySelectorAll(
+                ".calculator-catalog-card, .post-card, .tools-featured-section .project-card"
+              )];
+              const invalidDestinationCards = destinationCards.filter((card) =>
+                card.tagName !== "A"
+                || !card.getAttribute("href")
+                || card.querySelector("a, button")
+              ).length;
+              const calculatorCatalogTagRows = document.querySelectorAll(
+                ".calculator-catalog-card .tag-row"
+              ).length;
               const embeddedFamilyTabs = document.querySelectorAll(".embedded-family-tab").length;
               const embeddedExamples = document.querySelectorAll(".embedded-example-card").length;
               const embeddedLabel = document.querySelector(".embedded-workbench label > span, .embedded-workbench .tool-input > label");
@@ -317,6 +328,9 @@ test(
                 calculatorResultText,
                 hasScrollCue: Boolean(document.querySelector(".tools-scroll-cue")),
                 hasCalculatorFinder: Boolean(calculatorFinder && calculatorFinderSearch),
+                destinationCardCount: destinationCards.length,
+                invalidDestinationCards,
+                calculatorCatalogTagRows,
                 embeddedFamilyTabs,
                 embeddedExamples,
                 embeddedLabelFontSize
@@ -347,6 +361,9 @@ test(
             calculatorResultText,
             hasScrollCue,
             hasCalculatorFinder,
+            destinationCardCount,
+            invalidDestinationCards,
+            calculatorCatalogTagRows,
             embeddedFamilyTabs,
             embeddedExamples,
             embeddedLabelFontSize
@@ -374,6 +391,11 @@ test(
             if (badgeWidth < 52 || badgeHeight < 52 || badgeSpans !== 2) {
               failures.push(
                 `${route} @ ${viewport.label}: indexed badge is not a centered 52px two-part badge`
+              );
+            }
+            if (destinationCardCount < 1 || invalidDestinationCards !== 0) {
+              failures.push(
+                `${route} @ ${viewport.label}: writing destinations are not full-surface semantic links`
               );
             }
           }
@@ -415,6 +437,16 @@ test(
             if (!/36 calculators/i.test(calculatorResultText) || !hasScrollCue) {
               failures.push(
                 `${route} @ ${viewport.label}: calculator result feedback or generator scroll cue is missing`
+              );
+            }
+            if (destinationCardCount < 36 || invalidDestinationCards !== 0) {
+              failures.push(
+                `${route} @ ${viewport.label}: tool destinations are not full-surface semantic links`
+              );
+            }
+            if (calculatorCatalogTagRows !== 0) {
+              failures.push(
+                `${route} @ ${viewport.label}: calculator cards repeat tags instead of concise summaries`
               );
             }
           }

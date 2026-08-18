@@ -3370,6 +3370,22 @@ body {
   transition: border-color 180ms ease, transform 180ms steps(2, end);
 }
 
+.card-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.card-link:focus-visible {
+  outline: 3px solid var(--pixel-green);
+  outline-offset: 4px;
+}
+
+.card-link:hover h3,
+.card-link:focus-visible h3 {
+  color: var(--pixel-cyan);
+}
+
 .calculator-catalog-card:hover,
 .calculator-catalog-card:focus-within {
   border-color: var(--pixel-cyan);
@@ -3396,10 +3412,14 @@ body {
 }
 
 .calculator-catalog-copy > p {
+  display: -webkit-box;
+  overflow: hidden;
   margin: 0 0 16px;
   font-family: var(--font-reading);
   font-size: 1rem;
   line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .calculator-thumbnail {

@@ -15,20 +15,18 @@ interface ToolNavCardProps {
 
 export function ToolNavCard({ tool, index }: ToolNavCardProps) {
   return (
-    <article className="project-card">
+    <Link className="project-card card-link" href={tool.href}>
       <div className="project-card-top mono">
         <span>TOOL_{String(index + 1).padStart(2, "0")}</span>
         <span>{tool.icon}</span>
       </div>
       <div className="project-card-copy">
-        <h3>
-          <Link href={tool.href}>{tool.title}</Link>
-        </h3>
+        <h3>{tool.title}</h3>
         {tool.highlight ? (
           <span className="tag tool-card-highlight">{tool.highlight}</span>
         ) : null}
         <p>{tool.description}</p>
       </div>
-    </article>
+    </Link>
   );
 }

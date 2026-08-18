@@ -12,7 +12,10 @@ interface PostCardProps {
 
 export function PostCard({ post, index, featured = false }: PostCardProps) {
   return (
-    <article className={`post-card ${featured ? "featured" : ""}`}>
+    <Link
+      className={`post-card card-link ${featured ? "featured" : ""}`}
+      href={`/writing/${post.slug}`}
+    >
       <IndexedBadge index={index + 1} />
       <div className="post-main">
         <div className="post-meta">
@@ -20,9 +23,7 @@ export function PostCard({ post, index, featured = false }: PostCardProps) {
           <span>{formatDate(post.publishedAt)}</span>
           <span>{post.readingTime} min</span>
         </div>
-        <h3>
-          <Link href={`/writing/${post.slug}`}>{post.title}</Link>
-        </h3>
+        <h3>{post.title}</h3>
         <p>{post.summary}</p>
         <div className="tag-row">
           {post.tags.slice(0, 4).map((tag) => (
@@ -32,6 +33,6 @@ export function PostCard({ post, index, featured = false }: PostCardProps) {
           ))}
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
