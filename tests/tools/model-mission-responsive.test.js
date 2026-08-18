@@ -304,8 +304,19 @@ test(
           const arrowCtas = [...document.querySelectorAll("a, button")]
             .filter((item) => /[←→↗]/.test(item.textContent ?? ""))
             .map((item) => item.textContent.trim());
+          document.querySelector('[data-mission-task="monocular-depth"]').click();
+          await pause();
+          const depthDetail = document.querySelector(
+            '[data-selected-task-detail][data-task-id="monocular-depth"]'
+          );
+          const depthExamples = [...(depthDetail?.querySelectorAll(
+            "[data-selected-task-example]"
+          ) ?? [])].map((item) => item.textContent.trim());
           document.querySelector('[data-mission-task="regression"]').click();
           await pause();
+          const stepAfterTaskSelection = document.querySelector(
+            '[data-mission-workflow] [data-active="true"]'
+          )?.textContent.trim();
           [...document.querySelectorAll("[data-mission-workflow] button")]
             .find((item) => item.textContent.includes("Model")).click();
           await pause();
@@ -319,6 +330,9 @@ test(
             hasSelectedTaskDetail: Boolean(initialSelectedDetail),
             selectedDetailExampleCount: initialSelectedDetail
               ?.querySelectorAll("[data-selected-task-example]").length ?? 0,
+            depthDetailVisible: Boolean(depthDetail),
+            depthExamples,
+            stepAfterTaskSelection,
             arrowCtas,
             selectedTask: document.querySelector(
               '[data-mission-task][aria-pressed="true"]'
@@ -355,6 +369,14 @@ test(
         repeatedTaskExamples: 0,
         hasSelectedTaskDetail: true,
         selectedDetailExampleCount: 3,
+        depthDetailVisible: true,
+        depthExamples: [
+          "robot navigation",
+          "obstacle awareness",
+          "3D scene layout",
+          "AR placement",
+        ],
+        stepAfterTaskSelection: "01Goal",
         arrowCtas: [],
         selectedModel: "random-forest",
         hasRegressor: true,
@@ -642,6 +664,9 @@ test(
               documentWidth: document.documentElement.scrollWidth,
               visiblePanels: [config, codePanel].filter(visible).length,
               tabsVisible: visible(workspaceTabs),
+              codeRegions: document.querySelectorAll(
+                "[data-mission-code-region]"
+              ).length,
               configRect,
               codeRect,
               shellRailOverlap:
@@ -680,6 +705,11 @@ test(
           `workspace tabs match the tablet breakpoint at ${context}`,
         );
         assert.equal(
+          layout.codeRegions,
+          3,
+          `install, summary, and generated source stay distinct at ${context}`,
+        );
+        assert.equal(
           layout.panelOverlap,
           false,
           `workspace panels do not overlap at ${context}`,
@@ -709,6 +739,7 @@ test(
                 viewport.width <= 1100 ? 1 : 2
               )
               && layout.tabsVisible === (viewport.width <= 1100)
+              && layout.codeRegions === 3
               && layout.panelOverlap === false
               && layout.shellRailOverlap === false
               && layout.controlsInside === true
@@ -722,6 +753,7 @@ test(
               ),
             tabsMatchBreakpoint:
               layout.tabsVisible === (viewport.width <= 1100),
+            codeRegionsSeparated: layout.codeRegions === 3,
             panelsDoNotOverlap: layout.panelOverlap === false,
             railDoesNotOverlap: layout.shellRailOverlap === false,
             controlsContained: layout.controlsInside === true,

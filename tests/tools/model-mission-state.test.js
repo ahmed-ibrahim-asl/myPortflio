@@ -38,7 +38,7 @@ test("task change keeps one project and resets incompatible sections", () => {
   });
 
   assert.equal(regression.project.taskId, "regression");
-  assert.equal(regression.stepId, "data");
+  assert.equal(regression.stepId, "goal");
   assert.equal(regression.workspaceTab, "configure");
   assert.equal(regression.project.data.dataset, "diabetes");
   assert.equal(regression.project.model.model, "ridge");

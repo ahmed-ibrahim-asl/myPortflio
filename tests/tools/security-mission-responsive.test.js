@@ -392,7 +392,10 @@ test(
               element.matches("input, select, textarea")
             );
             const readingText = root
-              ? [...root.querySelectorAll("p, label")].filter(visible)
+              ? [...root.querySelectorAll("p")].filter(visible)
+              : [];
+            const utilityText = root
+              ? [...root.querySelectorAll("label, small")].filter(visible)
               : [];
             const railRect = document.querySelector(
               'nav[aria-label="Security Mission progress"]'
@@ -445,6 +448,12 @@ test(
                 .map((element) => element.tagName)
                 .slice(0, 8),
               undersizedReadingText: readingText
+                .filter((element) =>
+                  parseFloat(getComputedStyle(element).fontSize) < 15.9
+                )
+                .map((element) => element.textContent?.trim().slice(0, 50))
+                .slice(0, 8),
+              undersizedUtilityText: utilityText
                 .filter((element) =>
                   parseFloat(getComputedStyle(element).fontSize) < 13.9
                 )
@@ -507,7 +516,12 @@ test(
         assert.deepEqual(
           layout.undersizedReadingText,
           [],
-          `reading text meets the 14px font floor at ${viewport.width}px`,
+          `reading text meets the 16px font floor at ${viewport.width}px`,
+        );
+        assert.deepEqual(
+          layout.undersizedUtilityText,
+          [],
+          `utility text meets the 14px font floor at ${viewport.width}px`,
         );
       }
     } finally {

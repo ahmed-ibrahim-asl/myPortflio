@@ -665,7 +665,7 @@
   width: 100%;
   max-height: 820px;
   padding: 18px;
-  margin: 14px 0 0;
+  margin: 0;
   color: var(--ink);
   background: var(--night);
   border: 1px solid var(--line);
@@ -678,21 +678,38 @@
 }
 
 .codeSummary {
-  margin: 14px 0 0;
+  margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 1rem;
+}
+
+.codeSummaryRegion {
+  padding: 15px;
+  margin-top: 14px;
+  background: var(--panel-raised);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--pixel-green);
+}
+
+.codeSourceRegion {
+  min-width: 0;
+  margin-top: 14px;
+}
+
+.codeRegionTitle {
+  margin: 0 0 8px;
+  color: var(--pixel-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .installBox {
   display: grid;
   gap: 5px;
   border-left: 5px solid var(--pixel-cyan);
-}
-
-.installBox span {
-  color: var(--muted);
-  font-size: 0.92rem;
-  text-transform: uppercase;
 }
 
 .installBox code {

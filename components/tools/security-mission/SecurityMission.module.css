@@ -1683,8 +1683,13 @@ button.traceToken {
   font-size: 1rem;
 }
 
-.root p,
-.root label {
+.root p {
+  font-size: 1rem;
+}
+
+.root label,
+.root small,
+.root button > small {
   font-size: max(0.875rem, 14px);
 }
 

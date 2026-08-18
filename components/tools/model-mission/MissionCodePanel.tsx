@@ -135,8 +135,14 @@ export function MissionCodePanel({
       ) : null}
 
       {result?.dependencies.length ? (
-        <div className={styles.installBox}>
-          <span>Install dependencies</span>
+        <section
+          className={styles.installBox}
+          data-mission-code-region="install"
+          aria-labelledby="mission-install-title"
+        >
+          <h2 className={styles.codeRegionTitle} id="mission-install-title">
+            Install dependencies
+          </h2>
           <code>
             pip install {result.dependencies
               .map((dependency) =>
@@ -144,17 +150,35 @@ export function MissionCodePanel({
               )
               .join(" ")}
           </code>
-        </div>
+        </section>
       ) : null}
 
       {result?.summary ? (
-        <p className={styles.codeSummary}>{result.summary}</p>
+        <section
+          className={styles.codeSummaryRegion}
+          data-mission-code-region="summary"
+          aria-labelledby="mission-summary-title"
+        >
+          <h2 className={styles.codeRegionTitle} id="mission-summary-title">
+            Project summary
+          </h2>
+          <p className={styles.codeSummary}>{result.summary}</p>
+        </section>
       ) : null}
 
       {ready ? (
-        <pre className={styles.code}>
-          <code>{result?.code}</code>
-        </pre>
+        <section
+          className={styles.codeSourceRegion}
+          data-mission-code-region="source"
+          aria-labelledby="mission-source-title"
+        >
+          <h2 className={styles.codeRegionTitle} id="mission-source-title">
+            Generated source
+          </h2>
+          <pre className={styles.code}>
+            <code>{result?.code}</code>
+          </pre>
+        </section>
       ) : null}
     </section>
   );
