@@ -19,6 +19,10 @@ export function TaskChooser({
   selectedTaskId,
   onChoose,
 }: TaskChooserProps) {
+  const selectedTask = MODEL_MISSION_TASKS.find(
+    (task) => task.id === selectedTaskId,
+  ) ?? MODEL_MISSION_TASKS[0];
+
   return (
     <div className={styles.taskGroups}>
       {Object.entries(LEVEL_LABELS).map(([level, label]) => (
@@ -56,24 +60,35 @@ export function TaskChooser({
                       {task.technicalTerm}
                     </span>
                     <p>{task.description}</p>
-                    <span className={styles.taskMeta}>{task.modality}</span>
-                    <span
-                      className={styles.taskExamples}
-                      data-mission-task-examples
-                    >
-                      <span>Examples</span>
-                      <span className={styles.exampleList}>
-                        {task.examples.map((example: string) => (
-                          <span key={example}>{example}</span>
-                        ))}
-                      </span>
-                    </span>
                   </button>
                 );
               })}
           </div>
         </section>
       ))}
+
+      <aside
+        className={styles.selectedTaskDetail}
+        data-selected-task-detail
+        data-task-id={selectedTask.id}
+        aria-live="polite"
+      >
+        <div>
+          <span className={styles.selectedTaskLabel}>Selected mission</span>
+          <strong>{selectedTask.technicalTerm}</strong>
+          <p>{selectedTask.modality}</p>
+        </div>
+        <div className={styles.selectedTaskExamples}>
+          <span>Try it with</span>
+          <div className={styles.exampleList}>
+            {selectedTask.examples.map((example: string) => (
+              <span data-selected-task-example key={example}>
+                {example}
+              </span>
+            ))}
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }

@@ -299,7 +299,7 @@
 .modelGrid button {
   position: relative;
   display: grid;
-  min-height: 172px;
+  min-height: 132px;
   gap: 6px;
   align-content: start;
   padding: 16px;
@@ -342,34 +342,47 @@
 
 .taskCard p,
 .modelGrid p {
+  display: -webkit-box;
+  overflow: hidden;
   margin: 2px 0 0;
   color: var(--muted);
   font-size: 1rem;
   line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
-.taskMeta {
-  margin-top: 4px;
-  color: var(--pixel-gold);
-  font-size: 0.92rem;
-  font-weight: 750;
-  text-transform: uppercase;
-  line-height: 1.45;
-}
-
-.taskExamples {
+.selectedTaskDetail {
   display: grid;
-  gap: 7px;
-  margin-top: auto;
-  padding-top: 10px;
-  color: var(--muted);
-  font-size: 0.92rem;
-  border-top: 1px solid var(--line);
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 18px;
+  align-items: center;
+  padding: 16px;
+  background: var(--night);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--pixel-green);
 }
 
-.taskExamples > span:first-child {
+.selectedTaskDetail > div {
+  display: grid;
+  gap: 6px;
+}
+
+.selectedTaskDetail strong {
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.selectedTaskDetail p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.selectedTaskLabel,
+.selectedTaskExamples > span {
   color: var(--pixel-green);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -911,7 +924,8 @@
   .fieldGrid,
   .lessonGrid,
   .summaryGrid,
-  .layerControls {
+  .layerControls,
+  .selectedTaskDetail {
     grid-template-columns: minmax(0, 1fr);
   }
 

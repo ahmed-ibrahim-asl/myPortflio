@@ -163,9 +163,9 @@ export function ModelMissionShell() {
           aria-label="Explanation level"
         >
           {[
-            ["guided", "Guided", "Show the concepts and safe defaults"],
-            ["customize", "Customize", "Show more configuration choices"],
-            ["advanced", "Advanced", "Expose production-oriented controls"],
+            ["guided", "Guided", "Safe defaults"],
+            ["customize", "Customize", "More choices"],
+            ["advanced", "Advanced", "Production controls"],
           ].map(([value, label, help]) => (
             <button
               type="button"

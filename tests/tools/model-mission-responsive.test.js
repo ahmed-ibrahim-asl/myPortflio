@@ -286,12 +286,21 @@ test(
           const objectDetectionCard = document.querySelector(
             '[data-mission-task="object-detection"]'
           );
+          const missionTaskCards = [...document.querySelectorAll(
+            "[data-mission-task]"
+          )];
           const taskBodyFont = parseFloat(getComputedStyle(
             objectDetectionCard.querySelector("p")
           ).fontSize);
-          const taskExampleFont = parseFloat(getComputedStyle(
-            objectDetectionCard.querySelector("[data-mission-task-examples]")
-          ).fontSize);
+          const maxTaskHeight = Math.max(...missionTaskCards.map(
+            (item) => item.getBoundingClientRect().height
+          ));
+          const repeatedTaskExamples = document.querySelectorAll(
+            "[data-mission-task-examples]"
+          ).length;
+          const initialSelectedDetail = document.querySelector(
+            "[data-selected-task-detail]"
+          );
           const arrowCtas = [...document.querySelectorAll("a, button")]
             .filter((item) => /[←→↗]/.test(item.textContent ?? ""))
             .map((item) => item.textContent.trim());
@@ -305,7 +314,11 @@ test(
           return {
             tasks,
             taskBodyFont,
-            taskExampleFont,
+            taskCardsAreCompact: maxTaskHeight <= 230,
+            repeatedTaskExamples,
+            hasSelectedTaskDetail: Boolean(initialSelectedDetail),
+            selectedDetailExampleCount: initialSelectedDetail
+              ?.querySelectorAll("[data-selected-task-example]").length ?? 0,
             arrowCtas,
             selectedTask: document.querySelector(
               '[data-mission-task][aria-pressed="true"]'
@@ -338,7 +351,10 @@ test(
           "neural-network",
         ],
         taskBodyFont: 16,
-        taskExampleFont: 14.72,
+        taskCardsAreCompact: true,
+        repeatedTaskExamples: 0,
+        hasSelectedTaskDetail: true,
+        selectedDetailExampleCount: 3,
         arrowCtas: [],
         selectedModel: "random-forest",
         hasRegressor: true,
