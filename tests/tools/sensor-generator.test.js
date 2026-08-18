@@ -1,6 +1,72 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
 import { generateSensorCode, SENSOR_CONFIGURATIONS } from '../../lib/tools/sensor-templates.js';
+import {
+  EMBEDDED_EXAMPLES,
+  EMBEDDED_FAMILIES,
+  EMBEDDED_TARGETS,
+  generateEmbeddedCode
+} from '../../lib/tools/embedded-generator/catalog.js';
+
+test('Embedded Generator - targets distinguish sensors, communication, and interfaces', () => {
+  assert.deepStrictEqual(EMBEDDED_FAMILIES.map(({ id }) => id), [
+    'sensor',
+    'communication',
+    'interface'
+  ]);
+  assert.strictEqual(EMBEDDED_TARGETS.find(({ id }) => id === 'bme280').family, 'sensor');
+  assert.strictEqual(EMBEDDED_TARGETS.find(({ id }) => id === 'espnow-sender').family, 'communication');
+  assert.strictEqual(EMBEDDED_TARGETS.find(({ id }) => id === 'esp32s3-usb-cdc').family, 'interface');
+  assert.ok(EMBEDDED_EXAMPLES.length >= 10);
+});
+
+test('Embedded Generator - expanded sensor starters produce code, wiring, and notes', () => {
+  const targets = ['bmp280', 'ds18b20', 'bh1750', 'vl53l0x', 'ads1115', 'hx711', 'soil-moisture'];
+
+  for (const target of targets) {
+    const result = generateEmbeddedCode({
+      family: 'sensor',
+      target,
+      environment: 'arduino',
+      protocol: EMBEDDED_TARGETS.find(({ id }) => id === target).protocols[0]
+    });
+    assert.strictEqual(result.ok, true, `${target} should generate`);
+    assert.ok(result.code.length > 80, `${target} should return useful starter code`);
+    assert.ok(result.code.endsWith('\n'));
+    assert.ok(result.wiring.length > 0, `${target} should explain wiring`);
+    assert.ok(result.notes.length > 0, `${target} should include notes`);
+  }
+});
+
+test('Embedded Generator - communication starters use placeholders and correct families', () => {
+  const targets = [
+    'http-client', 'http-server', 'mqtt-publisher', 'mqtt-subscriber',
+    'ble-server', 'ble-client', 'i2c-scanner', 'spi-transfer'
+  ];
+
+  for (const target of targets) {
+    const metadata = EMBEDDED_TARGETS.find(({ id }) => id === target);
+    const result = generateEmbeddedCode({
+      family: metadata.family,
+      target,
+      environment: 'arduino',
+      protocol: metadata.protocols[0]
+    });
+    assert.strictEqual(result.ok, true, `${target} should generate`);
+    assert.ok(result.code.endsWith('\n'));
+    assert.ok(result.notes.length > 0);
+  }
+
+  const mqtt = generateEmbeddedCode({
+    family: 'communication',
+    target: 'mqtt-publisher',
+    environment: 'arduino',
+    protocol: 'mqtt'
+  });
+  assert.match(mqtt.code, /YOUR_WIFI_SSID/);
+  assert.match(mqtt.code, /YOUR_MQTT_BROKER/);
+  assert.doesNotMatch(mqtt.code, /aassal950|wa\.me|201068163322/i);
+});
 
 test('Sensor Generator - Every registry ID is unique', () => {
   const ids = SENSOR_CONFIGURATIONS.map(c => c.id);

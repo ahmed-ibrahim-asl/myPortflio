@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { ToolShell } from "@/components/tools/ToolShell";
+import React, { useMemo, useState } from "react";
+import { EmbeddedExamplePicker } from "@/components/tools/EmbeddedExamplePicker";
 import { TerminalCodeBlock } from "@/components/tools/TerminalCodeBlock";
-import { generateSensorCode, SENSOR_CONFIGURATIONS, SENSOR_PARAM_SCHEMAS } from "@/lib/tools/sensor-templates";
+import { ToolShell } from "@/components/tools/ToolShell";
+import {
+  EMBEDDED_CONFIGURATIONS,
+  EMBEDDED_EXAMPLES,
+  EMBEDDED_FAMILIES,
+  EMBEDDED_PARAM_SCHEMAS,
+  EMBEDDED_TARGETS,
+  generateEmbeddedCode
+} from "@/lib/tools/embedded-generator/catalog";
 
-interface SensorParamField {
+interface ParamField {
   key: string;
   label: string;
   type: "select" | "number";
@@ -13,193 +21,246 @@ interface SensorParamField {
   options?: { value: string; label: string }[];
 }
 
-const PARAM_SCHEMAS = SENSOR_PARAM_SCHEMAS as unknown as Record<string, SensorParamField[]>;
+interface Selection {
+  family: string;
+  target: string;
+  environment: string;
+  protocol: string;
+}
+
+interface EmbeddedTarget {
+  id: string;
+  family: string;
+  label: string;
+  summary: string;
+  protocols: readonly string[];
+}
+
+interface EmbeddedExample {
+  id: string;
+  family: string;
+  target: string;
+  title: string;
+  summary: string;
+  params: Readonly<Record<string, unknown>>;
+}
+
+const configurations = EMBEDDED_CONFIGURATIONS as readonly any[];
+const parameterSchemas = EMBEDDED_PARAM_SCHEMAS as Record<string, ParamField[]>;
+const targets = EMBEDDED_TARGETS as unknown as readonly EmbeddedTarget[];
+const examples = EMBEDDED_EXAMPLES as unknown as readonly EmbeddedExample[];
+
+function firstConfiguration(target: string) {
+  return configurations.find((config) => config.target === target);
+}
 
 export default function SensorCodeGeneratorPage() {
-  const [selection, setSelection] = useState({
-    sensor: "bme280",
+  const [selection, setSelection] = useState<Selection>({
+    family: "sensor",
+    target: "bme280",
     environment: "arduino",
     protocol: "i2c"
   });
-  const [paramsBySensor, setParamsBySensor] = useState<Record<string, Record<string, unknown>>>({});
+  const [paramsByTarget, setParamsByTarget] = useState<Record<string, Record<string, unknown>>>({});
+  const [activeExampleId, setActiveExampleId] = useState("weather-station");
 
-  const getAvailableEnvironments = (sensorId: string) => {
-    const envs = new Set();
-    SENSOR_CONFIGURATIONS.filter(c => c.sensor === sensorId).forEach(c => envs.add(c.environment));
-    return Array.from(envs);
+  const familyTargets = useMemo(
+    () => targets.filter((target) => target.family === selection.family),
+    [selection.family]
+  );
+  const targetConfigurations = useMemo(
+    () => configurations.filter((config) => config.target === selection.target),
+    [selection.target]
+  );
+  const environments = useMemo(
+    () => [...new Map(targetConfigurations.map((config) => [config.environment, config.environmentLabel])).entries()],
+    [targetConfigurations]
+  );
+  const protocols = useMemo(
+    () => [...new Map(
+      targetConfigurations
+        .filter((config) => config.environment === selection.environment)
+        .map((config) => [config.protocol, config.protocolLabel])
+    ).entries()],
+    [selection.environment, targetConfigurations]
+  );
+  const familyExamples = useMemo(
+    () => examples.filter((example) => example.family === selection.family),
+    [selection.family]
+  );
+
+  const activeSchema = parameterSchemas[selection.target] ?? [];
+  const activeParams = paramsByTarget[selection.target] ?? {};
+  const result = useMemo(
+    () => generateEmbeddedCode(selection, activeParams),
+    [selection, activeParams]
+  );
+
+  const chooseTarget = (target: string, family = selection.family) => {
+    const config = firstConfiguration(target);
+    if (!config) return;
+    setSelection({ family, target, environment: config.environment, protocol: config.protocol });
   };
 
-  const getAvailableProtocols = (sensorId: string, envId: string) => {
-    const protocols = new Set();
-    SENSOR_CONFIGURATIONS.filter(c => c.sensor === sensorId && c.environment === envId).forEach(c => protocols.add(c.protocol));
-    return Array.from(protocols);
+  const chooseFamily = (family: string) => {
+    const target = targets.find((item) => item.family === family);
+    if (!target) return;
+    setActiveExampleId(examples.find((example) => example.family === family)?.id ?? "");
+    chooseTarget(target.id, family);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    
-    setSelection(prev => {
-      const next = { ...prev, [name]: value };
-      
-      // Dependent select logic
-      if (name === "sensor") {
-        const envs = getAvailableEnvironments(value);
-        if (!envs.includes(next.environment)) {
-          next.environment = envs[0] as string;
-        }
-        const protocols = getAvailableProtocols(value, next.environment);
-        if (!protocols.includes(next.protocol)) {
-          next.protocol = protocols[0] as string;
-        }
-      } else if (name === "environment") {
-        const protocols = getAvailableProtocols(next.sensor, value);
-        if (!protocols.includes(next.protocol)) {
-          next.protocol = protocols[0] as string;
-        }
-      }
-      
-      return next;
+  const chooseEnvironment = (environment: string) => {
+    const config = targetConfigurations.find((item) => item.environment === environment);
+    if (!config) return;
+    setSelection((current) => ({ ...current, environment, protocol: config.protocol }));
+  };
+
+  const chooseExample = (example: EmbeddedExample) => {
+    const config = firstConfiguration(example.target);
+    if (!config) return;
+    setActiveExampleId(example.id);
+    setParamsByTarget((current) => ({ ...current, [example.target]: { ...example.params } }));
+    setSelection({
+      family: example.family,
+      target: example.target,
+      environment: config.environment,
+      protocol: config.protocol
     });
   };
 
-  const activeSchema = PARAM_SCHEMAS[selection.sensor];
-  const activeParams = paramsBySensor[selection.sensor] || {};
-
-  const handleParamChange = (key: string, rawValue: string, type: string) => {
-    setParamsBySensor((prev) => ({
-      ...prev,
-      [selection.sensor]: {
-        ...prev[selection.sensor],
-        [key]: type === "number" ? Number(rawValue) : rawValue
+  const changeParam = (field: ParamField, rawValue: string) => {
+    setParamsByTarget((current) => ({
+      ...current,
+      [selection.target]: {
+        ...current[selection.target],
+        [field.key]: field.type === "number" ? Number(rawValue) : rawValue
       }
     }));
   };
 
-  const result = useMemo(
-    () => generateSensorCode(selection, activeParams),
-    [selection, activeParams]
-  );
-
   return (
     <ToolShell
-      title="Sensor Code Generator"
-      description="Generate validated starter code for selected embedded sensors and development environments."
+      title="Embedded Code Workbench"
+      description="Choose a sensor, communication workflow, or board interface. Start from a working example, adjust real wiring values, and copy a documented starter project."
     >
-      <div className="tool-controls">
-        <h3 className="mono" style={{ fontSize: "0.8rem", color: "var(--pixel-gold)" }}>CONFIGURATION</h3>
-
-        <div className="tool-input">
-          <label htmlFor="sensor">Sensor</label>
-          <select id="sensor" name="sensor" value={selection.sensor} onChange={handleChange}>
-            <optgroup label="Sensors">
-              <option value="bme280">BME280 (Temp/Hum/Pres)</option>
-              <option value="mpu6050">MPU6050 (Accel/Gyro)</option>
-              <option value="hcsr04">HC-SR04 (Ultrasonic)</option>
-              <option value="irsensor">IR Obstacle (Digital)</option>
-              <option value="dht11">DHT11 (Temp/Hum)</option>
-              <option value="dht22">DHT22 (Temp/Hum)</option>
-              <option value="mq2">MQ-2 (Smoke/Gas)</option>
-              <option value="pir">HC-SR501 (PIR Motion)</option>
-            </optgroup>
-            <optgroup label="ESP32 Communication">
-              <option value="espnow-sender">ESP-NOW (Sender)</option>
-              <option value="espnow-receiver">ESP-NOW (Receiver)</option>
-              <option value="uart-comm">UART / Serial2</option>
-            </optgroup>
-            <optgroup label="ESP32-S3 Specifics">
-              <option value="esp32s3-usb-cdc">Native USB CDC</option>
-              <option value="esp32s3-camera">OV2640 Camera</option>
-            </optgroup>
-          </select>
-        </div>
-        
-        <div className="tool-input">
-          <label htmlFor="environment">Target Environment</label>
-          <select id="environment" name="environment" value={selection.environment} onChange={handleChange}>
-            {getAvailableEnvironments(selection.sensor).map((env: any) => (
-              <option key={env} value={env}>
-                {SENSOR_CONFIGURATIONS.find(c => c.environment === env)?.environmentLabel || env}
-              </option>
-            ))}
-          </select>
+      <div className="embedded-workbench">
+        <div className="embedded-family-tabs" role="tablist" aria-label="Embedded code family">
+          {EMBEDDED_FAMILIES.map((family) => (
+            <button
+              className={`embedded-family-tab${selection.family === family.id ? " is-active" : ""}`}
+              type="button"
+              role="tab"
+              aria-selected={selection.family === family.id}
+              aria-pressed={selection.family === family.id}
+              onClick={() => chooseFamily(family.id)}
+              key={family.id}
+            >
+              <strong>{family.label}</strong>
+              <span>{family.summary}</span>
+            </button>
+          ))}
         </div>
 
-        <div className="tool-input">
-          <label htmlFor="protocol">Protocol</label>
-          <select id="protocol" name="protocol" value={selection.protocol} onChange={handleChange}>
-            {getAvailableProtocols(selection.sensor, selection.environment).map((proto: any) => (
-              <option key={proto} value={proto}>
-                {SENSOR_CONFIGURATIONS.find(c => c.protocol === proto)?.protocolLabel || proto}
-              </option>
-            ))}
-          </select>
-        </div>
+        <EmbeddedExamplePicker
+          examples={familyExamples}
+          activeExampleId={activeExampleId}
+          onSelect={chooseExample}
+        />
 
-        {activeSchema && activeSchema.length > 0 ? (
-          <>
-            <h3 className="mono" style={{ fontSize: "0.8rem", color: "var(--pixel-gold)", margin: "16px 0 4px" }}>
-              WIRING
-            </h3>
-            {activeSchema.map((field) => (
-              <div className="tool-input" key={field.key}>
-                <label htmlFor={field.key}>
-                  {field.label}
-                  {field.type === "select" ? (
-                    <select
-                      id={field.key}
-                      value={String(activeParams[field.key] ?? field.default)}
-                      onChange={(e) => handleParamChange(field.key, e.target.value, field.type)}
-                    >
-                      {field.options?.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      id={field.key}
-                      type="number"
-                      value={String(activeParams[field.key] ?? field.default)}
-                      onChange={(e) => handleParamChange(field.key, e.target.value, field.type)}
-                    />
-                  )}
-                </label>
-              </div>
-            ))}
-          </>
-        ) : null}
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} aria-live="polite">
-        {!result.ok ? (
-          <div className="tool-result-card">
-             <span className="hud-card-label mono" style={{ color: "var(--tool-error)" }}>ERROR</span>
-             <div className="metric-value mono" style={{ fontSize: "1.5rem" }}>{result.error}</div>
-             <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>This sensor configuration is not currently supported.</p>
-          </div>
-        ) : (
-          <>
-            <TerminalCodeBlock code={result.code} label={result.filename || "main.cpp"} />
-            
-            <div className="tool-result-card" style={{ padding: "16px", background: "rgba(85, 213, 216, 0.05)", borderColor: "#202844" }}>
-              <span className="mono" style={{ color: "var(--pixel-cyan)", fontSize: "0.75rem" }}>NOTES</span>
-              <ul style={{ margin: "8px 0 0", paddingLeft: "20px", fontSize: "0.85rem", color: "var(--muted)" }}>
-                {result.notes.map((note: string, i: number) => (
-                  <li key={i}>{note}</li>
-                ))}
-              </ul>
-              {result.dependencies.length > 0 && (
-                <>
-                  <span className="mono" style={{ display: "block", color: "var(--pixel-gold)", fontSize: "0.75rem", marginTop: "16px" }}>DEPENDENCIES</span>
-                  <ul style={{ margin: "8px 0 0", paddingLeft: "20px", fontSize: "0.85rem", color: "var(--muted)" }}>
-                    {result.dependencies.map((dep: any, i: number) => (
-                      <li key={i}>{dep.name} <code style={{ fontSize: "0.8em" }}>{dep.version}</code></li>
-                    ))}
-                  </ul>
-                </>
-              )}
+        <div className="embedded-workbench-grid">
+          <section className="embedded-controls" aria-labelledby="embedded-configuration-title">
+            <div className="embedded-section-heading">
+              <span className="mono">CONFIGURATION</span>
+              <h2 id="embedded-configuration-title">Choose the hardware path</h2>
             </div>
-          </>
-        )}
+
+            <label className="tool-input">
+              <span>{selection.family === "sensor" ? "Sensor" : selection.family === "communication" ? "Communication workflow" : "Board interface"}</span>
+              <select value={selection.target} onChange={(event) => chooseTarget(event.target.value)}>
+                {familyTargets.map((target) => (
+                  <option value={target.id} key={target.id}>{target.label} — {target.summary}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="tool-input">
+              <span>Target environment</span>
+              <select value={selection.environment} onChange={(event) => chooseEnvironment(event.target.value)}>
+                {environments.map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+              </select>
+            </label>
+
+            <label className="tool-input">
+              <span>Protocol or bus</span>
+              <select
+                value={selection.protocol}
+                onChange={(event) => setSelection((current) => ({ ...current, protocol: event.target.value }))}
+              >
+                {protocols.map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+              </select>
+            </label>
+
+            {activeSchema.length ? (
+              <div className="embedded-parameter-group">
+                <h3>Wiring and calibration</h3>
+                {activeSchema.map((field) => (
+                  <label className="tool-input" key={field.key}>
+                    <span>{field.label}</span>
+                    {field.type === "select" ? (
+                      <select
+                        value={String(activeParams[field.key] ?? field.default)}
+                        onChange={(event) => changeParam(field, event.target.value)}
+                      >
+                        {field.options?.map((option) => (
+                          <option value={option.value} key={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="number"
+                        value={String(activeParams[field.key] ?? field.default)}
+                        onChange={(event) => changeParam(field, event.target.value)}
+                      />
+                    )}
+                  </label>
+                ))}
+              </div>
+            ) : null}
+          </section>
+
+          <section className="embedded-output" aria-live="polite" aria-labelledby="embedded-output-title">
+            <div className="embedded-section-heading">
+              <span className="mono">GENERATED STARTER</span>
+              <h2 id="embedded-output-title">Code, wiring, and dependencies</h2>
+            </div>
+            {!result.ok ? (
+              <div className="embedded-error">
+                <strong>That combination is not available.</strong>
+                <p>Choose one of the environment and protocol pairs shown in the controls.</p>
+              </div>
+            ) : (
+              <>
+                <TerminalCodeBlock code={result.code} label={result.filename || "main.cpp"} />
+                <div className="embedded-notes-grid">
+                  <div>
+                    <h3>Wiring</h3>
+                    <ul>{result.wiring.map((note: string) => <li key={note}>{note}</li>)}</ul>
+                  </div>
+                  <div>
+                    <h3>Notes</h3>
+                    <ul>{result.notes.map((note: string) => <li key={note}>{note}</li>)}</ul>
+                  </div>
+                  <div>
+                    <h3>Dependencies</h3>
+                    {result.dependencies.length ? (
+                      <ul>{result.dependencies.map((dependency: any) => <li key={dependency.name}>{dependency.name} <code>{dependency.version}</code></li>)}</ul>
+                    ) : <p>Uses board-core libraries only.</p>}
+                  </div>
+                </div>
+              </>
+            )}
+          </section>
+        </div>
       </div>
     </ToolShell>
   );

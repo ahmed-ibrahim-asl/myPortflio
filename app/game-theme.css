@@ -3029,6 +3029,342 @@ body {
   .engineering-image-signal span:nth-child(3) { left: calc(100% - 12px); }
 }
 
+/* Embedded code workbench: truthful families, examples, and readable output. */
+.tool-shell-heading {
+  margin-bottom: 32px;
+}
+
+.tool-shell-back {
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+.tool-shell-description {
+  max-width: 76ch;
+  margin-top: -20px;
+  font-size: 1.0625rem;
+}
+
+.tool-grid > .embedded-workbench {
+  grid-column: 1 / -1;
+}
+
+.embedded-workbench {
+  display: grid;
+  gap: 28px;
+  min-width: 0;
+}
+
+.embedded-family-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.embedded-family-tab {
+  display: grid;
+  gap: 8px;
+  min-height: 112px;
+  padding: 18px;
+  color: var(--ink-soft);
+  text-align: left;
+  background: var(--panel);
+  border: 2px solid #354064;
+  box-shadow: 4px 4px 0 var(--pixel-shadow);
+}
+
+.embedded-family-tab strong {
+  color: var(--ink);
+  font-size: 1.05rem;
+  text-transform: uppercase;
+}
+
+.embedded-family-tab span {
+  font-family: var(--font-reading);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.embedded-family-tab:hover,
+.embedded-family-tab:focus-visible,
+.embedded-family-tab.is-active {
+  border-color: var(--pixel-cyan);
+}
+
+.embedded-family-tab.is-active {
+  color: #071018;
+  background: var(--pixel-cyan);
+  box-shadow: 4px 4px 0 #263a52;
+}
+
+.embedded-family-tab.is-active strong,
+.embedded-family-tab.is-active span {
+  color: #071018;
+}
+
+.embedded-examples,
+.embedded-controls,
+.embedded-output {
+  min-width: 0;
+  padding: 22px;
+  background: #0a0f21;
+  border: 1px solid #354064;
+  box-shadow: 5px 5px 0 var(--pixel-shadow);
+}
+
+.embedded-section-heading > span {
+  color: var(--pixel-green);
+  font-size: 0.875rem;
+  font-weight: 900;
+}
+
+.embedded-section-heading h2 {
+  margin: 6px 0 18px;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  text-transform: uppercase;
+}
+
+.embedded-example-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.embedded-example-card {
+  display: grid;
+  gap: 6px;
+  min-height: 92px;
+  padding: 14px;
+  color: var(--ink-soft);
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid #3b456a;
+}
+
+.embedded-example-card strong {
+  color: var(--ink);
+  font-size: 0.9375rem;
+}
+
+.embedded-example-card span {
+  font-family: var(--font-reading);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.embedded-example-card:hover,
+.embedded-example-card:focus-visible,
+.embedded-example-card.is-active {
+  border-color: var(--pixel-green);
+}
+
+.embedded-example-card.is-active {
+  background: #14233a;
+  box-shadow: inset 4px 0 0 var(--pixel-green);
+}
+
+.embedded-workbench-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.38fr) minmax(0, 0.62fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.embedded-controls {
+  display: grid;
+  gap: 18px;
+}
+
+.embedded-workbench .tool-input {
+  display: grid;
+  gap: 8px;
+  color: var(--pixel-cyan);
+  font-size: 0.875rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.embedded-workbench .tool-input input,
+.embedded-workbench .tool-input select {
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  padding: 12px 14px;
+  color: var(--ink);
+  background: #070a18;
+  border: 2px solid #354064;
+  font-family: var(--font-reading);
+  font-size: 1rem;
+  text-transform: none;
+}
+
+.embedded-workbench .tool-input input:focus,
+.embedded-workbench .tool-input select:focus {
+  border-color: var(--pixel-cyan);
+  box-shadow: 0 0 0 3px #1f3150;
+}
+
+.embedded-parameter-group {
+  display: grid;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid #354064;
+}
+
+.embedded-parameter-group h3,
+.embedded-notes-grid h3 {
+  margin: 0;
+  color: var(--pixel-gold);
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+}
+
+.embedded-output {
+  min-width: 0;
+}
+
+.terminal-code-block {
+  position: relative;
+  margin-top: 16px;
+  overflow: hidden;
+  background: #050711;
+  border: 1px solid #354064;
+}
+
+.terminal-code-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  background: #0b1022;
+  border-bottom: 1px solid #354064;
+}
+
+.terminal-code-label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  padding: 8px 12px;
+  overflow: hidden;
+  color: var(--pixel-green);
+  background: #13231c;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.terminal-code-copy {
+  min-width: 84px;
+  min-height: 44px;
+  padding: 8px 16px;
+  color: #071018;
+  background: var(--pixel-green);
+  border: 1px solid #d5ffce;
+  font-size: 0.875rem;
+  font-weight: 900;
+}
+
+.terminal-code-copy:hover,
+.terminal-code-copy:focus-visible {
+  background: #b7f3a9;
+}
+
+.terminal-code-pre {
+  max-height: 620px;
+  padding: 22px;
+  margin: 0;
+  overflow: auto;
+  color: #e2e8f0;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  white-space: pre;
+}
+
+.embedded-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.embedded-notes-grid > div {
+  min-width: 0;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid #354064;
+}
+
+.embedded-notes-grid ul {
+  padding-left: 20px;
+  margin: 10px 0 0;
+}
+
+.embedded-notes-grid li,
+.embedded-notes-grid p {
+  color: var(--ink-soft);
+  font-family: var(--font-reading);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.embedded-notes-grid code {
+  overflow-wrap: anywhere;
+  color: var(--pixel-green);
+}
+
+.embedded-error {
+  padding: 20px;
+  color: #ffd5dc;
+  background: #2a1119;
+  border: 1px solid #a94d63;
+  font-size: 1rem;
+}
+
+@media (max-width: 1040px) {
+  .embedded-workbench-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .embedded-family-tabs,
+  .embedded-example-grid,
+  .embedded-notes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .embedded-family-tab {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .embedded-examples,
+  .embedded-controls,
+  .embedded-output {
+    padding: 16px;
+  }
+
+  .terminal-code-header {
+    align-items: stretch;
+  }
+
+  .terminal-code-label {
+    flex: 1 1 auto;
+  }
+
+  .terminal-code-pre {
+    padding: 18px;
+    font-size: 0.875rem;
+  }
+}
+
 /* Calculator discovery: original diagrams, immediate search, related-tool finder. */
 .tools-calculator-section {
   padding-top: 64px;

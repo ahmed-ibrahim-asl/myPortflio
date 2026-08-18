@@ -283,6 +283,10 @@ test(
               const calculatorResultText = document.querySelector(".calculator-results-count")?.textContent ?? "";
               const calculatorFinder = document.querySelector(".calculator-finder");
               const calculatorFinderSearch = calculatorFinder?.querySelector("input[type='search']");
+              const embeddedFamilyTabs = document.querySelectorAll(".embedded-family-tab").length;
+              const embeddedExamples = document.querySelectorAll(".embedded-example-card").length;
+              const embeddedLabel = document.querySelector(".embedded-workbench label > span, .embedded-workbench .tool-input > label");
+              const embeddedLabelFontSize = embeddedLabel ? parseFloat(getComputedStyle(embeddedLabel).fontSize) : 0;
               return {
                 overflowPx,
                 clientWidth: doc.clientWidth,
@@ -307,7 +311,10 @@ test(
                 calculatorThumbnails,
                 calculatorResultText,
                 hasScrollCue: Boolean(document.querySelector(".tools-scroll-cue")),
-                hasCalculatorFinder: Boolean(calculatorFinder && calculatorFinderSearch)
+                hasCalculatorFinder: Boolean(calculatorFinder && calculatorFinderSearch),
+                embeddedFamilyTabs,
+                embeddedExamples,
+                embeddedLabelFontSize
               };
             })()`
           });
@@ -333,7 +340,10 @@ test(
             calculatorThumbnails,
             calculatorResultText,
             hasScrollCue,
-            hasCalculatorFinder
+            hasCalculatorFinder,
+            embeddedFamilyTabs,
+            embeddedExamples,
+            embeddedLabelFontSize
           } = result.result.value;
           if (overflowPx > 1) {
             failures.push(
@@ -406,6 +416,18 @@ test(
             if (!hasCalculatorFinder) {
               failures.push(
                 `${route} @ ${viewport.label}: shared calculator finder is missing`
+              );
+            }
+          }
+          if (route === "/tools/sensor-code-generator/" && viewport.width === 1440) {
+            if (embeddedFamilyTabs !== 3 || embeddedExamples < 5) {
+              failures.push(
+                `${route} @ ${viewport.label}: embedded families or example presets are missing`
+              );
+            }
+            if (embeddedLabelFontSize < 14) {
+              failures.push(
+                `${route} @ ${viewport.label}: embedded workbench labels remain below the 14px font floor`
               );
             }
           }
