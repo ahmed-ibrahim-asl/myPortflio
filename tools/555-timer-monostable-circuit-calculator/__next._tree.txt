@@ -1,0 +1,2 @@
+:HL["/myPortflio/_next/static/chunks/0p7b913kf38gz.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":20,"slots":{"children":{"name":"tools","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"555-timer-monostable-circuit-calculator","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"U2WuXYY9wwtqmX_6JHFYU"}
