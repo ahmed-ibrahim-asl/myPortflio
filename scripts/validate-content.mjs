@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import matter from "gray-matter";
+import { parseFrontmatter } from "../lib/frontmatter.js";
 
 const directory = path.join(process.cwd(), "content", "writing");
 const files = (await fs.readdir(directory)).filter((file) => file.endsWith(".md"));
@@ -11,7 +11,7 @@ const failures = [];
 for (const file of files) {
   const slug = file.replace(/\.md$/, "");
   const source = await fs.readFile(path.join(directory, file), "utf8");
-  const { data, content } = matter(source);
+  const { data, content } = parseFrontmatter(source);
 
   if (slugs.has(slug)) failures.push(`${file}: duplicate slug`);
   slugs.add(slug);

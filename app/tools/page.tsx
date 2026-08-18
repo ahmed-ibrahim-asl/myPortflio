@@ -49,7 +49,7 @@ export default function ToolsIndexPage() {
             <h2>Generate, simulate, and learn the full workflow.</h2>
             <p className="section-intro">
               Guided workbenches for firmware, IoT, control, machine learning, and authorized
-              security labs—built as working tools rather than static demos.
+              security labs, all built as working tools instead of static demos.
             </p>
           </div>
         </div>

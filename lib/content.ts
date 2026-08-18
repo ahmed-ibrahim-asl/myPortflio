@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
+import { parseFrontmatter } from "./frontmatter.js";
 import { marked } from "marked";
 import { Post } from "@/types/content";
 
@@ -41,7 +41,7 @@ function sanitizeHtmlOutput(rawHtml: string): string {
 function normalizePost(fileName: string): Post {
   const slug = fileName.replace(/\.md$/, "");
   const source = fs.readFileSync(path.join(writingDirectory, fileName), "utf8");
-  const { data, content } = matter(source);
+  const { data, content } = parseFrontmatter(source);
   const words = content.trim().split(/\s+/).filter(Boolean).length;
 
   return {

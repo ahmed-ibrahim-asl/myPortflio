@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import matter from "gray-matter";
+import { parseFrontmatter, stringifyFrontmatter } from "../lib/frontmatter.js";
 import { marked } from "marked";
 
 const root = process.cwd();
@@ -76,7 +76,7 @@ function defaultMeta(data = {}) {
 async function readPost(slug) {
   const filePath = path.join(writingDir, `${safeSlug(slug)}.md`);
   const source = await fs.readFile(filePath, "utf8");
-  const parsed = matter(source);
+  const parsed = parseFrontmatter(source);
   return {
     slug: safeSlug(slug),
     meta: defaultMeta(parsed.data),
@@ -121,7 +121,7 @@ async function writePost({ slug, previousSlug, meta, content }) {
     ...meta,
     updatedAt: new Date().toISOString().slice(0, 10)
   });
-  const output = matter.stringify(content.trim() + "\n", normalized);
+  const output = stringifyFrontmatter(content.trim() + "\n", normalized);
   const destination = path.join(writingDir, `${nextSlug}.md`);
 
   if (previousSlug && safeSlug(previousSlug) !== nextSlug) {

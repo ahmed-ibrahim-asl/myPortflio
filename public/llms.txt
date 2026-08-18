@@ -4,11 +4,21 @@
 
 ## Core pages
 
-- [Home](https://ahmed-ibrahim-asl.github.io/myPortfolio/): Overview of Ahmed's embedded systems, IoT, robotics, research, and teaching work.
-- [Work](https://ahmed-ibrahim-asl.github.io/myPortfolio/work/): Embedded firmware, robotics, IoT telemetry, secure hardware, OTA management, Flutter, and interface projects.
-- [About](https://ahmed-ibrahim-asl.github.io/myPortfolio/about/): Experience, university teaching, technical capabilities, publications, CV, and workshops.
-- [Writing](https://ahmed-ibrahim-asl.github.io/myPortfolio/writing/): Engineering field notes, Linux and cybersecurity walkthroughs, and the Learn With Me series.
-- [Contact](https://ahmed-ibrahim-asl.github.io/myPortfolio/contact/): Email and professional profiles.
+- [Home](https://ahmed-ibrahim-asl.github.io/myPortflio/): Overview of Ahmed's embedded systems, IoT, robotics, research, teaching work, and free engineering tools.
+- [Work](https://ahmed-ibrahim-asl.github.io/myPortflio/work/): Embedded firmware, robotics, IoT telemetry, secure hardware, OTA management, Flutter, and interface projects.
+- [About](https://ahmed-ibrahim-asl.github.io/myPortflio/about/): Experience, university teaching, technical capabilities, publications, CV, and workshops.
+- [Writing](https://ahmed-ibrahim-asl.github.io/myPortflio/writing/): Engineering field notes, Linux and cybersecurity walkthroughs, and the Learn With Me series.
+- [Tools](https://ahmed-ibrahim-asl.github.io/myPortflio/tools/): Searchable electronics calculators and guided engineering workbenches.
+- [Contact](https://ahmed-ibrahim-asl.github.io/myPortflio/contact/): Email and professional profiles.
+
+## Free engineering tools
+
+- [Electronics calculators](https://ahmed-ibrahim-asl.github.io/myPortflio/tools/#calculators): 36 interactive calculators for circuits, component values, timing, conversions, number systems, and engineering math.
+- [Model Mission](https://ahmed-ibrahim-asl.github.io/myPortflio/tools/ai-script-generator/): Guided computer vision project builder with YOLO26, YOLOE open-vocabulary detection, monocular depth, and U-Net segmentation examples.
+- [Sensor Code Generator](https://ahmed-ibrahim-asl.github.io/myPortflio/tools/sensor-code-generator/): Arduino, ESP-IDF, and PlatformIO code for sensors, I2C, SPI, UART, Bluetooth, Wi-Fi, ESP-NOW, and other embedded interfaces.
+- [PID Simulator](https://ahmed-ibrahim-asl.github.io/myPortflio/tools/pid-simulator/): Interactive proportional, integral, and derivative controller tuning.
+- [Battery Life Estimator](https://ahmed-ibrahim-asl.github.io/myPortflio/tools/battery-estimator/): ESP32 runtime and average-current estimates from active and sleep duty cycles.
+- [Security Mission](https://ahmed-ibrahim-asl.github.io/myPortflio/tools/security-command-builder/): Guided command builder for authorized security labs.
 
 ## Areas of work
 

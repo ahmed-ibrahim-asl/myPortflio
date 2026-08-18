@@ -632,9 +632,7 @@
   max-width: 100%;
   color: var(--pixel-green);
   font-size: 0.9rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .codeActions {
