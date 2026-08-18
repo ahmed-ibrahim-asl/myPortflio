@@ -3,8 +3,7 @@ import Link from "next/link";
 import { ProjectCard } from "@/components/ProjectCard";
 import { PostCard } from "@/components/PostCard";
 import { SectionHeading } from "@/components/SectionHeading";
-import { PixelWorld } from "@/components/PixelWorld";
-import { EngineeringImagePair } from "@/components/EngineeringImagePair";
+import { ProfilePortrait } from "@/components/ProfilePortrait";
 import { FreeToolsHook } from "@/components/FreeToolsHook";
 import {
   education,
@@ -31,7 +30,6 @@ export default function HomePage() {
       {/* 1. Hero: client outcome + primary project CTA */}
       <section className="hero" data-mission="origin" data-mission-label="ORIGIN" data-mission-num="01">
         <div className="shell hero-shell">
-          <PixelWorld />
           <div className="hero-grid">
             <div className="hero-copy">
               <div className="hero-kicker">
@@ -58,7 +56,7 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-            <EngineeringImagePair context="home" />
+            <ProfilePortrait context="home" />
           </div>
         </div>
       </section>

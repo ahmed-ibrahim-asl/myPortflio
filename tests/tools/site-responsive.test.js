@@ -8,7 +8,7 @@ import { setTimeout as delay } from "node:timers/promises";
 
 // Sitewide horizontal-overflow check across every real route, at the four breakpoints the
 // archived design-system checklist (design-system/ahmed-asl-portfolio/MASTER.md) already
-// specifies but nothing ever ran: 375 (mobile), 768 (tablet), 1024 (small desktop), 1440
+// specifies but nothing ever ran: 320/390 (phones), 768 (tablet), 1024 (small desktop), 1440
 // (desktop). This complements the per-tool responsive tests (which drive full interaction
 // journeys on one tool each) by covering breadth across the whole site in one pass.
 
@@ -19,7 +19,8 @@ const chromeCandidates = [
 ].filter(Boolean);
 
 const VIEWPORTS = [
-  { width: 375, height: 812, label: "375 (mobile)" },
+  { width: 320, height: 720, label: "320 (small phone)" },
+  { width: 390, height: 844, label: "390 (phone)" },
   { width: 768, height: 1024, label: "768 (tablet)" },
   { width: 1024, height: 800, label: "1024 (small desktop)" },
   { width: 1440, height: 900, label: "1440 (desktop)" }
@@ -158,7 +159,7 @@ async function createClient(port, url) {
 }
 
 test(
-  "every route stays free of horizontal overflow at 375/768/1024/1440",
+  "every route stays free of horizontal overflow at 320/390/768/1024/1440",
   { timeout: 180_000 },
   async (t) => {
     const chromePath = chromeCandidates.find(existsSync);
@@ -275,7 +276,10 @@ test(
                 const style = getComputedStyle(link);
                 return style.whiteSpace !== "nowrap" || link.scrollWidth > link.clientWidth + 1;
               });
-              const imagePairCount = document.querySelectorAll(".engineering-image-pair img").length;
+              const portraitCount = document.querySelectorAll(".profile-portrait img").length;
+              const removedSceneCount = document.querySelectorAll(
+                ".pixel-world, .engineering-image-frame--bench, .engineering-image-signal"
+              ).length;
               const freeToolsHook = document.querySelector(".free-tools-hook");
               const calculatorSection = document.querySelector("#calculators");
               const advancedToolsSection = document.querySelector("#advanced-tools");
@@ -302,7 +306,8 @@ test(
                 contactFontSize: contactInputStyle ? parseFloat(contactInputStyle.fontSize) : 0,
                 visibleContactText,
                 contactLinkWraps,
-                imagePairCount,
+                portraitCount,
+                removedSceneCount,
                 hasFreeToolsHook: Boolean(freeToolsHook),
                 documentTitle: document.title,
                 calculatorsBeforeAdvanced: Boolean(calculatorSection && advancedToolsSection)
@@ -333,7 +338,8 @@ test(
             contactFontSize,
             visibleContactText,
             contactLinkWraps,
-            imagePairCount,
+            portraitCount,
+            removedSceneCount,
             hasFreeToolsHook,
             documentTitle,
             calculatorsBeforeAdvanced,
@@ -383,18 +389,18 @@ test(
               );
             }
           }
-          if (route === "/" && viewport.width === 1440) {
-            if (imagePairCount !== 2 || !hasFreeToolsHook) {
+          if (route === "/") {
+            if (portraitCount !== 1 || removedSceneCount !== 0 || !hasFreeToolsHook) {
               failures.push(
-                `${route} @ ${viewport.label}: home is missing the two-image engineering story or free-tools hook`
+                `${route} @ ${viewport.label}: home must show one static portrait, no engineering scene, and the free-tools hook`
               );
             }
           }
-          if (route === "/about/" && viewport.width === 1440) {
-            if (imagePairCount !== 2) {
-              failures.push(`${route} @ ${viewport.label}: about is missing its two-image engineering story`);
+          if (route === "/about/") {
+            if (portraitCount !== 1 || removedSceneCount !== 0) {
+              failures.push(`${route} @ ${viewport.label}: about must show one static portrait with no engineering scene`);
             }
-            if (documentTitle !== "Embedded Systems Engineer and Educator") {
+            if (viewport.width === 1440 && documentTitle !== "Embedded Systems Engineer and Educator") {
               failures.push(
                 `${route} @ ${viewport.label}: browser title is still suffixed (${documentTitle})`
               );

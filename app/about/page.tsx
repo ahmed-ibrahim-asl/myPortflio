@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
-import { EngineeringImagePair } from "@/components/EngineeringImagePair";
+import { ProfilePortrait } from "@/components/ProfilePortrait";
 import {
   coursesTaught,
   education,
@@ -39,7 +39,7 @@ export default function AboutPage() {
             security, robotics, and teaching.
           </p>
         </div>
-        <EngineeringImagePair context="about" />
+        <ProfilePortrait context="about" />
       </section>
 
       <section className="shell about-statement about-statement-focused">
