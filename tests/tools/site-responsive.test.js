@@ -38,6 +38,10 @@ const ROUTES = [
   "/tools/sensor-code-generator/",
   "/tools/ai-script-generator/",
   "/tools/security-command-builder/",
+  "/tools/ohms-law-calculator/",
+  "/tools/resistor-color-code-calculator/",
+  "/tools/555-timer-astable-circuit-calculator/",
+  "/tools/decimal-binary-octal-hex-converter/",
 ];
 
 function stopProcessTree(child) {
@@ -233,16 +237,57 @@ test(
                   }
                 }
               }
-              return { overflowPx, clientWidth: doc.clientWidth, worstSelector, worstRight };
+              const missionRail = document.querySelector(".mission-rail");
+              const missionReadout = document.querySelector(".mobile-mission-readout");
+              const visible = (el) => Boolean(el) && getComputedStyle(el).display !== "none";
+              const hasMissionSections = document.querySelectorAll("[data-mission]").length > 0;
+              const unexpectedMissionUi = !hasMissionSections
+                && (visible(missionRail) || visible(missionReadout));
+              const toolBody = document.querySelector(".tool-body");
+              const toolBodyRect = toolBody?.getBoundingClientRect() ?? null;
+              const toolBodyOutsideViewport = Boolean(toolBodyRect)
+                && (toolBodyRect.left < -1 || toolBodyRect.right > doc.clientWidth + 1);
+              const boundedContent = document.querySelectorAll(
+                ".project-card, .post-card, .tool-section, .calculator-panel, .tool-header"
+              );
+              const contentOutsideViewport = [...boundedContent].some((el) => {
+                const rect = el.getBoundingClientRect();
+                return rect.width > 0 && (rect.left < -1 || rect.right > doc.clientWidth + 1);
+              });
+              return {
+                overflowPx,
+                clientWidth: doc.clientWidth,
+                worstSelector,
+                worstRight,
+                unexpectedMissionUi,
+                toolBodyOutsideViewport,
+                contentOutsideViewport
+              };
             })()`,
           });
 
-          const { overflowPx, worstSelector, worstRight } = result.result.value;
+          const {
+            overflowPx,
+            worstSelector,
+            worstRight,
+            unexpectedMissionUi,
+            toolBodyOutsideViewport,
+            contentOutsideViewport
+          } = result.result.value;
           if (overflowPx > 1) {
             failures.push(
               `${route} @ ${viewport.label}: overflows by ${overflowPx.toFixed(0)}px`
               + (worstSelector ? ` (worst offender: ${worstSelector}, right edge ${worstRight.toFixed(0)}px)` : ""),
             );
+          }
+          if (unexpectedMissionUi) {
+            failures.push(`${route} @ ${viewport.label}: mission UI appears without mission sections`);
+          }
+          if (toolBodyOutsideViewport) {
+            failures.push(`${route} @ ${viewport.label}: calculator body leaves the viewport`);
+          }
+          if (contentOutsideViewport) {
+            failures.push(`${route} @ ${viewport.label}: visible tool content leaves the viewport`);
           }
         }
       }
