@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { CalculatorFinder } from "./CalculatorFinder";
 
 export function CalculatorShell({ tool, children }) {
   return (
     <article className="tool-page">
       <header className="article-header tool-header shell">
         <Link className="article-back" href="/tools">
-          ← All engineering tools
+          All engineering tools
         </Link>
         <p className="eyebrow">{tool.category}</p>
         <h1>{tool.title}</h1>
@@ -20,6 +21,10 @@ export function CalculatorShell({ tool, children }) {
       </header>
 
       <div className="tool-body shell">{children}</div>
+
+      <div className="shell">
+        <CalculatorFinder activeSlug={tool.slug} />
+      </div>
 
       <footer className="tool-credit shell">
         <p className="eyebrow">With thanks</p>

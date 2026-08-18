@@ -1,22 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { calculatorCategories } from "@/data/calculators";
+import { filterCalculators } from "@/lib/tools/calculator-search";
 import { ToolCard } from "./ToolCard";
 
 export function ToolsIndex({ tools }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
-  const categories = ["All", ...new Set(tools.map((tool) => tool.category))];
+  const categories = ["All", ...calculatorCategories];
 
   const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return tools.filter((tool) => {
-      const inCategory = category === "All" || tool.category === category;
-      const haystack = [tool.title, tool.summary, tool.category, ...tool.tags]
-        .join(" ")
-        .toLowerCase();
-      return inCategory && (!needle || haystack.includes(needle));
-    });
+    return filterCalculators(tools, { query, category });
   }, [tools, query, category]);
 
   return (
@@ -26,9 +21,10 @@ export function ToolsIndex({ tools }) {
           <span className="sr-only">Search calculators</span>
           <span aria-hidden="true">⌕</span>
           <input
+            type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search calculators, formulas, and components"
+            placeholder="Search calculators and components"
           />
         </label>
         <div className="filter-row" aria-label="Filter calculators by category">
@@ -46,7 +42,13 @@ export function ToolsIndex({ tools }) {
         </div>
       </div>
 
-      <div className="post-list">
+      <p className="calculator-results-count" aria-live="polite">
+        {query.trim()
+          ? `${filtered.length} ${filtered.length === 1 ? "match" : "matches"} for “${query.trim()}”`
+          : `${filtered.length} calculators`}
+      </p>
+
+      <div className="calculator-catalog-grid">
         {filtered.map((tool, index) => (
           <ToolCard key={tool.slug} tool={tool} index={index} />
         ))}

@@ -1,6 +1,6 @@
 const SOURCE_LABEL = "Last Minute Engineers";
 
-export const calculators = [
+const calculatorCatalog = [
   {
     slug: "ohms-law-calculator",
     title: "Ohm's Law Calculator",
@@ -359,3 +359,37 @@ export const calculators = [
     sourceLabel: SOURCE_LABEL
   }
 ];
+
+export const calculatorCategories = Object.freeze([
+  "Fundamentals",
+  "Resistors",
+  "Timing & Filters",
+  "Conversions",
+  "Number Systems",
+  "Physics & Math"
+]);
+
+function resolveVisualKey(tool) {
+  if (tool.slug === "ohms-law-calculator" || tool.slug === "op-amp-gain-calculator") {
+    return "ohms";
+  }
+  if (tool.slug === "voltage-divider-calculator") return "divider";
+  if (tool.slug === "led-series-resistor-calculator") return "led";
+  if (tool.slug === "battery-life-calculator") return "battery";
+  if (tool.category === "Resistors") return "resistor";
+  if (tool.slug.includes("555-timer")) return "timer";
+  if (tool.slug.includes("filter") || tool.slug.includes("reactance")) return "filter";
+  if (tool.category === "Timing & Filters") return "wave";
+  if (tool.slug.includes("capacitor") || tool.slug.includes("capacitance")) return "capacitor";
+  if (tool.category === "Conversions") return "conversion";
+  if (tool.category === "Number Systems") return "number";
+  if (tool.slug.includes("wavelength") || tool.slug.includes("frequency")) return "wave";
+  return "physics";
+}
+
+export const calculators = Object.freeze(
+  calculatorCatalog.map((tool) => Object.freeze({
+    ...tool,
+    visualKey: resolveVisualKey(tool)
+  }))
+);

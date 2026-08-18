@@ -29,9 +29,6 @@ export function ToolNavCard({ tool, index }: ToolNavCardProps) {
         ) : null}
         <p>{tool.description}</p>
       </div>
-      <Link className="post-arrow" href={tool.href} aria-label={`Open ${tool.title}`}>
-        <span aria-hidden="true">↗</span>
-      </Link>
     </article>
   );
 }

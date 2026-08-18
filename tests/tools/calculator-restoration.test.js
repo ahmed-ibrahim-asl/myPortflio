@@ -24,6 +24,60 @@ test("all 36 completed calculators are present and registered", async () => {
   }
 });
 
+test("every calculator resolves to a supported original visual", async () => {
+  const { calculators, calculatorCategories } = await import(catalogUrl.href);
+  const supported = new Set([
+    "ohms",
+    "resistor",
+    "divider",
+    "led",
+    "battery",
+    "capacitor",
+    "wave",
+    "filter",
+    "timer",
+    "number",
+    "conversion",
+    "physics"
+  ]);
+
+  assert.deepEqual(calculatorCategories, [
+    "Fundamentals",
+    "Resistors",
+    "Timing & Filters",
+    "Conversions",
+    "Number Systems",
+    "Physics & Math"
+  ]);
+  assert.ok(calculators.every(({ visualKey }) => supported.has(visualKey)));
+});
+
+test("calculator search matches useful metadata and related results exclude the active tool", async () => {
+  const [{ calculators }, search] = await Promise.all([
+    import(catalogUrl.href),
+    import(new URL("../../lib/tools/calculator-search.js", import.meta.url).href)
+  ]);
+
+  assert.deepEqual(
+    search.filterCalculators(calculators, { query: "current limiting", category: "All" })
+      .map(({ slug }) => slug),
+    ["led-series-resistor-calculator"]
+  );
+  assert.ok(
+    search.filterCalculators(calculators, { query: "", category: "Number Systems" })
+      .every(({ category }) => category === "Number Systems")
+  );
+
+  const related = search.getRelatedCalculators(
+    calculators,
+    "ohms-law-calculator",
+    6
+  );
+  assert.equal(related.length, 6);
+  assert.ok(related.every(({ slug }) => slug !== "ohms-law-calculator"));
+  assert.equal(related[0].category, "Fundamentals");
+});
+
 test("restored utility modules retain representative behavior", async () => {
   const unitsUrl = new URL("../../lib/units.js", import.meta.url);
   const resistorUrl = new URL("../../lib/resistorColors.js", import.meta.url);
@@ -75,9 +129,10 @@ test("the Tools hub retains advanced tools and exposes the calculator index", ()
   const hub = readFileSync(new URL("../../app/tools/page.tsx", import.meta.url), "utf8");
   assert.match(hub, /engineeringTools/);
   assert.match(hub, /getAllTools/);
-  assert.match(hub, /Featured Engineering Workbenches/);
-  assert.match(hub, /Electronics Calculators/);
+  assert.match(hub, /id="calculators"/);
+  assert.match(hub, /id="advanced-tools"/);
   assert.match(hub, /<ToolsIndex tools=\{calculators\}/);
+  assert.ok(hub.indexOf('id="calculators"') < hub.indexOf('id="advanced-tools"'));
 });
 
 test("the calculator route statically generates catalog slugs", () => {

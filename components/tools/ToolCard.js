@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { IndexedBadge } from "@/components/IndexedBadge";
+import { CalculatorThumbnail } from "./CalculatorThumbnail";
 
 export function ToolCard({ tool, index }) {
   return (
-    <article className="post-card">
-      <IndexedBadge index={index + 1} />
-      <div className="post-main">
+    <article className="calculator-catalog-card">
+      <CalculatorThumbnail visualKey={tool.visualKey} title={tool.title} />
+      <div className="calculator-catalog-copy">
         <div className="post-meta">
-          <span>{tool.category}</span>
+          <span>{String(index + 1).padStart(2, "0")} / {tool.category}</span>
         </div>
         <h3>
           <Link href={`/tools/${tool.slug}`}>{tool.title}</Link>

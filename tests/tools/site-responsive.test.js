@@ -277,6 +277,12 @@ test(
               });
               const imagePairCount = document.querySelectorAll(".engineering-image-pair img").length;
               const freeToolsHook = document.querySelector(".free-tools-hook");
+              const calculatorSection = document.querySelector("#calculators");
+              const advancedToolsSection = document.querySelector("#advanced-tools");
+              const calculatorThumbnails = document.querySelectorAll(".calculator-thumbnail svg").length;
+              const calculatorResultText = document.querySelector(".calculator-results-count")?.textContent ?? "";
+              const calculatorFinder = document.querySelector(".calculator-finder");
+              const calculatorFinderSearch = calculatorFinder?.querySelector("input[type='search']");
               return {
                 overflowPx,
                 clientWidth: doc.clientWidth,
@@ -294,7 +300,14 @@ test(
                 contactLinkWraps,
                 imagePairCount,
                 hasFreeToolsHook: Boolean(freeToolsHook),
-                documentTitle: document.title
+                documentTitle: document.title,
+                calculatorsBeforeAdvanced: Boolean(calculatorSection && advancedToolsSection)
+                  && (calculatorSection.compareDocumentPosition(advancedToolsSection)
+                    & Node.DOCUMENT_POSITION_FOLLOWING) !== 0,
+                calculatorThumbnails,
+                calculatorResultText,
+                hasScrollCue: Boolean(document.querySelector(".tools-scroll-cue")),
+                hasCalculatorFinder: Boolean(calculatorFinder && calculatorFinderSearch)
               };
             })()`
           });
@@ -315,7 +328,12 @@ test(
             contactLinkWraps,
             imagePairCount,
             hasFreeToolsHook,
-            documentTitle
+            documentTitle,
+            calculatorsBeforeAdvanced,
+            calculatorThumbnails,
+            calculatorResultText,
+            hasScrollCue,
+            hasCalculatorFinder
           } = result.result.value;
           if (overflowPx > 1) {
             failures.push(
@@ -369,6 +387,25 @@ test(
             if (documentTitle !== "Embedded Systems Engineer and Educator") {
               failures.push(
                 `${route} @ ${viewport.label}: browser title is still suffixed (${documentTitle})`
+              );
+            }
+          }
+          if (route === "/tools/" && viewport.width === 1440) {
+            if (!calculatorsBeforeAdvanced || calculatorThumbnails !== 36) {
+              failures.push(
+                `${route} @ ${viewport.label}: calculator search is not first or cards lack 36 original diagrams`
+              );
+            }
+            if (!/36 calculators/i.test(calculatorResultText) || !hasScrollCue) {
+              failures.push(
+                `${route} @ ${viewport.label}: calculator result feedback or generator scroll cue is missing`
+              );
+            }
+          }
+          if (route === "/tools/ohms-law-calculator/" && viewport.width === 1440) {
+            if (!hasCalculatorFinder) {
+              failures.push(
+                `${route} @ ${viewport.label}: shared calculator finder is missing`
               );
             }
           }
