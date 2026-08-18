@@ -264,6 +264,19 @@ test(
                 const rect = el.getBoundingClientRect();
                 return rect.width > 0 && (rect.left < -1 || rect.right > doc.clientWidth + 1);
               });
+              const indexedBadge = document.querySelector(".indexed-badge, .post-index");
+              const badgeRect = indexedBadge?.getBoundingClientRect() ?? null;
+              const badgeSpans = indexedBadge?.querySelectorAll("span").length ?? 0;
+              const contactInput = document.querySelector(".contact-form input:not([type='hidden'])");
+              const contactInputStyle = contactInput ? getComputedStyle(contactInput) : null;
+              const visibleContactText = document.querySelector(".contact-form button")?.textContent ?? "";
+              const visibleContactLinks = [...document.querySelectorAll(".contact-socials a")];
+              const contactLinkWraps = visibleContactLinks.some((link) => {
+                const style = getComputedStyle(link);
+                return style.whiteSpace !== "nowrap" || link.scrollWidth > link.clientWidth + 1;
+              });
+              const imagePairCount = document.querySelectorAll(".engineering-image-pair img").length;
+              const freeToolsHook = document.querySelector(".free-tools-hook");
               return {
                 overflowPx,
                 clientWidth: doc.clientWidth,
@@ -271,7 +284,17 @@ test(
                 worstRight,
                 unexpectedMissionUi,
                 toolBodyOutsideViewport,
-                contentOutsideViewport
+                contentOutsideViewport,
+                badgeWidth: badgeRect?.width ?? 0,
+                badgeHeight: badgeRect?.height ?? 0,
+                badgeSpans,
+                contactPaddingLeft: contactInputStyle ? parseFloat(contactInputStyle.paddingLeft) : 0,
+                contactFontSize: contactInputStyle ? parseFloat(contactInputStyle.fontSize) : 0,
+                visibleContactText,
+                contactLinkWraps,
+                imagePairCount,
+                hasFreeToolsHook: Boolean(freeToolsHook),
+                documentTitle: document.title
               };
             })()`
           });
@@ -282,7 +305,17 @@ test(
             worstRight,
             unexpectedMissionUi,
             toolBodyOutsideViewport,
-            contentOutsideViewport
+            contentOutsideViewport,
+            badgeWidth,
+            badgeHeight,
+            badgeSpans,
+            contactPaddingLeft,
+            contactFontSize,
+            visibleContactText,
+            contactLinkWraps,
+            imagePairCount,
+            hasFreeToolsHook,
+            documentTitle
           } = result.result.value;
           if (overflowPx > 1) {
             failures.push(
@@ -302,6 +335,42 @@ test(
           }
           if (contentOutsideViewport) {
             failures.push(`${route} @ ${viewport.label}: visible tool content leaves the viewport`);
+          }
+          if (route === "/writing/" && viewport.width === 1440) {
+            if (badgeWidth < 52 || badgeHeight < 52 || badgeSpans !== 2) {
+              failures.push(
+                `${route} @ ${viewport.label}: indexed badge is not a centered 52px two-part badge`
+              );
+            }
+          }
+          if (route === "/contact/") {
+            if (contactPaddingLeft < 14 || contactFontSize < 16) {
+              failures.push(
+                `${route} @ ${viewport.label}: form text lacks the required 14px inset and 16px font floor`
+              );
+            }
+            if (/[↗→]/u.test(visibleContactText) || contactLinkWraps) {
+              failures.push(
+                `${route} @ ${viewport.label}: contact actions contain an arrow or wrap their labels`
+              );
+            }
+          }
+          if (route === "/" && viewport.width === 1440) {
+            if (imagePairCount !== 2 || !hasFreeToolsHook) {
+              failures.push(
+                `${route} @ ${viewport.label}: home is missing the two-image engineering story or free-tools hook`
+              );
+            }
+          }
+          if (route === "/about/" && viewport.width === 1440) {
+            if (imagePairCount !== 2) {
+              failures.push(`${route} @ ${viewport.label}: about is missing its two-image engineering story`);
+            }
+            if (documentTitle !== "Embedded Systems Engineer and Educator") {
+              failures.push(
+                `${route} @ ${viewport.label}: browser title is still suffixed (${documentTitle})`
+              );
+            }
           }
         }
       }

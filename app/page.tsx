@@ -4,6 +4,8 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { PostCard } from "@/components/PostCard";
 import { SectionHeading } from "@/components/SectionHeading";
 import { PixelWorld } from "@/components/PixelWorld";
+import { EngineeringImagePair } from "@/components/EngineeringImagePair";
+import { FreeToolsHook } from "@/components/FreeToolsHook";
 import {
   education,
   experience,
@@ -46,18 +48,17 @@ export default function HomePage() {
               <p className="hero-sub">
                 {profile.summary}
               </p>
+              <FreeToolsHook />
               <div className="hero-actions">
                 <Link className="button primary" href="/contact">
-                  Tell me about your project <span aria-hidden="true">&rarr;</span>
+                  Tell me about your project
                 </Link>
                 <Link className="button text-button" href="#method">
-                  See how I solve problems <span aria-hidden="true">&darr;</span>
+                  See how I solve problems
                 </Link>
               </div>
             </div>
-            <figure className="hero-portrait">
-              <img src={profile.portrait} alt={`Portrait of ${profile.name}`} />
-            </figure>
+            <EngineeringImagePair context="home" />
           </div>
         </div>
       </section>
@@ -74,7 +75,7 @@ export default function HomePage() {
               understand and use the result.
             </p>
             <Link className="text-link" href="/about">
-              Read my full background <span aria-hidden="true">&rarr;</span>
+              Read my full background
             </Link>
           </div>
           <dl className="home-about-facts">
@@ -110,7 +111,7 @@ export default function HomePage() {
           title="Projects built around a problem, a build, and a result."
           action={
             <Link className="text-link" href="/work">
-              View all projects <span aria-hidden="true">&rarr;</span>
+              View all projects
             </Link>
           }
         />
@@ -135,7 +136,7 @@ export default function HomePage() {
               <h3>{experience[0].role}</h3>
               <p>{experience[0].organization}</p>
               <Link className="text-link" href="/about#experience">
-                View experience <span aria-hidden="true">&rarr;</span>
+                View experience
               </Link>
             </article>
             <article className="proof-card">
@@ -144,7 +145,7 @@ export default function HomePage() {
               <h3>{publication.title}</h3>
               <p>{publication.description}</p>
               <Link className="text-link" href="/about#publications">
-                View publication record <span aria-hidden="true">&rarr;</span>
+                View publication record
               </Link>
             </article>
             <article className="proof-card">
@@ -153,7 +154,7 @@ export default function HomePage() {
               <h3>{competitionProject.title}</h3>
               <p>{competitionProject.outcome}</p>
               <Link className="text-link" href={`/work#${competitionProject.slug}`}>
-                View project <span aria-hidden="true">&rarr;</span>
+                View project
               </Link>
             </article>
           </div>
@@ -192,7 +193,7 @@ export default function HomePage() {
           title={toolkitHeading}
           action={
             <Link className="text-link" href="/about#skills">
-              View full toolkit <span aria-hidden="true">&rarr;</span>
+              View full toolkit
             </Link>
           }
         />
@@ -234,7 +235,7 @@ export default function HomePage() {
               products I build today.
             </p>
             <Link className="text-link" href="/about">
-              Read the full story <span aria-hidden="true">&rarr;</span>
+              Read the full story
             </Link>
           </div>
         </div>
@@ -247,7 +248,7 @@ export default function HomePage() {
           title="Linux, embedded systems, Flutter, and security walkthroughs."
           action={
             <Link className="text-link" href="/writing">
-              Browse all writing <span aria-hidden="true">&rarr;</span>
+              Browse all writing
             </Link>
           }
         />
@@ -271,10 +272,10 @@ export default function HomePage() {
           </div>
           <div className="home-contact-actions">
             <Link className="button primary" href="/contact">
-              Send your project brief <span aria-hidden="true">&rarr;</span>
+              Send your project brief
             </Link>
             <a className="button text-button" href={`mailto:${profile.email}`}>
-              Email directly <span aria-hidden="true">&rarr;</span>
+              Email directly
             </a>
           </div>
         </div>

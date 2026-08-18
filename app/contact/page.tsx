@@ -48,7 +48,7 @@ export default function ContactPage() {
             />
           </label>
           <button className="button primary" type="submit">
-            Send your project brief <span aria-hidden="true">↗</span>
+            Send your project brief
           </button>
         </form>
 
@@ -57,11 +57,9 @@ export default function ContactPage() {
             <div className="contact-socials">
               <a href={`mailto:${profile.email}`} aria-label="Email Ahmed directly">
                 <span className="social-link-text">Email directly</span>
-                <span className="social-link-arrow" aria-hidden="true">↗</span>
               </a>
               <a href={profile.whatsapp} target="_blank" rel="noreferrer" aria-label="Message Ahmed on WhatsApp">
                 <span className="social-link-text">Message on WhatsApp</span>
-                <span className="social-link-arrow" aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -69,11 +67,9 @@ export default function ContactPage() {
             <div className="contact-socials">
               <a href={profile.cv} target="_blank" rel="noreferrer" aria-label="Open CV for employment evaluation">
                 <span className="social-link-text">Open CV</span>
-                <span className="social-link-arrow" aria-hidden="true">↗</span>
               </a>
               <a href={profile.scholar} target="_blank" rel="noreferrer" aria-label="Open Google Scholar for academic evaluation">
                 <span className="social-link-text">Open Publications</span>
-                <span className="social-link-arrow" aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -89,7 +85,6 @@ export default function ContactPage() {
                 >
                   <SocialIcon label={social.label} />
                   <span className="social-link-text">{social.label}</span>
-                  <span className="social-link-arrow" aria-hidden="true">↗</span>
                 </a>
               ))}
             </div>

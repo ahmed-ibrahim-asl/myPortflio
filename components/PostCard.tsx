@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Post } from "@/types/content";
 import { formatDate } from "@/lib/utils";
+import { IndexedBadge } from "@/components/IndexedBadge";
 
 interface PostCardProps {
   post: Post;
@@ -12,7 +13,7 @@ interface PostCardProps {
 export function PostCard({ post, index, featured = false }: PostCardProps) {
   return (
     <article className={`post-card ${featured ? "featured" : ""}`}>
-      <div className="post-index mono">{String(index + 1).padStart(2, "0")}</div>
+      <IndexedBadge index={index + 1} />
       <div className="post-main">
         <div className="post-meta">
           <span>{post.category}</span>
@@ -31,13 +32,6 @@ export function PostCard({ post, index, featured = false }: PostCardProps) {
           ))}
         </div>
       </div>
-      <Link
-        className="post-arrow"
-        href={`/writing/${post.slug}`}
-        aria-label={`Read ${post.title}`}
-      >
-        <span aria-hidden="true">↗</span>
-      </Link>
     </article>
   );
 }

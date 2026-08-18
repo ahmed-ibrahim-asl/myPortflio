@@ -13,10 +13,7 @@ import { absoluteUrl, siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.title,
-    template: `%s | ${siteConfig.name}`
-  },
+  title: siteConfig.title,
   description: siteConfig.description,
   alternates: {
     canonical: absoluteUrl("/")

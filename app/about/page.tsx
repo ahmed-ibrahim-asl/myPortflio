@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
+import { EngineeringImagePair } from "@/components/EngineeringImagePair";
 import {
   coursesTaught,
   education,
@@ -27,37 +28,37 @@ export default function AboutPage() {
     <>
       <JsonLd data={createProfilePageJsonLd()} />
 
-      <section className="page-intro shell about-intro">
-        <div>
-          <h1>Titles tell you where someone works. Questions tell you how they think.</h1>
+      <section className="page-intro shell about-intro about-story-intro">
+        <div className="about-intro-copy">
+          <span className="eyebrow">Engineer / educator / lifelong learner</span>
+          <h1>I build by following the question through the whole system.</h1>
           <p className="page-lede">
-            Mine started with an ATM. I wanted to know how it recognized an account,
-            checked whether money was available, and exchanged information with systems
-            somewhere else.
+            My first big question was about an ATM: how one machine could recognize an
+            account, check money somewhere else, and complete a physical action safely.
+            That question became a career across electronics, firmware, networks, software,
+            security, robotics, and teaching.
           </p>
         </div>
-        <figure className="about-portrait">
-          <img src={profile.portrait} alt={`Portrait of ${profile.name}`} />
-        </figure>
+        <EngineeringImagePair context="about" />
       </section>
 
       <section className="shell about-statement about-statement-focused">
-        <div className="about-narrative">
-          <p>
-            That curiosity moved into Windows CMD, BIOS passwords, online games,
-            electronics, networks, and eventually the machines and connected products
-            I build today.
-          </p>
-          <p>
-            I do not see firmware, electronics, Linux, security, Flutter, or design as
-            separate identities. They are tools I learned while building projects and
-            trying to solve problems. I keep sharpening them because the next problem
-            rarely stays inside one field.
-          </p>
-          <p>
-            That is what I bring to a project: I stay with the problem, learn what is
-            missing, test what I build, and make the result understandable.
-          </p>
+        <div className="about-story-grid">
+          <article>
+            <span className="mono">01 / FOLLOW THE SIGNAL</span>
+            <h2>Across boundaries, not inside one job title.</h2>
+            <p>Firmware, electronics, Linux, security, apps, and interface design are tools for tracing one system from input to useful result.</p>
+          </article>
+          <article>
+            <span className="mono">02 / PROVE THE BUILD</span>
+            <h2>Make the idea observable.</h2>
+            <p>I document assumptions, test failure modes, and turn uncertain requirements into a prototype that people can inspect and improve.</p>
+          </article>
+          <article>
+            <span className="mono">03 / TEACH THE SYSTEM</span>
+            <h2>Leave understanding behind.</h2>
+            <p>Teaching sharpened a useful engineering habit: a result is stronger when another person can understand, operate, and extend it.</p>
+          </article>
         </div>
         <aside className="profile-credential-card">
           <div>
@@ -68,7 +69,7 @@ export default function AboutPage() {
             </p>
           </div>
           <a className="button primary" href={profile.cv} target="_blank" rel="noreferrer">
-            Open CV <span aria-hidden="true">↗</span>
+            Open CV
           </a>
         </aside>
       </section>
@@ -200,7 +201,7 @@ export default function AboutPage() {
               target="_blank"
               rel="noreferrer"
             >
-              Open Google Scholar <span aria-hidden="true">↗</span>
+              Open Google Scholar
             </a>
           </div>
           <div className="publication-list">
@@ -240,7 +241,7 @@ export default function AboutPage() {
                     {item.citedBy} {item.citedBy === 1 ? "citation" : "citations"}
                   </span>
                   <a href={item.href} target="_blank" rel="noreferrer">
-                    Open publication <span aria-hidden="true">↗</span>
+                    Open publication
                   </a>
                 </div>
               </article>
@@ -274,7 +275,7 @@ export default function AboutPage() {
                 </div>
                 <h3>{tutorial.title}</h3>
                 <p>{tutorial.description}</p>
-                <span className="text-link">Watch session <span aria-hidden="true">↗</span></span>
+                <span className="text-link">Watch session</span>
               </div>
             </a>
           ))}
@@ -294,10 +295,10 @@ export default function AboutPage() {
           </div>
           <div className="home-contact-actions">
             <Link className="button primary" href="/contact">
-              Send your project brief <span aria-hidden="true">&rarr;</span>
+              Send your project brief
             </Link>
             <a className="button text-button" href={`mailto:${profile.email}`}>
-              Email directly <span aria-hidden="true">&rarr;</span>
+              Email directly
             </a>
           </div>
         </div>

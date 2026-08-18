@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { IndexedBadge } from "@/components/IndexedBadge";
 
 export function ToolCard({ tool, index }) {
   return (
     <article className="post-card">
-      <div className="post-index mono">{String(index + 1).padStart(2, "0")}</div>
+      <IndexedBadge index={index + 1} />
       <div className="post-main">
         <div className="post-meta">
           <span>{tool.category}</span>
@@ -20,9 +21,6 @@ export function ToolCard({ tool, index }) {
           ))}
         </div>
       </div>
-      <Link className="post-arrow" href={`/tools/${tool.slug}`} aria-label={`Open ${tool.title}`}>
-        ↗
-      </Link>
     </article>
   );
 }
