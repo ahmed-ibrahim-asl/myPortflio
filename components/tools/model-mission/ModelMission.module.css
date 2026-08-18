@@ -205,7 +205,7 @@
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
   gap: 22px;
   align-items: start;
 }
@@ -865,8 +865,21 @@
 }
 
 @media (max-width: 1100px) {
+  .mobileTabs {
+    display: grid;
+  }
+
   .workspace {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workspace[data-mobile-active="configure"] .codeWorkspace,
+  .workspace[data-mobile-active="code"] .configurePanel {
+    display: none;
+  }
+
+  .configurePanel {
+    min-height: 0;
   }
 
   .taskGrid,
@@ -885,22 +898,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .mobileTabs {
-    display: grid;
-  }
-
-  .workspace {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .workspace[data-mobile-active="configure"] .codeWorkspace,
-  .workspace[data-mobile-active="code"] .configurePanel {
-    display: none;
-  }
-
-  .configurePanel {
-    min-height: 0;
-  }
 }
 
 @media (max-width: 640px) {

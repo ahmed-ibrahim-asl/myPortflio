@@ -612,6 +612,9 @@ test(
             );
             const code = codePanel?.querySelector("pre");
             const rail = document.querySelector(".mission-rail");
+            const workspaceTabs = document.querySelector(
+              "[data-mission-mobile-tabs]"
+            );
             const rect = (element) => {
               const box = element.getBoundingClientRect();
               return {
@@ -638,6 +641,7 @@ test(
               viewportWidth: document.documentElement.clientWidth,
               documentWidth: document.documentElement.scrollWidth,
               visiblePanels: [config, codePanel].filter(visible).length,
+              tabsVisible: visible(workspaceTabs),
               configRect,
               codeRect,
               shellRailOverlap:
@@ -667,8 +671,13 @@ test(
         );
         assert.equal(
           layout.visiblePanels,
-          viewport.width <= 960 ? 1 : 2,
+          viewport.width <= 1100 ? 1 : 2,
           `correct responsive workspace at ${context}`,
+        );
+        assert.equal(
+          layout.tabsVisible,
+          viewport.width <= 1100,
+          `workspace tabs match the tablet breakpoint at ${context}`,
         );
         assert.equal(
           layout.panelOverlap,
@@ -697,8 +706,9 @@ test(
             passed:
               layout.documentWidth === layout.viewportWidth
               && layout.visiblePanels === (
-                viewport.width <= 960 ? 1 : 2
+                viewport.width <= 1100 ? 1 : 2
               )
+              && layout.tabsVisible === (viewport.width <= 1100)
               && layout.panelOverlap === false
               && layout.shellRailOverlap === false
               && layout.controlsInside === true
@@ -708,8 +718,10 @@ test(
               layout.documentWidth === layout.viewportWidth,
             correctPanelCount:
               layout.visiblePanels === (
-                viewport.width <= 960 ? 1 : 2
+                viewport.width <= 1100 ? 1 : 2
               ),
+            tabsMatchBreakpoint:
+              layout.tabsVisible === (viewport.width <= 1100),
             panelsDoNotOverlap: layout.panelOverlap === false,
             railDoesNotOverlap: layout.shellRailOverlap === false,
             controlsContained: layout.controlsInside === true,
