@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export interface MissionState {
   activeMission: string;
@@ -9,14 +10,23 @@ export interface MissionState {
 }
 
 export function useMissionObserver(): MissionState {
+  const pathname = usePathname();
   const [activeMission, setActiveMission] = useState<string>("origin");
   const [completedMissions, setCompletedMissions] = useState<Set<string>>(new Set());
   const [hasMissions, setHasMissions] = useState<boolean>(false);
 
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-mission]"));
-    setHasMissions(sections.length > 0);
-    if (sections.length === 0) return;
+    const hasSections = sections.length > 0;
+
+    setHasMissions(hasSections);
+    setCompletedMissions(new Set());
+
+    if (!hasSections) {
+      setActiveMission("origin");
+      document.documentElement.removeAttribute("data-active-mission");
+      return;
+    }
 
     const missionOrder = sections.map((sec) => sec.getAttribute("data-mission") || "");
 
@@ -33,8 +43,6 @@ export function useMissionObserver(): MissionState {
       for (let i = 0; i < sections.length; i++) {
         const sec = sections[i];
         const offsetTop = sec.offsetTop;
-        const offsetHeight = sec.offsetHeight;
-
         // If the trigger point is within this section, or we've scrolled past it
         if (triggerPoint >= offsetTop) {
           currentMission = missionOrder[i];
@@ -77,8 +85,9 @@ export function useMissionObserver(): MissionState {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
+      document.documentElement.removeAttribute("data-active-mission");
     };
-  }, []);
+  }, [pathname]);
 
   return { activeMission, completedMissions, hasMissions };
 }

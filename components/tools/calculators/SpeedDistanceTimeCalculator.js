@@ -51,20 +51,18 @@ export function SpeedDistanceTimeCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Speed is just a way of answering &ldquo;how far, in how
-          long?&rdquo; in a single number. Cover more ground in the same
-          time, or the same ground in less time, and speed goes up either
-          way.
+          Speed is just a way of answering &ldquo;how far, in how long?&rdquo; in a single number.
+          Cover more ground in the same time, or the same ground in less time, and speed goes up
+          either way.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          If something covers 100 meters in 10 seconds, it&rsquo;s covering
-          10 meters every second — divide the distance by the time and
-          you get the rate. Run that backward and distance is just speed
-          multiplied by however long you kept it up; time is distance
-          split into speed-sized chunks.
+          If something covers 100 meters in 10 seconds, it&rsquo;s covering 10 meters every second —
+          divide the distance by the time and you get the rate. Run that backward and distance is
+          just speed multiplied by however long you kept it up; time is distance split into
+          speed-sized chunks.
         </p>
       </ToolSection>
 
@@ -74,9 +72,8 @@ export function SpeedDistanceTimeCalculator() {
 
       <Mnemonic tag="DST triangle" phrase="Distance on top, Speed and Time below">
         <p>
-          Same triangle trick as Ohm&rsquo;s Law: D over S×T. Cover the one
-          you want — D alone means divide, S or T alone means D over the
-          other one.
+          Same triangle trick as Ohm&rsquo;s Law: D over S×T. Cover the one you want — D alone means
+          divide, S or T alone means D over the other one.
         </p>
       </Mnemonic>
 
@@ -127,4 +124,3 @@ export function SpeedDistanceTimeCalculator() {
     </div>
   );
 }
-

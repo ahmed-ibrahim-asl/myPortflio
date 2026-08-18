@@ -21,21 +21,18 @@ export function AsciiToHexConverter() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          A computer never stores the letter &ldquo;A&rdquo; — it stores
-          the number 65. ASCII is just an agreed-upon table that maps
-          every character you can type to a number, and hex is the
-          compact way engineers usually write that number down.
+          A computer never stores the letter &ldquo;A&rdquo; — it stores the number 65. ASCII is
+          just an agreed-upon table that maps every character you can type to a number, and hex is
+          the compact way engineers usually write that number down.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Take a string, and look up each character&rsquo;s position in the
-          ASCII table one at a time. That position is a plain decimal
-          number between 0 and 255, which converts to exactly two hex
-          digits. String those hex pairs together, usually with a space
-          between characters, and you&rsquo;ve got the raw bytes a program
-          or a serial monitor would actually see.
+          Take a string, and look up each character&rsquo;s position in the ASCII table one at a
+          time. That position is a plain decimal number between 0 and 255, which converts to exactly
+          two hex digits. String those hex pairs together, usually with a space between characters,
+          and you&rsquo;ve got the raw bytes a program or a serial monitor would actually see.
         </p>
       </ToolSection>
 
@@ -46,10 +43,9 @@ export function AsciiToHexConverter() {
 
       <Mnemonic tag="One char, two hex digits" phrase="ASCII always fits in a single byte">
         <p>
-          Every standard ASCII character maxes out at 127 — well under 256
-          — so it never needs more than two hex digits. If you ever see
-          three or more per character, you&rsquo;re looking at a different
-          encoding.
+          Every standard ASCII character maxes out at 127 — well under 256 — so it never needs more
+          than two hex digits. If you ever see three or more per character, you&rsquo;re looking at
+          a different encoding.
         </p>
       </Mnemonic>
 
@@ -76,4 +72,3 @@ export function AsciiToHexConverter() {
     </div>
   );
 }
-

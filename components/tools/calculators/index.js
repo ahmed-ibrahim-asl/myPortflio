@@ -73,4 +73,3 @@ export const CALCULATOR_COMPONENTS = {
   "square-root-calculator": SquareRootCalculator,
   "cube-root-calculator": CubeRootCalculator
 };
-

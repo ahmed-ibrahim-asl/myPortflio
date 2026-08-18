@@ -18,9 +18,7 @@ import {
 } from "@/lib/resistorColors";
 import { ResistorBandsDiagram } from "../diagrams/ResistorBandsDiagram";
 
-const FIVE_BAND_TOLERANCES = TOLERANCE_COLORS.filter(
-  (color) => color.name !== "None"
-);
+const FIVE_BAND_TOLERANCES = TOLERANCE_COLORS.filter((color) => color.name !== "None");
 
 export function FiveBandResistorColorCodeCalculator() {
   const [d1, setD1] = useState(1); // Brown
@@ -29,10 +27,7 @@ export function FiveBandResistorColorCodeCalculator() {
   const [mult, setMult] = useState(10); // Brown
   const [tol, setTol] = useState(1); // Brown
 
-  const value = useMemo(
-    () => (d1 * 100 + d2 * 10 + d3) * mult,
-    [d1, d2, d3, mult]
-  );
+  const value = useMemo(() => (d1 * 100 + d2 * 10 + d3) * mult, [d1, d2, d3, mult]);
   const min = value * (1 - tol / 100);
 
   const bandHexes = [
@@ -48,37 +43,33 @@ export function FiveBandResistorColorCodeCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Precision resistors need more than two significant digits to say
-          what they mean, so they trade one of the multiplier&rsquo;s
-          shortcuts for an extra digit of accuracy. Same idea as the 4-band
-          code, one more band of resolution.
+          Precision resistors need more than two significant digits to say what they mean, so they
+          trade one of the multiplier&rsquo;s shortcuts for an extra digit of accuracy. Same idea as
+          the 4-band code, one more band of resolution.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Where a 4-band resistor spells out a two-digit number, a 5-band
-          resistor spells out three digits before the multiplier kicks in.
-          That&rsquo;s the whole difference — everything else about reading
-          the bands works exactly the same way, left to right.
+          Where a 4-band resistor spells out a two-digit number, a 5-band resistor spells out three
+          digits before the multiplier kicks in. That&rsquo;s the whole difference — everything else
+          about reading the bands works exactly the same way, left to right.
         </p>
       </ToolSection>
 
       <ToolSection title="The formula">
         <p className="mono">R = (D1 × 100 + D2 × 10 + D3) × Multiplier</p>
         <p>
-          D1, D2, and D3 are the first three digits, read from the band
-          nearest the resistor&rsquo;s edge inward.
+          D1, D2, and D3 are the first three digits, read from the band nearest the resistor&rsquo;s
+          edge inward.
         </p>
       </ToolSection>
 
       <Mnemonic phrase="One extra digit, one extra chance to be exact">
         <p>
-          Reuse the same color sentence as the 4-band code — Black, Brown,
-          Red, Orange, Yellow, Green, Blue, Violet, Grey, White — just read
-          it for three bands instead of two before you hit the multiplier.
-          The color order never changes; only how many digits you collect
-          does.
+          Reuse the same color sentence as the 4-band code — Black, Brown, Red, Orange, Yellow,
+          Green, Blue, Violet, Grey, White — just read it for three bands instead of two before you
+          hit the multiplier. The color order never changes; only how many digits you collect does.
         </p>
       </Mnemonic>
 
@@ -132,13 +123,9 @@ export function FiveBandResistorColorCodeCalculator() {
         <CalculatorResults>
           <CalculatorResult label="Resistance" value={formatOhms(value)} />
           <CalculatorResult label="Tolerance" value={`± ${tol}%`} />
-          <CalculatorResult
-            label="Range"
-            value={`${formatOhms(min)} – ${formatOhms(max)}`}
-          />
+          <CalculatorResult label="Range" value={`${formatOhms(min)} – ${formatOhms(max)}`} />
         </CalculatorResults>
       </CalculatorPanel>
     </div>
   );
 }
-

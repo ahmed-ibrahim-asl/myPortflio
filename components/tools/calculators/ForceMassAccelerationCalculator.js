@@ -61,21 +61,18 @@ export function ForceMassAccelerationCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Push on something and it accelerates — how much it accelerates
-          depends on how hard you push and how much there is to move.
-          Newton&rsquo;s second law is the sentence that pins that
-          relationship down exactly.
+          Push on something and it accelerates — how much it accelerates depends on how hard you
+          push and how much there is to move. Newton&rsquo;s second law is the sentence that pins
+          that relationship down exactly.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Push twice as hard on the same object and it accelerates twice
-          as fast — force and acceleration scale together directly. But
-          push the same amount on something twice as heavy and it only
-          accelerates half as fast — mass resists acceleration. Combine
-          both observations and force has to equal mass times
-          acceleration.
+          Push twice as hard on the same object and it accelerates twice as fast — force and
+          acceleration scale together directly. But push the same amount on something twice as heavy
+          and it only accelerates half as fast — mass resists acceleration. Combine both
+          observations and force has to equal mass times acceleration.
         </p>
       </ToolSection>
 
@@ -86,9 +83,8 @@ export function ForceMassAccelerationCalculator() {
 
       <Mnemonic tag="F = ma" phrase="Heavier needs harder">
         <p>
-          Same shape as Ohm&rsquo;s Law&rsquo;s triangle: F on top, m and a
-          on the bottom. Cover what you want, multiply or divide whatever
-          is left.
+          Same shape as Ohm&rsquo;s Law&rsquo;s triangle: F on top, m and a on the bottom. Cover
+          what you want, multiply or divide whatever is left.
         </p>
       </Mnemonic>
 
@@ -139,4 +135,3 @@ export function ForceMassAccelerationCalculator() {
     </div>
   );
 }
-

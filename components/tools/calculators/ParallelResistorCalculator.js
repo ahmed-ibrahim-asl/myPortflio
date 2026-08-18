@@ -15,9 +15,7 @@ import { formatOhms } from "@/lib/resistorColors";
 export function ParallelResistorCalculator() {
   const [values, setValues] = useState(["220", "330", "", ""]);
 
-  const numbers = values
-    .map((v) => Number(v))
-    .filter((n) => Number.isFinite(n) && n > 0);
+  const numbers = values.map((v) => Number(v)).filter((n) => Number.isFinite(n) && n > 0);
   const total = useMemo(() => {
     if (!numbers.length) return null;
     const reciprocalSum = numbers.reduce((sum, n) => sum + 1 / n, 0);
@@ -32,20 +30,18 @@ export function ParallelResistorCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Wire resistors side by side instead of end to end and current
-          suddenly has more than one path home. More paths means less
-          overall opposition — the combined resistance always ends up lower
-          than the smallest single resistor in the group.
+          Wire resistors side by side instead of end to end and current suddenly has more than one
+          path home. More paths means less overall opposition — the combined resistance always ends
+          up lower than the smallest single resistor in the group.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Each resistor lets through a share of current proportional to how
-          easily it conducts — its conductance, which is just 1 ÷ R. Add
-          more paths and you add more conductance, so the shares add up. To
-          turn that combined conductance back into a resistance, flip it
-          once more at the end.
+          Each resistor lets through a share of current proportional to how easily it conducts — its
+          conductance, which is just 1 ÷ R. Add more paths and you add more conductance, so the
+          shares add up. To turn that combined conductance back into a resistance, flip it once more
+          at the end.
         </p>
       </ToolSection>
 
@@ -55,9 +51,9 @@ export function ParallelResistorCalculator() {
 
       <Mnemonic tag="FAF" phrase="Flip, Add, Flip">
         <p>
-          Flip every resistance to a fraction (1 ÷ R), add the fractions
-          together, then flip the total back over. Three steps, same order,
-          every time — no matter how many resistors join the party.
+          Flip every resistance to a fraction (1 ÷ R), add the fractions together, then flip the
+          total back over. Three steps, same order, every time — no matter how many resistors join
+          the party.
         </p>
       </Mnemonic>
 
@@ -80,13 +76,9 @@ export function ParallelResistorCalculator() {
           />
         ))}
         <CalculatorResults>
-          <CalculatorResult
-            label="Total resistance"
-            value={total ? formatOhms(total) : "—"}
-          />
+          <CalculatorResult label="Total resistance" value={total ? formatOhms(total) : "—"} />
         </CalculatorResults>
       </CalculatorPanel>
     </div>
   );
 }
-

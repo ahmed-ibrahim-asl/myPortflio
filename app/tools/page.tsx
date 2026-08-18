@@ -23,8 +23,8 @@ export default function ToolsIndexPage() {
             <p className="eyebrow">Featured Engineering Workbenches</p>
             <h1>Built to be used, not just demoed.</h1>
             <p className="section-intro">
-              Advanced generators, simulators, and guided engineering workbenches for
-              hardware, firmware, IoT, machine learning, and authorized security labs.
+              Advanced generators, simulators, and guided engineering workbenches for hardware,
+              firmware, IoT, machine learning, and authorized security labs.
             </p>
           </div>
         </div>
@@ -42,8 +42,8 @@ export default function ToolsIndexPage() {
             <p className="eyebrow">Electronics Calculators</p>
             <h2>Bench formulas, ready when you need them.</h2>
             <p className="section-intro">
-              Search 36 interactive calculators for circuits, components, number
-              systems, conversions, and engineering math.
+              Search 36 interactive calculators for circuits, components, number systems,
+              conversions, and engineering math.
             </p>
           </div>
         </div>

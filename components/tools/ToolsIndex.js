@@ -37,6 +37,7 @@ export function ToolsIndex({ tools }) {
               className={category === item ? "active" : ""}
               key={item}
               type="button"
+              aria-pressed={category === item}
               onClick={() => setCategory(item)}
             >
               {item}
@@ -60,4 +61,3 @@ export function ToolsIndex({ tools }) {
     </>
   );
 }
-

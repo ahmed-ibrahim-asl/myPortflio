@@ -34,36 +34,34 @@ export function BinaryBitShiftCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Every binary digit is worth twice the one to its right. Slide the
-          whole pattern one place left and every bit is suddenly worth
-          double what it was — the value doubles. Slide it right and every
-          bit is worth half — the value halves. A bit shift is
-          multiplication or division by two, done by moving digits instead
-          of doing arithmetic.
+          Every binary digit is worth twice the one to its right. Slide the whole pattern one place
+          left and every bit is suddenly worth double what it was — the value doubles. Slide it
+          right and every bit is worth half — the value halves. A bit shift is multiplication or
+          division by two, done by moving digits instead of doing arithmetic.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Shifting left by one is the same move as writing a decimal number
-          and adding a zero on the end — ×10 in decimal becomes ×2 in
-          binary. Shifting right drops the last digit, which is the binary
-          equivalent of integer-dividing by 10 in decimal. Shift by more
-          than one place and you&rsquo;re just repeating the move — shift
-          left by 3 is ×2×2×2, or ×8.
+          Shifting left by one is the same move as writing a decimal number and adding a zero on the
+          end — ×10 in decimal becomes ×2 in binary. Shifting right drops the last digit, which is
+          the binary equivalent of integer-dividing by 10 in decimal. Shift by more than one place
+          and you&rsquo;re just repeating the move — shift left by 3 is ×2×2×2, or ×8.
         </p>
       </ToolSection>
 
       <ToolSection title="The formula">
-        <p className="mono">value ≪ n  =  value × 2ⁿ</p>
-        <p className="mono">value ≫ n  =  value ÷ 2ⁿ (rounded down)</p>
+        <p className="mono">value ≪ n = value × 2ⁿ</p>
+        <p className="mono">value ≫ n = value ÷ 2ⁿ (rounded down)</p>
       </ToolSection>
 
-      <Mnemonic tag="Left grows, right shrinks" phrase="The arrow points at what happens to the value">
+      <Mnemonic
+        tag="Left grows, right shrinks"
+        phrase="The arrow points at what happens to the value"
+      >
         <p>
-          The shift arrow doesn&rsquo;t describe the bits, it describes the
-          result: ≪ points away from zero (the value grows), ≫ points
-          toward zero (the value shrinks).
+          The shift arrow doesn&rsquo;t describe the bits, it describes the result: ≪ points away
+          from zero (the value grows), ≫ points toward zero (the value shrinks).
         </p>
       </Mnemonic>
 
@@ -107,10 +105,7 @@ export function BinaryBitShiftCalculator() {
         </CalculatorSelect>
         {result !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="Result (binary)"
-              value={toBinaryString(result, bits)}
-            />
+            <CalculatorResult label="Result (binary)" value={toBinaryString(result, bits)} />
             <CalculatorResult label="Result (decimal)" value={result} />
           </CalculatorResults>
         ) : (
@@ -120,4 +115,3 @@ export function BinaryBitShiftCalculator() {
     </div>
   );
 }
-

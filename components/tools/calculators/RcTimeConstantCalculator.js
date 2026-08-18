@@ -32,26 +32,23 @@ export function RcTimeConstantCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          A capacitor doesn&rsquo;t charge instantly — it fills up like a
-          bucket under a tap. A resistor in the circuit controls how fast
-          that bucket fills. Put the two together and there&rsquo;s a
-          single number that describes the pace: the RC time constant,
-          tau (τ).
+          A capacitor doesn&rsquo;t charge instantly — it fills up like a bucket under a tap. A
+          resistor in the circuit controls how fast that bucket fills. Put the two together and
+          there&rsquo;s a single number that describes the pace: the RC time constant, tau (τ).
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          A bigger resistor is a narrower tap — it slows the flow of
-          charge into the capacitor. A bigger capacitor is a bigger bucket
-          — it takes more charge to fill to the same level. Slow the flow
-          or grow the bucket and either way, filling takes longer. So the
-          time constant just grows with both.
+          A bigger resistor is a narrower tap — it slows the flow of charge into the capacitor. A
+          bigger capacitor is a bigger bucket — it takes more charge to fill to the same level. Slow
+          the flow or grow the bucket and either way, filling takes longer. So the time constant
+          just grows with both.
         </p>
         <p>
-          In one time constant, a charging capacitor reaches about 63% of
-          its final voltage. After roughly five time constants (5τ),
-          it&rsquo;s considered fully charged for practical purposes.
+          In one time constant, a charging capacitor reaches about 63% of its final voltage. After
+          roughly five time constants (5τ), it&rsquo;s considered fully charged for practical
+          purposes.
         </p>
       </ToolSection>
 
@@ -70,9 +67,9 @@ export function RcTimeConstantCalculator() {
 
       <Mnemonic tag="τ = RC" phrase="Resistance times Capacitance, that's it">
         <p>
-          No division, no square roots — the two letters you fed in are the
-          two letters you multiply. If you can remember there&rsquo;s
-          nothing else to the formula, you&rsquo;ve remembered the formula.
+          No division, no square roots — the two letters you fed in are the two letters you
+          multiply. If you can remember there&rsquo;s nothing else to the formula, you&rsquo;ve
+          remembered the formula.
         </p>
       </Mnemonic>
 
@@ -109,14 +106,8 @@ export function RcTimeConstantCalculator() {
         </CalculatorSelect>
         {tau !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="Time constant (τ)"
-              value={formatEngineering(tau, "s")}
-            />
-            <CalculatorResult
-              label="Fully charged (5τ)"
-              value={formatEngineering(tau * 5, "s")}
-            />
+            <CalculatorResult label="Time constant (τ)" value={formatEngineering(tau, "s")} />
+            <CalculatorResult label="Fully charged (5τ)" value={formatEngineering(tau * 5, "s")} />
           </CalculatorResults>
         ) : (
           <p className="muted">Enter valid numbers to see the result.</p>
@@ -125,4 +116,3 @@ export function RcTimeConstantCalculator() {
     </div>
   );
 }
-

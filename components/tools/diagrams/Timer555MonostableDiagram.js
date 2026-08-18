@@ -21,7 +21,16 @@ export function Timer555MonostableDiagram() {
       <GroundSymbol x={140} y={175} />
 
       <Wire x1={140} y1={50} x2={165} y2={50} />
-      <rect x={165} y={95} width={70} height={50} rx={4} fill="none" stroke="var(--ink)" strokeWidth="2" />
+      <rect
+        x={165}
+        y={95}
+        width={70}
+        height={50}
+        rx={4}
+        fill="none"
+        stroke="var(--ink)"
+        strokeWidth="2"
+      />
       <text x={200} y={125} textAnchor="middle" className="diagram-label-bold">
         555
       </text>
@@ -36,4 +45,3 @@ export function Timer555MonostableDiagram() {
     </DiagramFrame>
   );
 }
-

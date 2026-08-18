@@ -24,20 +24,18 @@ export function SquareRootCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Squaring a number means multiplying it by itself. A square root
-          undoes that — it asks &ldquo;what number, multiplied by itself,
-          gives me this?&rdquo; It shows up anywhere areas turn back into
-          side lengths, or RMS calculations turn power back into voltage.
+          Squaring a number means multiplying it by itself. A square root undoes that — it asks
+          &ldquo;what number, multiplied by itself, gives me this?&rdquo; It shows up anywhere areas
+          turn back into side lengths, or RMS calculations turn power back into voltage.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          12 × 12 = 144, so the square root of 144 is 12 — the operation
-          just runs backward. There&rsquo;s no simple arithmetic shortcut
-          for most numbers (that&rsquo;s why calculators exist for this),
-          but the idea stays the same: find the number that, squared,
-          lands exactly on your target.
+          12 × 12 = 144, so the square root of 144 is 12 — the operation just runs backward.
+          There&rsquo;s no simple arithmetic shortcut for most numbers (that&rsquo;s why calculators
+          exist for this), but the idea stays the same: find the number that, squared, lands exactly
+          on your target.
         </p>
       </ToolSection>
 
@@ -47,10 +45,9 @@ export function SquareRootCalculator() {
 
       <Mnemonic tag="√" phrase="What times itself gets you here">
         <p>
-          Keep a handful of perfect squares memorized — 1, 4, 9, 16, 25,
-          36, 49, 64, 81, 100 — and you can eyeball most everyday square
-          roots, or at least bracket them, without reaching for a
-          calculator.
+          Keep a handful of perfect squares memorized — 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 — and
+          you can eyeball most everyday square roots, or at least bracket them, without reaching for
+          a calculator.
         </p>
       </Mnemonic>
 
@@ -70,18 +67,12 @@ export function SquareRootCalculator() {
         />
         {result !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="√x"
-              value={Number(result.toPrecision(6))}
-            />
+            <CalculatorResult label="√x" value={Number(result.toPrecision(6))} />
           </CalculatorResults>
         ) : (
-          <p className="muted">
-            Enter a number that&rsquo;s zero or positive.
-          </p>
+          <p className="muted">Enter a number that&rsquo;s zero or positive.</p>
         )}
       </CalculatorPanel>
     </div>
   );
 }
-

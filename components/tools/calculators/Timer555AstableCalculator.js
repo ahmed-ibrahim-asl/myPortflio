@@ -39,21 +39,19 @@ export function Timer555AstableCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          In astable mode, a 555 timer never settles — it charges a
-          capacitor up, discharges it back down, and repeats forever,
-          producing a square wave with no input signal needed at all.
-          Two resistors and a capacitor set the pace.
+          In astable mode, a 555 timer never settles — it charges a capacitor up, discharges it back
+          down, and repeats forever, producing a square wave with no input signal needed at all. Two
+          resistors and a capacitor set the pace.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          The capacitor charges through both R1 and R2 together, which sets
-          how long the output stays high. It then discharges through R2
-          alone, which sets how long the output stays low. Because charging
-          always uses more resistance than discharging, the high time is
-          always longer than the low time — a plain 555 astable can never
-          produce a perfect 50/50 square wave.
+          The capacitor charges through both R1 and R2 together, which sets how long the output
+          stays high. It then discharges through R2 alone, which sets how long the output stays low.
+          Because charging always uses more resistance than discharging, the high time is always
+          longer than the low time — a plain 555 astable can never produce a perfect 50/50 square
+          wave.
         </p>
       </ToolSection>
 
@@ -65,14 +63,10 @@ export function Timer555AstableCalculator() {
         <p className="mono">f = 1 / (t_high + t_low)</p>
       </ToolSection>
 
-      <Mnemonic
-        tag="Charge high, discharge low"
-        phrase="R1 helps you rise, only R2 lets you fall"
-      >
+      <Mnemonic tag="Charge high, discharge low" phrase="R1 helps you rise, only R2 lets you fall">
         <p>
-          R1 only ever appears in the charging (high) time. If you remember
-          that one fact, both formulas fall out of it — discharging just
-          drops R1 from the same shape of equation.
+          R1 only ever appears in the charging (high) time. If you remember that one fact, both
+          formulas fall out of it — discharging just drops R1 from the same shape of equation.
         </p>
       </Mnemonic>
 
@@ -116,23 +110,14 @@ export function Timer555AstableCalculator() {
         </CalculatorSelect>
         {result ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="Frequency"
-              value={formatEngineering(result.frequency, "Hz")}
-            />
+            <CalculatorResult label="Frequency" value={formatEngineering(result.frequency, "Hz")} />
             <CalculatorResult
               label="Duty cycle"
               value={Number(result.duty.toPrecision(3))}
               unit="%"
             />
-            <CalculatorResult
-              label="High time"
-              value={formatEngineering(result.tHigh, "s")}
-            />
-            <CalculatorResult
-              label="Low time"
-              value={formatEngineering(result.tLow, "s")}
-            />
+            <CalculatorResult label="High time" value={formatEngineering(result.tHigh, "s")} />
+            <CalculatorResult label="Low time" value={formatEngineering(result.tLow, "s")} />
           </CalculatorResults>
         ) : (
           <p className="muted">Enter valid numbers to see the result.</p>
@@ -141,4 +126,3 @@ export function Timer555AstableCalculator() {
     </div>
   );
 }
-

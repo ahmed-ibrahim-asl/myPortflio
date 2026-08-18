@@ -21,20 +21,17 @@ export function HexToAsciiConverter() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          This is ASCII-to-hex run backward: given the raw hex byte values
-          a device sent or stored, recover the readable text they were
-          meant to represent. Useful the moment you&rsquo;re staring at a
-          hex dump and need to know what it actually says.
+          This is ASCII-to-hex run backward: given the raw hex byte values a device sent or stored,
+          recover the readable text they were meant to represent. Useful the moment you&rsquo;re
+          staring at a hex dump and need to know what it actually says.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Split the hex string into pairs of digits — each pair is one
-          byte, one character. Convert each pair back to a decimal number,
-          then look that number up in the ASCII table to get its
-          character. Line the characters up in order and you&rsquo;ve got
-          the original text back.
+          Split the hex string into pairs of digits — each pair is one byte, one character. Convert
+          each pair back to a decimal number, then look that number up in the ASCII table to get its
+          character. Line the characters up in order and you&rsquo;ve got the original text back.
         </p>
       </ToolSection>
 
@@ -45,9 +42,8 @@ export function HexToAsciiConverter() {
 
       <Mnemonic tag="Pair up, then look up" phrase="Two hex digits in, one character out">
         <p>
-          Always split hex into pairs before converting — a lone digit
-          isn&rsquo;t a byte. If the string has an odd number of digits,
-          something upstream dropped a character.
+          Always split hex into pairs before converting — a lone digit isn&rsquo;t a byte. If the
+          string has an odd number of digits, something upstream dropped a character.
         </p>
       </Mnemonic>
 
@@ -74,4 +70,3 @@ export function HexToAsciiConverter() {
     </div>
   );
 }
-

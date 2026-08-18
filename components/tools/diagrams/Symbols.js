@@ -82,7 +82,13 @@ export function CapacitorH({ x, y, label }) {
   return (
     <g stroke="var(--ink)">
       <line x1={x} y1={y} x2={x + leadIn} y2={y} strokeWidth="2" />
-      <line x1={x + leadIn} y1={y - plateHeight / 2} x2={x + leadIn} y2={y + plateHeight / 2} strokeWidth="3" />
+      <line
+        x1={x + leadIn}
+        y1={y - plateHeight / 2}
+        x2={x + leadIn}
+        y2={y + plateHeight / 2}
+        strokeWidth="3"
+      />
       <line
         x1={x + leadIn + plateGap}
         y1={y - plateHeight / 2}
@@ -90,7 +96,13 @@ export function CapacitorH({ x, y, label }) {
         y2={y + plateHeight / 2}
         strokeWidth="3"
       />
-      <line x1={x + leadIn + plateGap} y1={y} x2={x + leadIn + plateGap + leadOut} y2={y} strokeWidth="2" />
+      <line
+        x1={x + leadIn + plateGap}
+        y1={y}
+        x2={x + leadIn + plateGap + leadOut}
+        y2={y}
+        strokeWidth="2"
+      />
       {label ? (
         <text
           x={x + leadIn + plateGap / 2}
@@ -114,7 +126,13 @@ export function CapacitorV({ x, y, label }) {
   return (
     <g stroke="var(--ink)">
       <line x1={x} y1={y} x2={x} y2={y + leadIn} strokeWidth="2" />
-      <line x1={x - plateWidth / 2} y1={y + leadIn} x2={x + plateWidth / 2} y2={y + leadIn} strokeWidth="3" />
+      <line
+        x1={x - plateWidth / 2}
+        y1={y + leadIn}
+        x2={x + plateWidth / 2}
+        y2={y + leadIn}
+        strokeWidth="3"
+      />
       <line
         x1={x - plateWidth / 2}
         y1={y + leadIn + plateGap}
@@ -122,9 +140,20 @@ export function CapacitorV({ x, y, label }) {
         y2={y + leadIn + plateGap}
         strokeWidth="3"
       />
-      <line x1={x} y1={y + leadIn + plateGap} x2={x} y2={y + leadIn + plateGap + leadOut} strokeWidth="2" />
+      <line
+        x1={x}
+        y1={y + leadIn + plateGap}
+        x2={x}
+        y2={y + leadIn + plateGap + leadOut}
+        strokeWidth="2"
+      />
       {label ? (
-        <text x={x + plateWidth / 2 + 12} y={y + leadIn + plateGap / 2 + 5} className="diagram-label" stroke="none">
+        <text
+          x={x + plateWidth / 2 + 12}
+          y={y + leadIn + plateGap / 2 + 5}
+          className="diagram-label"
+          stroke="none"
+        >
           {label}
         </text>
       ) : null}
@@ -135,4 +164,3 @@ export function CapacitorV({ x, y, label }) {
 export function capacitorVHeight() {
   return 50;
 }
-

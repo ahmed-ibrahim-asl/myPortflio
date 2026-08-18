@@ -15,13 +15,8 @@ import { formatOhms } from "@/lib/resistorColors";
 export function SeriesResistorCalculator() {
   const [values, setValues] = useState(["220", "330", "470", ""]);
 
-  const numbers = values
-    .map((v) => Number(v))
-    .filter((n) => Number.isFinite(n) && n > 0);
-  const total = useMemo(
-    () => numbers.reduce((sum, n) => sum + n, 0),
-    [numbers]
-  );
+  const numbers = values.map((v) => Number(v)).filter((n) => Number.isFinite(n) && n > 0);
+  const total = useMemo(() => numbers.reduce((sum, n) => sum + n, 0), [numbers]);
 
   function update(index, next) {
     setValues((prev) => prev.map((v, i) => (i === index ? next : v)));
@@ -31,19 +26,17 @@ export function SeriesResistorCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Chain resistors one after another — same current has to squeeze
-          through every one of them in turn — and each resistor adds its
-          own bit of opposition on top of the last. There&rsquo;s no
-          shortcut here and no need for one.
+          Chain resistors one after another — same current has to squeeze through every one of them
+          in turn — and each resistor adds its own bit of opposition on top of the last.
+          There&rsquo;s no shortcut here and no need for one.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Current has exactly one path to follow through a series chain, so
-          whatever resistance the first resistor adds, the second adds more
-          on top, and the third more still. The total opposition the
-          current feels is just those oppositions stacked up.
+          Current has exactly one path to follow through a series chain, so whatever resistance the
+          first resistor adds, the second adds more on top, and the third more still. The total
+          opposition the current feels is just those oppositions stacked up.
         </p>
       </ToolSection>
 
@@ -53,9 +46,8 @@ export function SeriesResistorCalculator() {
 
       <Mnemonic tag="Series stacks" phrase="Same line, so just add">
         <p>
-          If the resistors sit on one single wire, one after another, the
-          math is the easy kind: add them. Save the flipping and dividing
-          for when they sit side by side instead.
+          If the resistors sit on one single wire, one after another, the math is the easy kind: add
+          them. Save the flipping and dividing for when they sit side by side instead.
         </p>
       </Mnemonic>
 
@@ -84,4 +76,3 @@ export function SeriesResistorCalculator() {
     </div>
   );
 }
-

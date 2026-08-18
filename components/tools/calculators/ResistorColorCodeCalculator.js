@@ -39,37 +39,34 @@ export function ResistorColorCodeCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          A resistor is too small to print a number on, so manufacturers
-          paint the number instead — as a sequence of colored bands. Learn
-          the code once and any resistor in the drawer becomes readable at a
-          glance, no multimeter required.
+          A resistor is too small to print a number on, so manufacturers paint the number instead —
+          as a sequence of colored bands. Learn the code once and any resistor in the drawer becomes
+          readable at a glance, no multimeter required.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Four bands, four jobs. The first two bands are digits — they spell
-          out a two-digit number. The third band is a multiplier — it tells
-          you how many zeros to add (or, for gold and silver, how far to
-          shift the decimal point). The fourth band is tolerance — how far
-          the real resistance is allowed to drift from that number.
+          Four bands, four jobs. The first two bands are digits — they spell out a two-digit number.
+          The third band is a multiplier — it tells you how many zeros to add (or, for gold and
+          silver, how far to shift the decimal point). The fourth band is tolerance — how far the
+          real resistance is allowed to drift from that number.
         </p>
       </ToolSection>
 
       <ToolSection title="The formula">
         <p className="mono">R = (D1 × 10 + D2) × Multiplier</p>
         <p>
-          D1 and D2 are the first two digits, read left to right starting
-          from the band closest to the edge of the resistor.
+          D1 and D2 are the first two digits, read left to right starting from the band closest to
+          the edge of the resistor.
         </p>
       </ToolSection>
 
       <Mnemonic phrase="Big Bears Race Over Yellow Grass, Blue Violets Grow Wild">
         <p>
-          Black, Brown, Red, Orange, Yellow, Green, Blue, Violet, Grey,
-          White — digits 0 through 9, in the order the bands are always
-          printed. The sentence walks the color wheel in the same order the
-          bands do, so once it&rsquo;s stuck, so is the code.
+          Black, Brown, Red, Orange, Yellow, Green, Blue, Violet, Grey, White — digits 0 through 9,
+          in the order the bands are always printed. The sentence walks the color wheel in the same
+          order the bands do, so once it&rsquo;s stuck, so is the code.
         </p>
       </Mnemonic>
 
@@ -116,13 +113,9 @@ export function ResistorColorCodeCalculator() {
         <CalculatorResults>
           <CalculatorResult label="Resistance" value={formatOhms(value)} />
           <CalculatorResult label="Tolerance" value={`± ${tol}%`} />
-          <CalculatorResult
-            label="Range"
-            value={`${formatOhms(min)} – ${formatOhms(max)}`}
-          />
+          <CalculatorResult label="Range" value={`${formatOhms(min)} – ${formatOhms(max)}`} />
         </CalculatorResults>
       </CalculatorPanel>
     </div>
   );
 }
-

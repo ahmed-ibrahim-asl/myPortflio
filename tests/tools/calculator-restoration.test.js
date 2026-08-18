@@ -20,11 +20,7 @@ test("all 36 completed calculators are present and registered", async () => {
   assert.equal(new Set(calculators.map(({ slug }) => slug)).size, 36);
   assert.equal(componentFiles.length, 36);
   for (const { slug } of calculators) {
-    assert.match(
-      registrySource,
-      new RegExp(`[\"]${slug}[\"]\\s*:`),
-      `${slug} must be registered`
-    );
+    assert.match(registrySource, new RegExp(`[\"]${slug}[\"]\\s*:`), `${slug} must be registered`);
   }
 });
 
@@ -47,6 +43,32 @@ test("restored utility modules retain representative behavior", async () => {
   assert.equal(numbers.twosComplement(1, 8), 255);
   assert.equal(numbers.asciiToHex("Hi"), "48 69");
   assert.equal(numbers.hexToAscii("48 69"), "Hi");
+  assert.equal(numbers.hexToAscii("4869"), "Hi");
+  assert.equal(numbers.parseInBase("102", 2), null);
+  assert.equal(numbers.parseInBase("1G", 16), null);
+  assert.equal(numbers.parseInBase("-2A", 16), -42);
+  assert.equal(numbers.hexToAscii("4"), null);
+  assert.equal(numbers.hexToAscii("48 6G"), null);
+  assert.equal(numbers.shiftValue(5, 8, 7, "left"), 128);
+  assert.equal(numbers.shiftValue(5, 8, 8, "left"), 0);
+  assert.equal(numbers.shiftValue(5, 8, 32, "left"), 0);
+  assert.equal(numbers.shiftValue(5, 8, 33, "right"), 0);
+});
+
+test("shared calculator controls expose accessible result and selection semantics", () => {
+  const ui = readFileSync(
+    new URL("../../components/tools/CalculatorUI.js", import.meta.url),
+    "utf8"
+  );
+  const index = readFileSync(
+    new URL("../../components/tools/ToolsIndex.js", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(ui, /className="calculator-results"[^>]*aria-live="polite"/);
+  assert.match(ui, /role="group" aria-label=\{label\}/);
+  assert.doesNotMatch(ui, /role="listbox"/);
+  assert.match(index, /aria-pressed=\{category === item\}/);
 });
 
 test("the Tools hub retains advanced tools and exposes the calculator index", () => {

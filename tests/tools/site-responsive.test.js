@@ -15,14 +15,14 @@ import { setTimeout as delay } from "node:timers/promises";
 const chromeCandidates = [
   process.env.CHROME_PATH,
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
 ].filter(Boolean);
 
 const VIEWPORTS = [
   { width: 375, height: 812, label: "375 (mobile)" },
   { width: 768, height: 1024, label: "768 (tablet)" },
   { width: 1024, height: 800, label: "1024 (small desktop)" },
-  { width: 1440, height: 900, label: "1440 (desktop)" },
+  { width: 1440, height: 900, label: "1440 (desktop)" }
 ];
 
 const ROUTES = [
@@ -41,7 +41,7 @@ const ROUTES = [
   "/tools/ohms-law-calculator/",
   "/tools/resistor-color-code-calculator/",
   "/tools/555-timer-astable-circuit-calculator/",
-  "/tools/decimal-binary-octal-hex-converter/",
+  "/tools/decimal-binary-octal-hex-converter/"
 ];
 
 function stopProcessTree(child) {
@@ -49,7 +49,7 @@ function stopProcessTree(child) {
   if (process.platform === "win32") {
     spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], {
       stdio: "ignore",
-      windowsHide: true,
+      windowsHide: true
     });
   } else {
     child.kill("SIGTERM");
@@ -87,16 +87,13 @@ async function startChrome(chromePath, userDataDir) {
       "--no-first-run",
       "--remote-debugging-port=0",
       `--user-data-dir=${userDataDir}`,
-      "about:blank",
+      "about:blank"
     ],
-    { stdio: ["ignore", "ignore", "pipe"], windowsHide: true },
+    { stdio: ["ignore", "ignore", "pipe"], windowsHide: true }
   );
   const debuggerUrl = await new Promise((resolve, reject) => {
     let output = "";
-    const timeout = setTimeout(
-      () => reject(new Error(`Chrome did not start.\n${output}`)),
-      15_000,
-    );
+    const timeout = setTimeout(() => reject(new Error(`Chrome did not start.\n${output}`)), 15_000);
     chrome.stderr.on("data", (chunk) => {
       output += chunk.toString();
       const match = output.match(/DevTools listening on (ws:\/\/\S+)/);
@@ -114,10 +111,9 @@ async function startChrome(chromePath, userDataDir) {
 }
 
 async function createClient(port, url) {
-  const response = await fetch(
-    `http://127.0.0.1:${port}/json/new?${encodeURIComponent(url)}`,
-    { method: "PUT" },
-  );
+  const response = await fetch(`http://127.0.0.1:${port}/json/new?${encodeURIComponent(url)}`, {
+    method: "PUT"
+  });
   const target = await response.json();
   const socket = new WebSocket(target.webSocketDebuggerUrl);
   let nextId = 1;
@@ -151,11 +147,12 @@ async function createClient(port, url) {
       pending.set(id, { resolve, reject });
     });
   };
-  const waitForEvent = (method) => new Promise((resolve) => {
-    const waiters = events.get(method) ?? [];
-    waiters.push(resolve);
-    events.set(method, waiters);
-  });
+  const waitForEvent = (method) =>
+    new Promise((resolve) => {
+      const waiters = events.get(method) ?? [];
+      waiters.push(resolve);
+      events.set(method, waiters);
+    });
 
   return { socket, send, waitForEvent };
 }
@@ -176,16 +173,29 @@ test(
     const baseUrl = useExisting ? existingRoot : `http://127.0.0.1:${port}`;
 
     const command = process.platform === "win32" ? process.env.ComSpec || "cmd.exe" : "npm";
-    const args = process.platform === "win32"
-      ? ["/d", "/s", "/c", "npm.cmd", "run", "dev", "--", "--hostname", "127.0.0.1", "--port", String(port)]
-      : ["run", "dev", "--", "--hostname", "127.0.0.1", "--port", String(port)];
+    const args =
+      process.platform === "win32"
+        ? [
+            "/d",
+            "/s",
+            "/c",
+            "npm.cmd",
+            "run",
+            "dev",
+            "--",
+            "--hostname",
+            "127.0.0.1",
+            "--port",
+            String(port)
+          ]
+        : ["run", "dev", "--", "--hostname", "127.0.0.1", "--port", String(port)];
     const app = useExisting
       ? null
       : spawn(command, args, {
           cwd: process.cwd(),
           env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
           stdio: ["ignore", "pipe", "pipe"],
-          windowsHide: true,
+          windowsHide: true
         });
 
     const userDataDir = mkdtempSync(join(tmpdir(), "site-responsive-"));
@@ -207,7 +217,7 @@ test(
             width: viewport.width,
             height: viewport.height,
             deviceScaleFactor: 1,
-            mobile: viewport.width < 500,
+            mobile: viewport.width < 500
           });
           const loaded = client.waitForEvent("Page.loadEventFired");
           await client.send("Page.navigate", { url: `${baseUrl}${route}` });
@@ -263,7 +273,7 @@ test(
                 toolBodyOutsideViewport,
                 contentOutsideViewport
               };
-            })()`,
+            })()`
           });
 
           const {
@@ -276,12 +286,16 @@ test(
           } = result.result.value;
           if (overflowPx > 1) {
             failures.push(
-              `${route} @ ${viewport.label}: overflows by ${overflowPx.toFixed(0)}px`
-              + (worstSelector ? ` (worst offender: ${worstSelector}, right edge ${worstRight.toFixed(0)}px)` : ""),
+              `${route} @ ${viewport.label}: overflows by ${overflowPx.toFixed(0)}px` +
+                (worstSelector
+                  ? ` (worst offender: ${worstSelector}, right edge ${worstRight.toFixed(0)}px)`
+                  : "")
             );
           }
           if (unexpectedMissionUi) {
-            failures.push(`${route} @ ${viewport.label}: mission UI appears without mission sections`);
+            failures.push(
+              `${route} @ ${viewport.label}: mission UI appears without mission sections`
+            );
           }
           if (toolBodyOutsideViewport) {
             failures.push(`${route} @ ${viewport.label}: calculator body leaves the viewport`);
@@ -291,16 +305,76 @@ test(
           }
         }
       }
+
+      await client.send("Emulation.setDeviceMetricsOverride", {
+        width: 1440,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: false
+      });
+      const homeLoaded = client.waitForEvent("Page.loadEventFired");
+      await client.send("Page.navigate", { url: `${baseUrl}/` });
+      await homeLoaded;
+      const navigationResult = await client.send("Runtime.evaluate", {
+        awaitPromise: true,
+        returnByValue: true,
+        expression: `(async () => {
+          const visible = (el) => Boolean(el) && getComputedStyle(el).display !== "none";
+          const waitFor = async (predicate, label) => {
+            const deadline = Date.now() + 5000;
+            while (Date.now() < deadline) {
+              if (predicate()) return;
+              await new Promise((resolve) => setTimeout(resolve, 50));
+            }
+            throw new Error("Timed out waiting for " + label);
+          };
+          await waitFor(
+            () => visible(document.querySelector(".mission-rail")),
+            "home mission rail"
+          );
+          const homeHasMissionUi = visible(document.querySelector(".mission-rail"));
+          const toolsLink = [...document.querySelectorAll("a")].find((link) =>
+            new URL(link.href).pathname.endsWith("/tools/")
+            || new URL(link.href).pathname.endsWith("/tools")
+          );
+          toolsLink?.click();
+          await waitFor(
+            () => location.pathname.endsWith("/tools/") || location.pathname.endsWith("/tools"),
+            "client navigation to tools"
+          );
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+          const toolsHasMissionUi = visible(document.querySelector(".mission-rail"))
+            || visible(document.querySelector(".mobile-mission-readout"));
+          document.querySelector("a.brand")?.click();
+          await waitFor(
+            () => location.pathname.endsWith("/")
+              && document.querySelectorAll("[data-mission]").length > 0
+              && visible(document.querySelector(".mission-rail")),
+            "client navigation back home"
+          );
+          return {
+            homeHasMissionUi,
+            toolsHasMissionUi,
+            returnHomeHasMissionUi: visible(document.querySelector(".mission-rail"))
+          };
+        })()`
+      });
+      const navigation = navigationResult.result.value;
+      if (!navigation.homeHasMissionUi) {
+        failures.push("client navigation: mission UI missing on initial home route");
+      }
+      if (navigation.toolsHasMissionUi) {
+        failures.push("client navigation: mission UI remains visible after home → tools");
+      }
+      if (!navigation.returnHomeHasMissionUi) {
+        failures.push("client navigation: mission UI does not return after tools → home");
+      }
     } finally {
       if (client?.socket) client.socket.close();
       if (chrome) stopProcessTree(chrome);
       if (app) stopProcessTree(app);
     }
 
-    assert.deepStrictEqual(
-      failures,
-      [],
-      `horizontal overflow found:\n${failures.join("\n")}`,
-    );
-  },
+    assert.deepStrictEqual(failures, [], `horizontal overflow found:\n${failures.join("\n")}`);
+  }
 );

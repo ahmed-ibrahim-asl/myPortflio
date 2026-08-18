@@ -29,22 +29,19 @@ export function RmsVoltageCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          An AC voltage is constantly changing — it doesn&rsquo;t sit at
-          one value the way a battery does. RMS voltage is the single
-          steady number that would deliver the exact same heating power as
-          that constantly-changing AC signal, which is why it&rsquo;s what
-          gets printed on wall sockets instead of the peak voltage.
+          An AC voltage is constantly changing — it doesn&rsquo;t sit at one value the way a battery
+          does. RMS voltage is the single steady number that would deliver the exact same heating
+          power as that constantly-changing AC signal, which is why it&rsquo;s what gets printed on
+          wall sockets instead of the peak voltage.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          A sine wave spends most of its time well below its peak — it
-          only touches the very top for an instant each cycle. Average the
-          power delivered across the whole cycle (which means squaring the
-          voltage, averaging that, then rooting it back — Root Mean
-          Square) and for a clean sine wave, the answer always works out
-          to the peak divided by √2.
+          A sine wave spends most of its time well below its peak — it only touches the very top for
+          an instant each cycle. Average the power delivered across the whole cycle (which means
+          squaring the voltage, averaging that, then rooting it back — Root Mean Square) and for a
+          clean sine wave, the answer always works out to the peak divided by √2.
         </p>
       </ToolSection>
 
@@ -55,9 +52,8 @@ export function RmsVoltageCalculator() {
 
       <Mnemonic tag="÷ √2" phrase="RMS is peak, taken down a notch">
         <p>
-          For a sine wave, RMS is always about 70.7% of the peak (1 ÷ √2).
-          Peak-to-peak is just double the peak — keep those two divisions
-          straight and the rest follows.
+          For a sine wave, RMS is always about 70.7% of the peak (1 ÷ √2). Peak-to-peak is just
+          double the peak — keep those two divisions straight and the rest follows.
         </p>
       </Mnemonic>
 
@@ -104,4 +100,3 @@ export function RmsVoltageCalculator() {
     </div>
   );
 }
-

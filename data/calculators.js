@@ -235,8 +235,7 @@ export const calculators = [
     slug: "ascii-to-hex-converter",
     title: "ASCII to HEX Converter",
     category: "Number Systems",
-    summary:
-      "See the raw hex bytes your text actually turns into once a computer gets hold of it.",
+    summary: "See the raw hex bytes your text actually turns into once a computer gets hold of it.",
     tags: ["ASCII", "Hex", "Text encoding"],
     sourceUrl: "https://lastminuteengineers.com/ascii-to-hex-converter/",
     sourceLabel: SOURCE_LABEL
@@ -245,8 +244,7 @@ export const calculators = [
     slug: "hex-to-ascii-converter",
     title: "HEX to ASCII Converter",
     category: "Number Systems",
-    summary:
-      "Turn a string of hex byte values back into the readable text it was encoding.",
+    summary: "Turn a string of hex byte values back into the readable text it was encoding.",
     tags: ["ASCII", "Hex", "Text encoding"],
     sourceUrl: "https://lastminuteengineers.com/hex-to-ascii-converter/",
     sourceLabel: SOURCE_LABEL
@@ -345,8 +343,7 @@ export const calculators = [
     slug: "square-root-calculator",
     title: "Square Root Calculator",
     category: "Physics & Math",
-    summary:
-      "The number that multiplies by itself to give you the one you started with.",
+    summary: "The number that multiplies by itself to give you the one you started with.",
     tags: ["Math", "Roots"],
     sourceUrl: "https://lastminuteengineers.com/square-root-calculator/",
     sourceLabel: SOURCE_LABEL
@@ -362,4 +359,3 @@ export const calculators = [
     sourceLabel: SOURCE_LABEL
   }
 ];
-

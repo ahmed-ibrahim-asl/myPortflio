@@ -24,19 +24,17 @@ export function CubeRootCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Cubing a number means multiplying it by itself twice more — a
-          volume instead of an area. A cube root undoes that: it asks what
-          number, multiplied by itself three times, gives you this one.
-          Unlike square roots, negative numbers have real cube roots too.
+          Cubing a number means multiplying it by itself twice more — a volume instead of an area. A
+          cube root undoes that: it asks what number, multiplied by itself three times, gives you
+          this one. Unlike square roots, negative numbers have real cube roots too.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          3 × 3 × 3 = 27, so the cube root of 27 is 3. It&rsquo;s the same
-          idea as a square root, just one multiplication deeper — which is
-          exactly why it comes up when you&rsquo;re working backward from
-          a volume to a side length.
+          3 × 3 × 3 = 27, so the cube root of 27 is 3. It&rsquo;s the same idea as a square root,
+          just one multiplication deeper — which is exactly why it comes up when you&rsquo;re
+          working backward from a volume to a side length.
         </p>
       </ToolSection>
 
@@ -46,9 +44,8 @@ export function CubeRootCalculator() {
 
       <Mnemonic tag="∛" phrase="What times itself three times gets you here">
         <p>
-          Keep a few perfect cubes handy — 1, 8, 27, 64, 125 — the same way
-          you&rsquo;d keep perfect squares handy. They cover most of the
-          quick mental checks you&rsquo;ll actually need.
+          Keep a few perfect cubes handy — 1, 8, 27, 64, 125 — the same way you&rsquo;d keep perfect
+          squares handy. They cover most of the quick mental checks you&rsquo;ll actually need.
         </p>
       </Mnemonic>
 
@@ -68,10 +65,7 @@ export function CubeRootCalculator() {
         />
         {result !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="∛x"
-              value={Number(result.toPrecision(6))}
-            />
+            <CalculatorResult label="∛x" value={Number(result.toPrecision(6))} />
           </CalculatorResults>
         ) : (
           <p className="muted">Enter a number.</p>
@@ -80,4 +74,3 @@ export function CubeRootCalculator() {
     </div>
   );
 }
-

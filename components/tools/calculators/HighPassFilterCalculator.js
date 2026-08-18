@@ -37,24 +37,20 @@ export function HighPassFilterCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          A high pass filter is a gatekeeper for frequency: signals above
-          a certain pitch sail through mostly untouched, while anything
-          below that pitch gets weaker the lower it goes. It&rsquo;s the
-          circuit behind stripping DC offset or hum out of an audio
-          signal.
+          A high pass filter is a gatekeeper for frequency: signals above a certain pitch sail
+          through mostly untouched, while anything below that pitch gets weaker the lower it goes.
+          It&rsquo;s the circuit behind stripping DC offset or hum out of an audio signal.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Build it from a capacitor and a resistor in series, and take the
-          output across the resistor. A capacitor&rsquo;s resistance to AC
-          (its reactance) drops as frequency rises — so at high frequency
-          the capacitor barely blocks anything, and most of the signal
-          reaches the resistor&rsquo;s output. At low frequency the
-          capacitor&rsquo;s reactance climbs and starts eating the signal
-          before it gets there. The cutoff frequency is the point where
-          the resistor and the capacitor are fighting the signal equally.
+          Build it from a capacitor and a resistor in series, and take the output across the
+          resistor. A capacitor&rsquo;s resistance to AC (its reactance) drops as frequency rises —
+          so at high frequency the capacitor barely blocks anything, and most of the signal reaches
+          the resistor&rsquo;s output. At low frequency the capacitor&rsquo;s reactance climbs and
+          starts eating the signal before it gets there. The cutoff frequency is the point where the
+          resistor and the capacitor are fighting the signal equally.
         </p>
       </ToolSection>
 
@@ -71,11 +67,13 @@ export function HighPassFilterCalculator() {
         <p>fc is the cutoff frequency in Hz, R in ohms, C in farads.</p>
       </ToolSection>
 
-      <Mnemonic tag="fc = 1/2πRC" phrase="Same formula as RC time constant, flipped and framed as frequency">
+      <Mnemonic
+        tag="fc = 1/2πRC"
+        phrase="Same formula as RC time constant, flipped and framed as frequency"
+      >
         <p>
-          If you already know τ = RC, you already know this — the cutoff
-          frequency is just 1 divided by (2π × τ). One formula, two ways
-          to think about the same RC pair.
+          If you already know τ = RC, you already know this — the cutoff frequency is just 1 divided
+          by (2π × τ). One formula, two ways to think about the same RC pair.
         </p>
       </Mnemonic>
 
@@ -112,10 +110,7 @@ export function HighPassFilterCalculator() {
         </CalculatorSelect>
         {cutoff !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="Cutoff frequency"
-              value={formatEngineering(cutoff, "Hz")}
-            />
+            <CalculatorResult label="Cutoff frequency" value={formatEngineering(cutoff, "Hz")} />
           </CalculatorResults>
         ) : (
           <p className="muted">Enter valid, positive numbers.</p>
@@ -124,4 +119,3 @@ export function HighPassFilterCalculator() {
     </div>
   );
 }
-

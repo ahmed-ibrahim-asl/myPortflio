@@ -10,6 +10,9 @@ test("the global motion system hides mission UI until mission sections exist", a
 
   assert.match(hook, /hasMissions:\s*boolean/);
   assert.match(hook, /useState<boolean>\(false\)/);
-  assert.match(hook, /setHasMissions\(sections\.length\s*>\s*0\)/);
+  assert.match(hook, /usePathname/);
+  assert.match(hook, /setHasMissions\(hasSections\)/);
+  assert.match(hook, /removeAttribute\("data-active-mission"\)/);
+  assert.match(hook, /}, \[pathname\]\);/);
   assert.match(system, /hasMissions\s*\?\s*\(\s*<MissionRail/);
 });

@@ -50,9 +50,7 @@ export function CalculatorField({ label, suffix, ...inputProps }) {
           spellCheck="false"
           {...inputProps}
         />
-        {suffix ? (
-          <span className="calculator-field-suffix">{suffix}</span>
-        ) : null}
+        {suffix ? <span className="calculator-field-suffix">{suffix}</span> : null}
       </div>
     </label>
   );
@@ -70,7 +68,11 @@ export function CalculatorSelect({ label, children, ...selectProps }) {
 }
 
 export function CalculatorResults({ children }) {
-  return <div className="calculator-results">{children}</div>;
+  return (
+    <div className="calculator-results" aria-live="polite" aria-atomic="true">
+      {children}
+    </div>
+  );
 }
 
 export function CalculatorResult({ label, value, unit }) {
@@ -91,7 +93,7 @@ export function ColorSwatchPicker({ label, colors, value, onChange, colorKey }) 
   return (
     <div className="calculator-field">
       <span>{label}</span>
-      <div className="swatch-row" role="listbox" aria-label={label}>
+      <div className="swatch-row" role="group" aria-label={label}>
         {colors.map((color) => (
           <button
             type="button"
@@ -110,4 +112,3 @@ export function ColorSwatchPicker({ label, colors, value, onChange, colorKey }) 
     </div>
   );
 }
-

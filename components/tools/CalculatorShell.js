@@ -32,8 +32,7 @@ export function CalculatorShell({ tool, children }) {
           <a href={tool.sourceUrl} target="_blank" rel="noreferrer">
             {tool.title}
           </a>{" "}
-          — thank you for making electronics approachable for makers
-          everywhere.
+          — thank you for making electronics approachable for makers everywhere.
         </p>
       </footer>
     </article>

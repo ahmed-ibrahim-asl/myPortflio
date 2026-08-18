@@ -36,20 +36,18 @@ export function HexCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Memory addresses, color codes, register values — a lot of the
-          numbers engineers work with day to day show up in hex, not
-          decimal. Being able to do quick arithmetic directly in hex saves
-          a constant back-and-forth conversion.
+          Memory addresses, color codes, register values — a lot of the numbers engineers work with
+          day to day show up in hex, not decimal. Being able to do quick arithmetic directly in hex
+          saves a constant back-and-forth conversion.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Hex has sixteen digits — 0 through 9, then A through F standing
-          in for 10 through 15. Add or subtract column by column exactly
-          like decimal, except a column only carries once it passes 15,
-          not 9. Everything else about long addition, subtraction,
-          multiplication, and division carries straight over.
+          Hex has sixteen digits — 0 through 9, then A through F standing in for 10 through 15. Add
+          or subtract column by column exactly like decimal, except a column only carries once it
+          passes 15, not 9. Everything else about long addition, subtraction, multiplication, and
+          division carries straight over.
         </p>
       </ToolSection>
 
@@ -59,10 +57,9 @@ export function HexCalculator() {
 
       <Mnemonic tag="A–F = 10–15" phrase="Six extra digits, six extra letters">
         <p>
-          The whole system hinges on remembering that A is 10 and F is 15
-          — everything in between follows the alphabet in order. Once that
-          maps in your head, hex arithmetic is just decimal arithmetic
-          that carries later.
+          The whole system hinges on remembering that A is 10 and F is 15 — everything in between
+          follows the alphabet in order. Once that maps in your head, hex arithmetic is just decimal
+          arithmetic that carries later.
         </p>
       </Mnemonic>
 
@@ -111,13 +108,9 @@ export function HexCalculator() {
             <CalculatorResult label="Result (decimal)" value={result} />
           </CalculatorResults>
         ) : (
-          <p className="muted">
-            Enter valid hex digits (0–9, A–F). Division by zero is
-            undefined.
-          </p>
+          <p className="muted">Enter valid hex digits (0–9, A–F). Division by zero is undefined.</p>
         )}
       </CalculatorPanel>
     </div>
   );
 }
-

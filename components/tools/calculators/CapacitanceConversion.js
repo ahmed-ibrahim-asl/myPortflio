@@ -26,20 +26,18 @@ export function CapacitanceConversion() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Capacitance is measured in farads, but a farad is an enormous
-          unit — most real capacitors are millions or billions of times
-          smaller. In practice you&rsquo;ll almost always see µF, nF, or
-          pF printed on the component, so converting between them is a
-          daily occurrence, not an edge case.
+          Capacitance is measured in farads, but a farad is an enormous unit — most real capacitors
+          are millions or billions of times smaller. In practice you&rsquo;ll almost always see µF,
+          nF, or pF printed on the component, so converting between them is a daily occurrence, not
+          an edge case.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Every prefix is just a power of ten away from the farad: milli
-          is a thousandth, micro is a millionth, nano is a billionth, pico
-          is a trillionth. Convert into farads first as a common baseline,
-          then convert back out to whichever unit you actually need.
+          Every prefix is just a power of ten away from the farad: milli is a thousandth, micro is a
+          millionth, nano is a billionth, pico is a trillionth. Convert into farads first as a
+          common baseline, then convert back out to whichever unit you actually need.
         </p>
       </ToolSection>
 
@@ -50,9 +48,9 @@ export function CapacitanceConversion() {
 
       <Mnemonic tag="m, µ, n, p" phrase="Each step down is a thousand times smaller">
         <p>
-          Milli, micro, nano, pico — each one is exactly a thousand times
-          smaller than the last. Know that one fact and you can convert
-          between any pair just by counting how many steps apart they are.
+          Milli, micro, nano, pico — each one is exactly a thousand times smaller than the last.
+          Know that one fact and you can convert between any pair just by counting how many steps
+          apart they are.
         </p>
       </Mnemonic>
 
@@ -98,4 +96,3 @@ export function CapacitanceConversion() {
     </div>
   );
 }
-

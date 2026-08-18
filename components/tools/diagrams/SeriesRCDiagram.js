@@ -1,4 +1,13 @@
-import { CapacitorH, CapacitorV, DiagramFrame, GroundSymbol, NodeDot, ResistorH, ResistorV, Wire } from "./Symbols";
+import {
+  CapacitorH,
+  CapacitorV,
+  DiagramFrame,
+  GroundSymbol,
+  NodeDot,
+  ResistorH,
+  ResistorV,
+  Wire
+} from "./Symbols";
 
 export function SeriesRCDiagram({ first, firstLabel, second, secondLabel, caption }) {
   const startX = 20;
@@ -36,4 +45,3 @@ export function SeriesRCDiagram({ first, firstLabel, second, secondLabel, captio
     </DiagramFrame>
   );
 }
-

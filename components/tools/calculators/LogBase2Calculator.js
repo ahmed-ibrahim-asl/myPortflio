@@ -24,20 +24,18 @@ export function LogBase2Calculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Log base 2 answers one question: how many times do you have to
-          double 1 to reach this number? It shows up constantly in
-          computing because doubling is exactly what an extra bit does —
-          one more bit doubles how many values you can represent.
+          Log base 2 answers one question: how many times do you have to double 1 to reach this
+          number? It shows up constantly in computing because doubling is exactly what an extra bit
+          does — one more bit doubles how many values you can represent.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          1 doubled once is 2. Doubled again is 4. Again is 8. Three
-          doublings got you from 1 to 8, so log₂(8) = 3. That&rsquo;s also
-          exactly how many bits it takes to count from 0 up to 7 — eight
-          distinct values, three bits. Log base 2 and bit counts are the
-          same question asked two different ways.
+          1 doubled once is 2. Doubled again is 4. Again is 8. Three doublings got you from 1 to 8,
+          so log₂(8) = 3. That&rsquo;s also exactly how many bits it takes to count from 0 up to 7 —
+          eight distinct values, three bits. Log base 2 and bit counts are the same question asked
+          two different ways.
         </p>
       </ToolSection>
 
@@ -47,9 +45,8 @@ export function LogBase2Calculator() {
 
       <Mnemonic tag="log₂" phrase="How many doublings get you there">
         <p>
-          Don&rsquo;t think &ldquo;logarithm,&rdquo; think
-          &ldquo;doublings.&rdquo; Count how many times you&rsquo;d have
-          to double 1 to land on your number — that count is the answer.
+          Don&rsquo;t think &ldquo;logarithm,&rdquo; think &ldquo;doublings.&rdquo; Count how many
+          times you&rsquo;d have to double 1 to land on your number — that count is the answer.
         </p>
       </Mnemonic>
 
@@ -69,10 +66,7 @@ export function LogBase2Calculator() {
         />
         {result !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="log₂(x)"
-              value={Number(result.toPrecision(6))}
-            />
+            <CalculatorResult label="log₂(x)" value={Number(result.toPrecision(6))} />
           </CalculatorResults>
         ) : (
           <p className="muted">Enter a positive number.</p>
@@ -81,4 +75,3 @@ export function LogBase2Calculator() {
     </div>
   );
 }
-

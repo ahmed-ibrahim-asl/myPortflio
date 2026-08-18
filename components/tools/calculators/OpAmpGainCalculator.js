@@ -24,32 +24,27 @@ export function OpAmpGainCalculator() {
     if (!Number.isFinite(feedback) || !Number.isFinite(input) || input === 0) {
       return null;
     }
-    return config === "inverting"
-      ? -(feedback / input)
-      : 1 + feedback / input;
+    return config === "inverting" ? -(feedback / input) : 1 + feedback / input;
   }, [config, rf, rin]);
 
   return (
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          An op-amp on its own has huge, unpredictable gain — nearly
-          useless as-is. Wire two resistors around it in a feedback loop
-          and that wild gain gets tamed into a precise, predictable
-          multiplier set entirely by the resistor values you chose.
+          An op-amp on its own has huge, unpredictable gain — nearly useless as-is. Wire two
+          resistors around it in a feedback loop and that wild gain gets tamed into a precise,
+          predictable multiplier set entirely by the resistor values you chose.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          The feedback resistor (Rf) and input resistor (Rin) form a
-          ratio, and the op-amp forces its output to whatever it takes to
-          keep its two inputs balanced. In the inverting layout, the
-          signal enters through Rin and the output flips sign — the gain
-          is just Rf over Rin. In the non-inverting layout the input
-          bypasses Rin entirely and the output stays the same polarity,
-          which is why that configuration always adds one to the ratio
-          instead of just returning it.
+          The feedback resistor (Rf) and input resistor (Rin) form a ratio, and the op-amp forces
+          its output to whatever it takes to keep its two inputs balanced. In the inverting layout,
+          the signal enters through Rin and the output flips sign — the gain is just Rf over Rin. In
+          the non-inverting layout the input bypasses Rin entirely and the output stays the same
+          polarity, which is why that configuration always adds one to the ratio instead of just
+          returning it.
         </p>
       </ToolSection>
 
@@ -60,12 +55,14 @@ export function OpAmpGainCalculator() {
         <p className="mono">Non-inverting: Gain = 1 + Rf / Rin</p>
       </ToolSection>
 
-      <Mnemonic tag="+1 for non-inverting" phrase="Same ratio, one extra term when the sign doesn't flip">
+      <Mnemonic
+        tag="+1 for non-inverting"
+        phrase="Same ratio, one extra term when the sign doesn't flip"
+      >
         <p>
-          Both configurations share the same Rf ÷ Rin ratio at their core.
-          Inverting keeps it bare (and negative); non-inverting tacks on a
-          +1, which is also why non-inverting gain can never drop below 1,
-          but inverting gain can.
+          Both configurations share the same Rf ÷ Rin ratio at their core. Inverting keeps it bare
+          (and negative); non-inverting tacks on a +1, which is also why non-inverting gain can
+          never drop below 1, but inverting gain can.
         </p>
       </Mnemonic>
 
@@ -100,11 +97,7 @@ export function OpAmpGainCalculator() {
         />
         {gain !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="Gain"
-              value={Number(gain.toPrecision(4))}
-              unit="×"
-            />
+            <CalculatorResult label="Gain" value={Number(gain.toPrecision(4))} unit="×" />
             <CalculatorResult
               label="Gain in dB"
               value={Number((20 * Math.log10(Math.abs(gain))).toPrecision(4))}
@@ -112,12 +105,9 @@ export function OpAmpGainCalculator() {
             />
           </CalculatorResults>
         ) : (
-          <p className="muted">
-            Enter valid numbers; the input resistor can&rsquo;t be zero.
-          </p>
+          <p className="muted">Enter valid numbers; the input resistor can&rsquo;t be zero.</p>
         )}
       </CalculatorPanel>
     </div>
   );
 }
-

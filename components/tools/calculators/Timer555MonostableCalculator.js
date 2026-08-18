@@ -32,21 +32,19 @@ export function Timer555MonostableCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          In monostable mode, a 555 timer sits quietly until it&rsquo;s
-          triggered — then it outputs one clean pulse of a fixed length and
-          goes back to waiting. It&rsquo;s the &ldquo;one-shot&rdquo; mode:
-          press a button once, get exactly one timed action, no matter how
-          long the button is held.
+          In monostable mode, a 555 timer sits quietly until it&rsquo;s triggered — then it outputs
+          one clean pulse of a fixed length and goes back to waiting. It&rsquo;s the
+          &ldquo;one-shot&rdquo; mode: press a button once, get exactly one timed action, no matter
+          how long the button is held.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          The trigger starts a single charge cycle on the capacitor through
-          the resistor. The output stays high for as long as that charge
-          takes to cross a fixed internal threshold — about two-thirds of
-          the supply voltage. Bigger R or bigger C means the capacitor takes
-          longer to reach that threshold, so the pulse lasts longer.
+          The trigger starts a single charge cycle on the capacitor through the resistor. The output
+          stays high for as long as that charge takes to cross a fixed internal threshold — about
+          two-thirds of the supply voltage. Bigger R or bigger C means the capacitor takes longer to
+          reach that threshold, so the pulse lasts longer.
         </p>
       </ToolSection>
 
@@ -59,10 +57,9 @@ export function Timer555MonostableCalculator() {
 
       <Mnemonic tag="1.1RC" phrase="Same shape as RC, just 10% longer">
         <p>
-          It&rsquo;s the RC time constant with a 1.1 out front instead of a
-          bare 1 — because the 555&rsquo;s trigger threshold sits a little
-          past one full time constant. Remember plain RC first, then tack
-          on the 1.1.
+          It&rsquo;s the RC time constant with a 1.1 out front instead of a bare 1 — because the
+          555&rsquo;s trigger threshold sits a little past one full time constant. Remember plain RC
+          first, then tack on the 1.1.
         </p>
       </Mnemonic>
 
@@ -99,10 +96,7 @@ export function Timer555MonostableCalculator() {
         </CalculatorSelect>
         {pulseWidth !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="Pulse width"
-              value={formatEngineering(pulseWidth, "s")}
-            />
+            <CalculatorResult label="Pulse width" value={formatEngineering(pulseWidth, "s")} />
           </CalculatorResults>
         ) : (
           <p className="muted">Enter valid numbers to see the result.</p>
@@ -111,4 +105,3 @@ export function Timer555MonostableCalculator() {
     </div>
   );
 }
-

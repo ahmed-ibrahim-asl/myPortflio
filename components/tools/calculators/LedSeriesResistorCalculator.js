@@ -37,22 +37,20 @@ export function LedSeriesResistorCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          An LED has no built-in resistance to speak of — wire one straight
-          to a battery and it draws as much current as the supply can give,
-          which is usually enough to destroy it in about a second. The
-          series resistor&rsquo;s only job is to eat the extra voltage the
-          LED doesn&rsquo;t need, so the current stays at a safe level.
+          An LED has no built-in resistance to speak of — wire one straight to a battery and it
+          draws as much current as the supply can give, which is usually enough to destroy it in
+          about a second. The series resistor&rsquo;s only job is to eat the extra voltage the LED
+          doesn&rsquo;t need, so the current stays at a safe level.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          An LED has a fixed forward voltage — the voltage it drops once
-          it&rsquo;s lit, regardless of the supply. Whatever voltage is
-          left over from the supply has to be absorbed by something else in
-          the loop, or it forces too much current through the LED. That
-          something else is the resistor: it drops the leftover voltage
-          while limiting current to whatever the LED is rated for.
+          An LED has a fixed forward voltage — the voltage it drops once it&rsquo;s lit, regardless
+          of the supply. Whatever voltage is left over from the supply has to be absorbed by
+          something else in the loop, or it forces too much current through the LED. That something
+          else is the resistor: it drops the leftover voltage while limiting current to whatever the
+          LED is rated for.
         </p>
       </ToolSection>
 
@@ -62,9 +60,9 @@ export function LedSeriesResistorCalculator() {
 
       <Mnemonic phrase="Source minus Forward, over Flow">
         <p>
-          Subtract what the LED keeps (its forward voltage) from what the
-          supply gives (source voltage), then divide by how much current
-          you want flowing. Leftover voltage, over desired flow.
+          Subtract what the LED keeps (its forward voltage) from what the supply gives (source
+          voltage), then divide by how much current you want flowing. Leftover voltage, over desired
+          flow.
         </p>
       </Mnemonic>
 
@@ -97,10 +95,7 @@ export function LedSeriesResistorCalculator() {
         />
         {result ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="Series resistor"
-              value={formatOhms(result.resistance)}
-            />
+            <CalculatorResult label="Series resistor" value={formatOhms(result.resistance)} />
             <CalculatorResult
               label="Resistor power"
               value={Number(result.power.toPrecision(3))}
@@ -109,12 +104,10 @@ export function LedSeriesResistorCalculator() {
           </CalculatorResults>
         ) : (
           <p className="muted">
-            Supply voltage must be higher than the LED&rsquo;s forward
-            voltage.
+            Supply voltage must be higher than the LED&rsquo;s forward voltage.
           </p>
         )}
       </CalculatorPanel>
     </div>
   );
 }
-

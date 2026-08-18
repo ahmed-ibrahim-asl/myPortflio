@@ -36,40 +36,33 @@ export function CapacitiveReactanceCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          A capacitor blocks steady DC but lets AC through — sort of. It
-          doesn&rsquo;t just let AC pass freely; it resists it by an amount
-          that depends on frequency. That frequency-dependent resistance is
-          called reactance, and for a capacitor, it goes down as frequency
-          goes up.
+          A capacitor blocks steady DC but lets AC through — sort of. It doesn&rsquo;t just let AC
+          pass freely; it resists it by an amount that depends on frequency. That
+          frequency-dependent resistance is called reactance, and for a capacitor, it goes down as
+          frequency goes up.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          A capacitor resists change by storing charge and pushing back.
-          At low frequency, the voltage barely changes before the
-          capacitor keeps up — so it blocks current effectively, and
-          reactance is high. At high frequency, the voltage is constantly
-          reversing before the capacitor can catch up, so more current
-          slips through — reactance drops. A bigger capacitor stores more
-          charge for the same voltage swing, so it resists less at any
-          given frequency too.
+          A capacitor resists change by storing charge and pushing back. At low frequency, the
+          voltage barely changes before the capacitor keeps up — so it blocks current effectively,
+          and reactance is high. At high frequency, the voltage is constantly reversing before the
+          capacitor can catch up, so more current slips through — reactance drops. A bigger
+          capacitor stores more charge for the same voltage swing, so it resists less at any given
+          frequency too.
         </p>
       </ToolSection>
 
       <ToolSection title="The formula">
         <p className="mono">Xc = 1 / (2π × f × C)</p>
-        <p>
-          Xc is reactance in ohms, f is frequency in hertz, C is
-          capacitance in farads.
-        </p>
+        <p>Xc is reactance in ohms, f is frequency in hertz, C is capacitance in farads.</p>
       </ToolSection>
 
       <Mnemonic tag="Xc = 1 / (2πfC)" phrase="Everything on the bottom, so bigger means lower">
         <p>
-          Every quantity that can grow — frequency, capacitance — sits in
-          the denominator. Grow either one and reactance has nowhere to go
-          but down.
+          Every quantity that can grow — frequency, capacitance — sits in the denominator. Grow
+          either one and reactance has nowhere to go but down.
         </p>
       </Mnemonic>
 
@@ -106,10 +99,7 @@ export function CapacitiveReactanceCalculator() {
         </CalculatorSelect>
         {reactance !== null ? (
           <CalculatorResults>
-            <CalculatorResult
-              label="Reactance"
-              value={formatEngineering(reactance, "Ω")}
-            />
+            <CalculatorResult label="Reactance" value={formatEngineering(reactance, "Ω")} />
           </CalculatorResults>
         ) : (
           <p className="muted">Enter valid numbers to see the result.</p>
@@ -118,4 +108,3 @@ export function CapacitiveReactanceCalculator() {
     </div>
   );
 }
-

@@ -29,20 +29,18 @@ export function OnesComplementCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          One&rsquo;s complement is the simplest operation you can do to a
-          binary number: flip every bit. Every 0 becomes a 1 and every 1
-          becomes a 0. It looks trivial, but it&rsquo;s the first of two
-          steps computers use to represent negative numbers in binary.
+          One&rsquo;s complement is the simplest operation you can do to a binary number: flip every
+          bit. Every 0 becomes a 1 and every 1 becomes a 0. It looks trivial, but it&rsquo;s the
+          first of two steps computers use to represent negative numbers in binary.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Write out the number in binary at a fixed width, then invert each
-          digit in place — no carrying, no borrowing, just a straight
-          swap. Whatever bits were 1s are now 0s and vice versa. The
-          result is the number&rsquo;s complement: together, the original
-          and its one&rsquo;s complement always add up to all 1s.
+          Write out the number in binary at a fixed width, then invert each digit in place — no
+          carrying, no borrowing, just a straight swap. Whatever bits were 1s are now 0s and vice
+          versa. The result is the number&rsquo;s complement: together, the original and its
+          one&rsquo;s complement always add up to all 1s.
         </p>
       </ToolSection>
 
@@ -53,8 +51,8 @@ export function OnesComplementCalculator() {
 
       <Mnemonic tag="NOT" phrase="Every bit becomes what it wasn't">
         <p>
-          No math, just opposites. If you can flip a light switch, you can
-          do one&rsquo;s complement.
+          No math, just opposites. If you can flip a light switch, you can do one&rsquo;s
+          complement.
         </p>
       </Mnemonic>
 
@@ -89,19 +87,13 @@ export function OnesComplementCalculator() {
               label="Original (binary)"
               value={toBinaryString(Number(value), bits)}
             />
-            <CalculatorResult
-              label="One's complement"
-              value={toBinaryString(result, bits)}
-            />
+            <CalculatorResult label="One's complement" value={toBinaryString(result, bits)} />
             <CalculatorResult label="As decimal" value={result} />
           </CalculatorResults>
         ) : (
-          <p className="muted">
-            Enter a whole number that fits in the chosen bit width.
-          </p>
+          <p className="muted">Enter a whole number that fits in the chosen bit width.</p>
         )}
       </CalculatorPanel>
     </div>
   );
 }
-

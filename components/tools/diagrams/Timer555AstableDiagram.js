@@ -24,7 +24,16 @@ export function Timer555AstableDiagram() {
       <Wire x1={260} y1={160} x2={260} y2={175} />
       <GroundSymbol x={260} y={175} />
 
-      <rect x={105} y={110} width={70} height={50} rx={4} fill="none" stroke="var(--ink)" strokeWidth="2" />
+      <rect
+        x={105}
+        y={110}
+        width={70}
+        height={50}
+        rx={4}
+        fill="none"
+        stroke="var(--ink)"
+        strokeWidth="2"
+      />
       <text x={140} y={140} textAnchor="middle" className="diagram-label-bold">
         555
       </text>
@@ -39,4 +48,3 @@ export function Timer555AstableDiagram() {
     </DiagramFrame>
   );
 }
-

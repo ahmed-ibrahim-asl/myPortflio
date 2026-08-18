@@ -20,14 +20,9 @@ export function ToolCard({ tool, index }) {
           ))}
         </div>
       </div>
-      <Link
-        className="post-arrow"
-        href={`/tools/${tool.slug}`}
-        aria-label={`Open ${tool.title}`}
-      >
+      <Link className="post-arrow" href={`/tools/${tool.slug}`} aria-label={`Open ${tool.title}`}>
         ↗
       </Link>
     </article>
   );
 }
-

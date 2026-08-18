@@ -30,19 +30,17 @@ export function AccelerationCalculator() {
     <div className="article-body">
       <ToolSection title="What's going on">
         <p>
-          Acceleration isn&rsquo;t speed — it&rsquo;s how fast speed
-          itself is changing. A car holding a steady 60 km/h has zero
-          acceleration no matter how fast it&rsquo;s going; a car going
-          from 0 to 60 in five seconds has a lot.
+          Acceleration isn&rsquo;t speed — it&rsquo;s how fast speed itself is changing. A car
+          holding a steady 60 km/h has zero acceleration no matter how fast it&rsquo;s going; a car
+          going from 0 to 60 in five seconds has a lot.
         </p>
       </ToolSection>
 
       <ToolSection title="Build it up">
         <p>
-          Take the velocity you ended with, subtract the velocity you
-          started with, and that difference is how much speed you gained
-          (or lost). Spread that gain over however long it took to happen,
-          and you get a rate — the gain per second, which is exactly what
+          Take the velocity you ended with, subtract the velocity you started with, and that
+          difference is how much speed you gained (or lost). Spread that gain over however long it
+          took to happen, and you get a rate — the gain per second, which is exactly what
           acceleration means.
         </p>
       </ToolSection>
@@ -50,16 +48,15 @@ export function AccelerationCalculator() {
       <ToolSection title="The formula">
         <p className="mono">a = (v_f − v_i) / t</p>
         <p>
-          a is acceleration in m/s², v_f and v_i are final and initial
-          velocity in m/s, t is time in seconds.
+          a is acceleration in m/s², v_f and v_i are final and initial velocity in m/s, t is time in
+          seconds.
         </p>
       </ToolSection>
 
       <Mnemonic tag="Δv / t" phrase="Change in speed, spread over time">
         <p>
-          Acceleration is just a rate, like speed itself is a rate. Speed
-          is distance change over time; acceleration is speed change over
-          time — one level up.
+          Acceleration is just a rate, like speed itself is a rate. Speed is distance change over
+          time; acceleration is speed change over time — one level up.
         </p>
       </Mnemonic>
 
@@ -105,4 +102,3 @@ export function AccelerationCalculator() {
     </div>
   );
 }
-
