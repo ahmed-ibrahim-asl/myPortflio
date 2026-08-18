@@ -11,3 +11,5 @@ start.sh
 start.bat
 .ease/
 .gemini/
+.superpowers/
+.worktrees/
