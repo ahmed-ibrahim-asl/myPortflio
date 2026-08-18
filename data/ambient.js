@@ -1,4 +1,4 @@
-const basePath = process.env.GITHUB_ACTIONS === "true" ? "/myPortfolio" : "";
+const basePath = process.env.GITHUB_ACTIONS === "true" ? "/myPortflio" : "";
 
 export const ambientWorlds = [
   {

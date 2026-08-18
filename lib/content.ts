@@ -112,7 +112,7 @@ export function renderPost(content: string): RenderedPost {
     }
   );
 
-  const basePath = process.env.GITHUB_ACTIONS === "true" ? "/myPortfolio" : "";
+  const basePath = process.env.GITHUB_ACTIONS === "true" ? "/myPortflio" : "";
   if (basePath) {
     html = html.replace(/(src|href)="\/blog\//g, `$1="${basePath}/blog/`);
   }

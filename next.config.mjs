@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const isGitHubPages = process.env.GITHUB_ACTIONS === "true";
-const basePath = isGitHubPages ? "/myPortfolio" : "";
+const basePath = isGitHubPages ? "/myPortflio" : "";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

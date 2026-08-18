@@ -12,7 +12,7 @@ import {
   WorkingMethodItem
 } from "@/types/portfolio";
 
-const basePath = process.env.GITHUB_ACTIONS === "true" ? "/myPortfolio" : "";
+const basePath = process.env.GITHUB_ACTIONS === "true" ? "/myPortflio" : "";
 const asset = (pathname: string): string => `${basePath}${pathname}`;
 
 export const profile: Profile = {

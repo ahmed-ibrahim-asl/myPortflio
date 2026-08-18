@@ -10,7 +10,7 @@ export const siteConfig: SiteConfig = {
   title: "Ahmed Asl | Hardware Prototypes & IoT Products",
   description:
     "Ahmed Asl turns rough hardware and IoT ideas into working prototypes and usable products. He works across electronics, embedded systems, robotics, connected products, mechatronics, and technical teaching.",
-  url: "https://ahmed-ibrahim-asl.github.io/myPortfolio"
+  url: "https://ahmed-ibrahim-asl.github.io/myPortflio"
 };
 
 export function absoluteUrl(pathname: string = ""): string {
