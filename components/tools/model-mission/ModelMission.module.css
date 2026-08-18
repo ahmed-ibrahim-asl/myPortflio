@@ -343,7 +343,6 @@
 .taskCard p,
 .modelGrid p {
   display: -webkit-box;
-  overflow: hidden;
   margin: 2px 0 0;
   color: var(--muted);
   font-size: 1rem;
