@@ -1,0 +1,22 @@
+<svg width="960" height="600" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plant Care AI">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050713"/>
+      <stop offset="1" stop-color="#0b0f21"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0 L0 0 0 40" fill="none" stroke="#30395e" stroke-width="1" opacity="0.35"/>
+    </pattern>
+  </defs>
+  <rect width="960" height="600" fill="url(#bgGrad)"/>
+  <rect width="960" height="600" fill="url(#grid)"/>
+  <rect x="0.5" y="0.5" width="959" height="599" fill="none" stroke="#30395e"/>
+  <g transform="translate(480, 250)"><g stroke="#55d5d8" stroke-width="2" fill="none" opacity="0.9">
+    <path d="M0 40 C-10 0 -40 -10 -40 -40 C-10 -40 0 -10 0 40 Z"/>
+    <path d="M0 40 C10 0 40 -10 40 -40 C10 -40 0 -10 0 40 Z"/>
+    <path d="M0 40 L0 -30"/>
+  </g></g>
+  <text x="48" y="56" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="18" letter-spacing="1" fill="#55d5d8" font-weight="700">AI & MOBILE</text>
+  <text x="48" y="552" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="30" fill="#eef1ff" font-weight="700">Plant Care AI</text>
+  <text x="912" y="552" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="26" fill="#55d5d8" text-anchor="end">&#8599;</text>
+</svg>

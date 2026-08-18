@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[22016,["/myPortflio/_next/static/chunks/006wjwbpv_8a3.js","/myPortflio/_next/static/chunks/14mrh2-p_w84d.js"],""]
+3:I[97367,["/myPortflio/_next/static/chunks/006wjwbpv_8a3.js","/myPortflio/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+0:{"rsc":["$","$1","c",{"children":[["$","section",null,{"className":"not-found shell","children":[["$","h1",null,{"children":"This page could not be found."}],["$","p",null,{"children":"The address may have changed, or the article may still be a draft."}],["$","$L2",null,{"className":"button primary","href":"/","children":["Return to the portfolio ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"faYq9CfA1mbngGeW3qg7G"}
+5:null

@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://ahmed-ibrahim-asl.github.io/myPortflio/sitemap.xml

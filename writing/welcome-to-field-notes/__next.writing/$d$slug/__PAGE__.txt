@@ -1,0 +1,54 @@
+1:"$Sreact.fragment"
+3:I[22016,["/myPortflio/_next/static/chunks/006wjwbpv_8a3.js","/myPortflio/_next/static/chunks/14mrh2-p_w84d.js","/myPortflio/_next/static/chunks/2zm_ho-9worua.js"],""]
+a:I[70825,["/myPortflio/_next/static/chunks/006wjwbpv_8a3.js","/myPortflio/_next/static/chunks/14mrh2-p_w84d.js","/myPortflio/_next/static/chunks/2zm_ho-9worua.js"],"ArticleEnhancer"]
+b:I[97367,["/myPortflio/_next/static/chunks/006wjwbpv_8a3.js","/myPortflio/_next/static/chunks/14mrh2-p_w84d.js"],"OutletBoundary"]
+c:"$Sreact.suspense"
+2:T43f,{"@context":"https://schema.org","@type":"BlogPosting","@id":"https://ahmed-ibrahim-asl.github.io/myPortflio/writing/welcome-to-field-notes/#article","url":"https://ahmed-ibrahim-asl.github.io/myPortflio/writing/welcome-to-field-notes/","mainEntityOfPage":"https://ahmed-ibrahim-asl.github.io/myPortflio/writing/welcome-to-field-notes/","headline":"Engineering Field Notes: Methods and Tests","description":"How I document embedded systems, Linux, cybersecurity, Flutter, and AI work so another engineer can reproduce the result.","image":"https://ahmed-ibrahim-asl.github.io/myPortflio/opengraph-image.png","datePublished":"2026-07-20","dateModified":"2026-07-25","inLanguage":"en","articleSection":"Notes","keywords":"Engineering, Linux, Documentation","author":{"@type":"Person","@id":"https://ahmed-ibrahim-asl.github.io/myPortflio/#ahmed-asl","name":"Ahmed Asl","url":"https://ahmed-ibrahim-asl.github.io/myPortflio/about/"},"publisher":{"@id":"https://ahmed-ibrahim-asl.github.io/myPortflio/#ahmed-asl"},"isPartOf":{"@id":"https://ahmed-ibrahim-asl.github.io/myPortflio/#website"}}4:T821,<p>A project page shows the finished system. These field notes record the decisions
+behind it: commands, measurements, failed approaches, and checks that proved the
+result.</p>
+<h2>Topics I cover</h2>
+<p>The archive focuses on work I can test and explain:</p>
+<ul>
+<li>embedded systems, firmware, sensors, and connected-device architecture;</li>
+<li>Linux, networking, and legal cybersecurity challenges;</li>
+<li>Flutter interfaces for physical products;</li>
+<li>robotics and control systems;</li>
+<li>AI and machine-learning experiments with reproducible inputs and results.</li>
+</ul>
+<p>Some entries are short references. Longer walkthroughs include the environment,
+commands, expected output, failure modes, and files needed to repeat the work.</p>
+<h2>How I write a walkthrough</h2>
+<p>A walkthrough should help the reader recognize the problem again. My longer
+articles follow a consistent structure:</p>
+<ol>
+<li>define the goal and constraints;</li>
+<li>record the environment and prerequisites;</li>
+<li>show the investigation or design process;</li>
+<li>explain the working solution;</li>
+<li>document common failure modes;</li>
+<li>finish with reusable checks or lessons.</li>
+</ol>
+<blockquote>
+<p>A useful technical note gives the reader a method they can apply elsewhere.</p>
+</blockquote>
+<h2>Reproducible examples</h2>
+<p>Commands appear in copyable terminal blocks:</p>
+<pre><code class="language-bash">ssh user@example-host -p 2220
+</code></pre>
+<p>I record versions, dependencies, configuration, and expected output when they
+change the result. Security articles stay within legal labs, owned systems, and
+defensive learning.</p>
+<h2>Series in progress</h2>
+<p>The OverTheWire Bandit walkthrough covers Linux commands and problem-solving in
+a controlled challenge environment. The Learn With Me series develops practical
+foundations in Linux, Python, Dart and Flutter, and Git.</p>
+<p>The archive grows alongside active engineering and teaching work. If an entry
+helps another person verify a result or avoid a repeated mistake, it has served
+its purpose.</p>
+0:{"rsc":["$","$1","c",{"children":[["$","article",null,{"className":"article-page","children":[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"$2"}}],["$","header",null,{"className":"article-header shell","children":[["$","$L3",null,{"className":"article-back","href":"/writing","children":[["$","span",null,{"aria-hidden":"true","children":"←"}]," All engineering notes"]}],["$","div",null,{"className":"article-title-grid","children":[["$","div",null,{"children":[["$","h1",null,{"children":"Engineering Field Notes: Methods and Tests"}],["$","p",null,{"className":"article-summary","children":"How I document embedded systems, Linux, cybersecurity, Flutter, and AI work so another engineer can reproduce the result."}]]}],["$","dl",null,{"className":"article-facts","children":[["$","div",null,{"children":[["$","dt",null,{"children":"Published"}],["$","dd",null,{"children":"Jul 20, 2026"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"Updated"}],["$","dd",null,{"children":"Jul 25, 2026"}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"Reading time"}],["$","dd",null,{"children":[2," minutes"]}]]}],["$","div",null,{"children":[["$","dt",null,{"children":"Difficulty"}],["$","dd",null,{"children":"All levels"}]]}],null]}]]}],["$","div",null,{"className":"tag-row article-tags","children":[["$","span","Engineering",{"className":"tag","children":"Engineering"}],["$","span","Linux",{"className":"tag","children":"Linux"}],["$","span","Documentation",{"className":"tag","children":"Documentation"}]]}]]}],["$","div",null,{"className":"article-layout shell","children":[["$","aside",null,{"className":"article-rail article-rail-left","children":[["$","p",null,{"className":"mono muted","children":["$","$L3",null,{"href":"/about","children":"Ahmed Asl"}]}],["$","p",null,{"children":"Embedded systems engineer and teaching assistant in Egypt."}],["$","a",null,{"href":"#article-end","children":["Jump to article end ",["$","span",null,{"aria-hidden":"true","children":"↓"}]]}]]}],["$","div",null,{"className":"article-body","dangerouslySetInnerHTML":{"__html":"$4"}}],"$L5"]}],"$L6","$L7"]}],["$L8"],"$L9"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"faYq9CfA1mbngGeW3qg7G"}
+5:["$","aside",null,{"className":"article-rail article-toc","children":[["$","p",null,{"className":"toc-title","children":"On this page"}],["$","ol",null,{"children":[]}]]}]
+6:["$","footer",null,{"id":"article-end","className":"article-footer shell","children":[["$","div",null,{"children":["$","h2",null,{"children":"Continue with another field note."}]}],["$","div",null,{"className":"article-pagination","children":[null,null]}]]}]
+7:["$","$La",null,{}]
+8:["$","script","script-0",{"src":"/myPortflio/_next/static/chunks/2zm_ho-9worua.js","async":true}]
+9:["$","$Lb",null,{"children":["$","$c",null,{"name":"Next.MetadataOutlet","children":"$@d"}]}]
+d:null
