@@ -395,7 +395,7 @@ test(
               ? [...root.querySelectorAll("p")].filter(visible)
               : [];
             const utilityText = root
-              ? [...root.querySelectorAll("label, small")].filter(visible)
+              ? [...root.querySelectorAll("label, small")]
               : [];
             const railRect = document.querySelector(
               'nav[aria-label="Security Mission progress"]'

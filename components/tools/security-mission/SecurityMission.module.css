@@ -137,7 +137,7 @@
 
 .heroReadout small {
   color: #7783a5;
-  font-size: 0.68rem;
+  font-size: 0.875rem;
   text-transform: uppercase;
 }
 
@@ -548,7 +548,7 @@
 
 .workflowStepRail button > small {
   color: #6f7a99;
-  font-size: 0.55rem;
+  font-size: 0.875rem;
   text-transform: uppercase;
 }
 
@@ -959,7 +959,7 @@
 
 .reviewGrid article small {
   color: #7884a4;
-  font-size: 0.61rem;
+  font-size: 0.875rem;
 }
 
 .importPanel {
@@ -1218,7 +1218,7 @@
 
 .trace > header small {
   color: #65708e;
-  font-size: 0.54rem;
+  font-size: 0.875rem;
   text-align: right;
 }
 
@@ -1397,7 +1397,7 @@ button.traceToken {
 
 .workflowSteps small {
   color: #687492;
-  font-size: 0.56rem;
+  font-size: 0.875rem;
   line-height: 1.4;
 }
 
