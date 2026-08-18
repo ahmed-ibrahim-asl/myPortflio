@@ -48,3 +48,22 @@ test("restored utility modules retain representative behavior", async () => {
   assert.equal(numbers.asciiToHex("Hi"), "48 69");
   assert.equal(numbers.hexToAscii("48 69"), "Hi");
 });
+
+test("the Tools hub retains advanced tools and exposes the calculator index", () => {
+  const hub = readFileSync(new URL("../../app/tools/page.tsx", import.meta.url), "utf8");
+  assert.match(hub, /engineeringTools/);
+  assert.match(hub, /getAllTools/);
+  assert.match(hub, /Featured Engineering Workbenches/);
+  assert.match(hub, /Electronics Calculators/);
+  assert.match(hub, /<ToolsIndex tools=\{calculators\}/);
+});
+
+test("the calculator route statically generates catalog slugs", () => {
+  const routeUrl = new URL("../../app/tools/[slug]/page.js", import.meta.url);
+  assert.equal(existsSync(routeUrl), true, "dynamic calculator route must exist");
+  const route = readFileSync(routeUrl, "utf8");
+  assert.match(route, /generateStaticParams/);
+  assert.match(route, /dynamicParams\s*=\s*false/);
+  assert.match(route, /CALCULATOR_COMPONENTS\[tool\.slug\]/);
+  assert.match(route, /if \(!Calculator\) notFound\(\)/);
+});
