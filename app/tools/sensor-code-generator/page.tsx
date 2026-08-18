@@ -10,6 +10,7 @@ import {
   EMBEDDED_FAMILIES,
   EMBEDDED_PARAM_SCHEMAS,
   EMBEDDED_TARGETS,
+  getEmbeddedFamilyStarter,
   generateEmbeddedCode
 } from "@/lib/tools/embedded-generator/catalog";
 
@@ -43,6 +44,12 @@ interface EmbeddedExample {
   title: string;
   summary: string;
   params: Readonly<Record<string, unknown>>;
+}
+
+interface EmbeddedFamilyStarter {
+  example: EmbeddedExample;
+  params: Record<string, unknown>;
+  selection: Selection;
 }
 
 const configurations = EMBEDDED_CONFIGURATIONS as readonly any[];
@@ -103,10 +110,15 @@ export default function SensorCodeGeneratorPage() {
   };
 
   const chooseFamily = (family: string) => {
-    const target = targets.find((item) => item.family === family);
-    if (!target) return;
-    setActiveExampleId(examples.find((example) => example.family === family)?.id ?? "");
-    chooseTarget(target.id, family);
+    const starter = getEmbeddedFamilyStarter(family) as EmbeddedFamilyStarter | null;
+    if (!starter) return;
+
+    setActiveExampleId(starter.example.id);
+    setParamsByTarget((current) => ({
+      ...current,
+      [starter.selection.target]: starter.params
+    }));
+    setSelection(starter.selection);
   };
 
   const chooseEnvironment = (environment: string) => {

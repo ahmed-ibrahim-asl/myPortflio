@@ -5,6 +5,7 @@ import {
   EMBEDDED_EXAMPLES,
   EMBEDDED_FAMILIES,
   EMBEDDED_TARGETS,
+  getEmbeddedFamilyStarter,
   generateEmbeddedCode
 } from '../../lib/tools/embedded-generator/catalog.js';
 
@@ -18,6 +19,19 @@ test('Embedded Generator - targets distinguish sensors, communication, and inter
   assert.strictEqual(EMBEDDED_TARGETS.find(({ id }) => id === 'espnow-sender').family, 'communication');
   assert.strictEqual(EMBEDDED_TARGETS.find(({ id }) => id === 'esp32s3-usb-cdc').family, 'interface');
   assert.ok(EMBEDDED_EXAMPLES.length >= 10);
+});
+
+test('Embedded Generator - each family starter keeps its example and generated target synchronized', () => {
+  for (const { id: family } of EMBEDDED_FAMILIES) {
+    const starter = getEmbeddedFamilyStarter(family);
+
+    assert.ok(starter, `${family} should have a starter example`);
+    assert.strictEqual(starter.example.target, starter.selection.target);
+    assert.strictEqual(starter.example.family, starter.selection.family);
+    assert.strictEqual(starter.selection.family, family);
+    assert.deepStrictEqual(starter.params, starter.example.params);
+    assert.strictEqual(generateEmbeddedCode(starter.selection, starter.params).ok, true);
+  }
 });
 
 test('Embedded Generator - expanded sensor starters produce code, wiring, and notes', () => {
