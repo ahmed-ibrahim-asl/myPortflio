@@ -7,7 +7,7 @@ import { MissionRail } from "@/components/MissionRail";
 
 export function MotionSystem() {
   useScrollProgress();
-  const { activeMission, completedMissions } = useMissionObserver();
+  const { activeMission, completedMissions, hasMissions } = useMissionObserver();
 
   // Bounded pointer parallax effect for hero elements
   useEffect(() => {
@@ -39,5 +39,7 @@ export function MotionSystem() {
     return () => window.removeEventListener("pointermove", handlePointerMove);
   }, []);
 
-  return <MissionRail activeMission={activeMission} completedMissions={completedMissions} />;
+  return hasMissions ? (
+    <MissionRail activeMission={activeMission} completedMissions={completedMissions} />
+  ) : null;
 }

@@ -5,14 +5,17 @@ import { useEffect, useState } from "react";
 export interface MissionState {
   activeMission: string;
   completedMissions: Set<string>;
+  hasMissions: boolean;
 }
 
 export function useMissionObserver(): MissionState {
   const [activeMission, setActiveMission] = useState<string>("origin");
   const [completedMissions, setCompletedMissions] = useState<Set<string>>(new Set());
+  const [hasMissions, setHasMissions] = useState<boolean>(false);
 
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-mission]"));
+    setHasMissions(sections.length > 0);
     if (sections.length === 0) return;
 
     const missionOrder = sections.map((sec) => sec.getAttribute("data-mission") || "");
@@ -77,5 +80,5 @@ export function useMissionObserver(): MissionState {
     };
   }, []);
 
-  return { activeMission, completedMissions };
+  return { activeMission, completedMissions, hasMissions };
 }
