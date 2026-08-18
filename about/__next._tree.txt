@@ -1,3 +1,4 @@
-:HL["/myPortflio/_next/static/chunks/0p7b913kf38gz.css","style"]
+:HL["/myPortflio/_next/static/chunks/1htsxngo1a2-w.css","style"]
 :HL["/myPortflio/media/optimized/profile-ahmed.webp","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":20,"slots":{"children":{"name":"about","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"U2WuXYY9wwtqmX_6JHFYU"}
+:HL["/myPortflio/images/hardware_bench_hero.jpg","image"]
+0:{"tree":{"name":"","param":null,"prefetchHints":4116,"slots":{"children":{"name":"about","param":null,"prefetchHints":4160,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}},"staleTime":300,"buildId":"oCniambV7jGo0pWxkuMWP"}
