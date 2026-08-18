@@ -22,6 +22,9 @@ test("tasks are ordered from simplest to most advanced", () => {
       "image-classification",
       "object-detection",
       "instance-segmentation",
+      "open-vocabulary-detection",
+      "monocular-depth",
+      "semantic-segmentation",
       "neural-network",
     ],
   );
@@ -54,6 +57,7 @@ test("every legacy field belongs to exactly one workflow step", () => {
   const fieldsByRecipe = {
     "yolo-detection-training": [
       "task",
+      "modelFamily",
       "modelSize",
       "environment",
       "datasetYaml",

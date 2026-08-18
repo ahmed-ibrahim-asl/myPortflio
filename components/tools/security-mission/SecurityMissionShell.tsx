@@ -138,7 +138,7 @@ export function SecurityMissionShell() {
         <header className={styles.hero}>
           <div className={styles.heroCopy}>
             <Link href="/tools/" className={styles.backLink}>
-              ← Back to tools
+              Back to tools
             </Link>
             <span className={styles.kicker}>Authorized command workbench</span>
             <h1>Security Mission</h1>

@@ -12,13 +12,13 @@ import {
 
 const YOLO_OUTPUT_HASHES = {
   "yolo-detection-training/starter":
-    "ce7c3929251ecdcb1fff3d34f8ac18af690045385cc0ee64f80db08994c05723",
+    "f98f84a28975361648322f558276cdcd9b8a45d89062209b56d7a676d16a122f",
   "yolo-detection-training/production":
-    "3f57cab004c5a5abb5f571081bc052e71453dfbcacf4e95093381715a97c1784",
+    "860d5de9ffc3cd48ae331e51995e42f7deb21e8e9ed8548070249e1823ebc208",
   "yolo-segmentation-training/starter":
-    "39d8552f7e797174404b34343ee80889bdc3799928692709be9e2f41b5e54c30",
+    "c14e28c41cebdd593fec4ae6d21afaa6c290cd3884048a8f542757d11220eade",
   "yolo-segmentation-training/production":
-    "c1b4813329aca2bd2a56ef0fc62af75bbea3f16347a8462542df87aef3bb273d",
+    "c75a5f5aa40e0d4025f861bc852bb0971cf78fe83fcdd77659d9d677c66718f1",
 };
 
 const YOLO_RECIPES = [

@@ -283,6 +283,18 @@ test(
           );
           const tasks = [...document.querySelectorAll("[data-mission-task]")]
             .map((item) => item.getAttribute("data-mission-task"));
+          const objectDetectionCard = document.querySelector(
+            '[data-mission-task="object-detection"]'
+          );
+          const taskBodyFont = parseFloat(getComputedStyle(
+            objectDetectionCard.querySelector("p")
+          ).fontSize);
+          const taskExampleFont = parseFloat(getComputedStyle(
+            objectDetectionCard.querySelector("[data-mission-task-examples]")
+          ).fontSize);
+          const arrowCtas = [...document.querySelectorAll("a, button")]
+            .filter((item) => /[←→↗]/.test(item.textContent ?? ""))
+            .map((item) => item.textContent.trim());
           document.querySelector('[data-mission-task="regression"]').click();
           await pause();
           [...document.querySelectorAll("[data-mission-workflow] button")]
@@ -292,6 +304,9 @@ test(
           await pause();
           return {
             tasks,
+            taskBodyFont,
+            taskExampleFont,
+            arrowCtas,
             selectedTask: document.querySelector(
               '[data-mission-task][aria-pressed="true"]'
             )?.getAttribute("data-mission-task"),
@@ -317,8 +332,14 @@ test(
           "image-classification",
           "object-detection",
           "instance-segmentation",
+          "open-vocabulary-detection",
+          "monocular-depth",
+          "semantic-segmentation",
           "neural-network",
         ],
+        taskBodyFont: 16,
+        taskExampleFont: 14.72,
+        arrowCtas: [],
         selectedModel: "random-forest",
         hasRegressor: true,
       });

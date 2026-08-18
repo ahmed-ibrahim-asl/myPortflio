@@ -38,7 +38,7 @@
   display: inline-block;
   margin-bottom: 28px;
   color: var(--pixel-cyan);
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -48,7 +48,7 @@
   display: block;
   margin-bottom: 8px;
   color: var(--pixel-green);
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -83,7 +83,7 @@
 .heroReadout span,
 .heroReadout small {
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: 0.94rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -122,12 +122,12 @@
 }
 
 .levelSwitch button strong {
-  font-size: 0.76rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
 }
 
 .levelSwitch button span {
-  font-size: 0.68rem;
+  font-size: 0.9rem;
 }
 
 .workflow {
@@ -165,14 +165,14 @@
   border: 0;
   border-right: 1px solid var(--line);
   cursor: pointer;
-  font-size: 0.68rem;
+  font-size: 0.9rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .workflow button span {
   color: var(--pixel-gold);
-  font-size: 0.58rem;
+  font-size: 0.92rem;
 }
 
 .workflow button[data-active="true"] {
@@ -238,7 +238,7 @@
   display: block;
   margin-bottom: 8px;
   color: var(--pixel-cyan);
-  font-size: 0.66rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -258,7 +258,7 @@
   max-width: 750px;
   margin: 0;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.94rem;
 }
 
 .taskGroups {
@@ -277,7 +277,7 @@
   justify-content: space-between;
   margin-bottom: 10px;
   color: var(--pixel-gold);
-  font-size: 0.68rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -285,7 +285,7 @@
 
 .taskGroupHeading small {
   color: var(--muted);
-  font-size: 0.58rem;
+  font-size: 0.92rem;
 }
 
 .taskGrid,
@@ -325,18 +325,18 @@
 
 .taskOrder {
   color: var(--pixel-gold);
-  font-size: 0.58rem;
+  font-size: 0.92rem;
 }
 
 .taskCard strong,
 .modelGrid strong {
-  font-size: 0.88rem;
+  font-size: 1rem;
 }
 
 .technicalTerm,
 .modelGrid span {
   color: var(--pixel-cyan);
-  font-size: 0.62rem;
+  font-size: 0.94rem;
   font-weight: 700;
 }
 
@@ -344,15 +344,50 @@
 .modelGrid p {
   margin: 2px 0 0;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
 .taskMeta {
-  margin-top: auto;
-  color: var(--muted);
-  font-size: 0.56rem;
+  margin-top: 4px;
+  color: var(--pixel-gold);
+  font-size: 0.92rem;
+  font-weight: 750;
+  text-transform: uppercase;
   line-height: 1.45;
+}
+
+.taskExamples {
+  display: grid;
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 10px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  border-top: 1px solid var(--line);
+}
+
+.taskExamples > span:first-child {
+  color: var(--pixel-green);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.exampleList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.exampleList > span {
+  padding: 4px 6px;
+  color: var(--ink);
+  background: var(--night);
+  border: 1px solid var(--line);
+  font-size: 0.92rem;
+  line-height: 1.35;
 }
 
 .fieldGrid {
@@ -375,7 +410,7 @@
 .field > span,
 .toggleField strong {
   color: var(--pixel-cyan);
-  font-size: 0.66rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -404,7 +439,7 @@
 .toggleField small,
 .root :global(.ml-generator-field-help) {
   color: var(--muted);
-  font-size: 0.64rem;
+  font-size: 0.9rem;
   line-height: 1.45;
 }
 
@@ -458,13 +493,13 @@
 .datasetNote strong,
 .lessonBox strong {
   color: var(--pixel-green);
-  font-size: 0.78rem;
+  font-size: 0.92rem;
 }
 
 .datasetNote span,
 .datasetNote a {
   color: var(--pixel-cyan);
-  font-size: 0.62rem;
+  font-size: 0.94rem;
 }
 
 .datasetNote p,
@@ -473,7 +508,7 @@
 .errorBox p {
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 1rem;
 }
 
 .lessonGrid {
@@ -502,13 +537,13 @@
 
 .summaryGrid span {
   color: var(--muted);
-  font-size: 0.6rem;
+  font-size: 0.94rem;
   text-transform: uppercase;
 }
 
 .summaryGrid strong {
   color: var(--pixel-green);
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   overflow-wrap: anywhere;
 }
 
@@ -524,7 +559,7 @@
 
 .stepActions span {
   color: var(--muted);
-  font-size: 0.64rem;
+  font-size: 0.9rem;
   text-align: center;
 }
 
@@ -540,7 +575,7 @@
   border: 1px solid var(--line);
   box-shadow: 3px 3px 0 var(--pixel-shadow);
   cursor: pointer;
-  font-size: 0.66rem;
+  font-size: 0.9rem;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -587,7 +622,7 @@
 
 .codeHeader span {
   color: var(--pixel-cyan);
-  font-size: 0.58rem;
+  font-size: 0.92rem;
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -596,8 +631,10 @@
 .codeHeader strong {
   max-width: 100%;
   color: var(--pixel-green);
-  font-size: 0.72rem;
-  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .codeActions {
@@ -624,7 +661,7 @@
   border: 1px solid var(--line);
   overflow: auto;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   line-height: 1.65;
   tab-size: 4;
   white-space: pre;
@@ -633,7 +670,7 @@
 .codeSummary {
   margin: 14px 0 0;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.9rem;
 }
 
 .installBox {
@@ -644,13 +681,13 @@
 
 .installBox span {
   color: var(--muted);
-  font-size: 0.58rem;
+  font-size: 0.92rem;
   text-transform: uppercase;
 }
 
 .installBox code {
   color: var(--pixel-cyan);
-  font-size: 0.68rem;
+  font-size: 0.9rem;
   overflow-wrap: anywhere;
 }
 
@@ -712,7 +749,7 @@
   justify-content: space-between;
   margin-bottom: 12px;
   color: var(--pixel-gold);
-  font-size: 0.62rem;
+  font-size: 0.94rem;
 }
 
 .layerControls {
@@ -726,7 +763,7 @@
   min-width: 0;
   gap: 5px;
   color: var(--muted);
-  font-size: 0.58rem;
+  font-size: 0.92rem;
 }
 
 .layerToggle input {
@@ -749,7 +786,7 @@
 
 .layerError {
   margin: 10px 0 0;
-  font-size: 0.66rem;
+  font-size: 0.9rem;
 }
 
 .addLayer {
@@ -761,7 +798,7 @@
 .layerSafety {
   margin: 0;
   color: var(--muted);
-  font-size: 0.6rem;
+  font-size: 0.94rem;
   line-height: 1.5;
 }
 
@@ -777,14 +814,14 @@
 .root :global(.ml-generator-field > label),
 .root :global(.ml-generator-field-label) {
   color: var(--pixel-cyan);
-  font-size: 0.66rem;
+  font-size: 0.9rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .root :global(.ml-generator-field-error) {
   color: #f49aab;
-  font-size: 0.64rem;
+  font-size: 0.9rem;
 }
 
 .root :global(.ml-generator-toggle) {
@@ -805,7 +842,7 @@
 
 .root :global(.ml-generator-toggle-state) {
   color: var(--muted);
-  font-size: 0.66rem;
+  font-size: 0.9rem;
 }
 
 @media (min-width: 1440px) {
@@ -968,7 +1005,7 @@
 .fieldHeading label,
 .controlMeta > span:first-child {
   color: var(--pixel-cyan);
-  font-size: 0.66rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -976,7 +1013,7 @@
 
 .fieldHeading > span:not(.recommendedBadge) {
   color: var(--muted);
-  font-size: 0.58rem;
+  font-size: 0.92rem;
   overflow-wrap: anywhere;
 }
 
@@ -984,7 +1021,7 @@
   padding: 3px 5px;
   color: var(--night);
   background: var(--pixel-gold);
-  font-size: 0.54rem;
+  font-size: 0.92rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -993,7 +1030,7 @@
 .fieldError {
   margin: 0;
   color: #f49aab;
-  font-size: 0.64rem;
+  font-size: 0.9rem;
 }
 
 .explanation,
@@ -1010,7 +1047,7 @@
   background: var(--panel-raised);
   border: 1px solid var(--line);
   cursor: pointer;
-  font-size: 0.62rem;
+  font-size: 0.94rem;
   font-weight: 800;
 }
 
@@ -1024,7 +1061,7 @@
 .recommendation {
   margin: 0;
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 

@@ -29,7 +29,6 @@ export function ProjectCard({ project, index, compact = false }: ProjectCardProp
       ) : (
         <div className="project-media project-placeholder" aria-hidden="true">
           <span>{project.tags[0]}</span>
-          <span className="project-signal">↗</span>
         </div>
       )}
 

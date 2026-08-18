@@ -12,7 +12,7 @@ export function SiteFooter() {
         </div>
         <div className="footer-contact">
           <a className="text-link large" href={`mailto:${profile.email}`}>
-            Email Ahmed <span aria-hidden="true">&rarr;</span>
+            Email Ahmed
           </a>
           <div className="footer-links">
             {profile.socials.map((item) => (
@@ -34,7 +34,7 @@ export function SiteFooter() {
       <div className="shell footer-bottom">
         <span>&copy; {new Date().getFullYear()} AHMED ASL</span>
         <span>EMBEDDED SYSTEMS &middot; IOT &middot; ROBOTICS</span>
-        <Link href="/writing">READ ENGINEERING NOTES &rarr;</Link>
+        <Link href="/writing">READ ENGINEERING NOTES</Link>
       </div>
     </footer>
   );

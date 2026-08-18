@@ -10,21 +10,21 @@ import {
   validateTemplateConfig,
 } from "../../lib/tools/ml-templates.js";
 
-const BASELINE_COMMIT = "23ef28c";
+const BASELINE_COMMIT = "2026-08-18-yolo26";
 
 const BASELINE_HASHES = Object.freeze({
   "yolo-detection-training/manifest":
-    "ee9f74c1c003caeaa8827c036b09282928678940586be661b49bc4a2ff78e95f",
+    "3f9a0f18f28bcd746961b42ef87432bced43c43d9e4761984e28a4b2c1470627",
   "yolo-detection-training/starter/contract":
-    "436f7b20489d1e573ce600d6dfdb05696fdaf1194d450d408024bc82fabbfbf0",
+    "6a0e3b0ca8c69ee13e06947ed2a5a2ae25cff0e35e3d9d9af54e0e32888a8a9d",
   "yolo-detection-training/production/contract":
-    "db3e86a83c004b030aa1d9a46ad58f46239a5780cd984eee9bde5853050844b9",
+    "be9bf27847295d52c7f6743b9611bfefb1dc218bf7d33a3d8f098e14dc73ddf1",
   "yolo-segmentation-training/manifest":
-    "3d754f05f63d151c8c369deba3d24394349ead3c82ca5cf77cc03f4197a0755c",
+    "846f995f7236358e06f067051e664729a281bd6da987d9c69bef5ba3e953b37f",
   "yolo-segmentation-training/starter/contract":
-    "237b8cdffcd89e400fdbac6b447b33070818a3ac66d76473b83aa0fb7bd0994e",
+    "6ba42a081f65d45c88a038adf8fc0a53a6c2185ccf9b057f0392966db139b774",
   "yolo-segmentation-training/production/contract":
-    "610526859d58469aa52fe89e8bd15e6ccd8efaf727bfa6c2216b2f5b27bfe8e8",
+    "2721f2901f350b246112c0f8a718f6363ee632fa293a3605aba700f89a937452",
   "sensor-timeseries-classification/manifest":
     "985008d3c0a1e7258708dc67572a723dec8e5939969517914a5b66ed8035ea39",
   "sensor-timeseries-classification/starter/contract":
@@ -38,7 +38,7 @@ const BASELINE_HASHES = Object.freeze({
   "edge-image-classification/production/contract":
     "fce1af34810a1460e628c1cc6d07c85667b9755ce956d524681b5750b82c043b",
   "scenario/detection-jetson":
-    "7ab6721692b3dedb3ff1fe1ab9ad232533568642b421104f4a05a814ea3b39b8",
+    "7d9a06cd8504ed5cb78fd5e34b70a9d18f00cd4c03176882b3b35c85ece2a24b",
   "scenario/sensor-splits":
     "4f8a537e12263c86801fbcbee93b9e7591bf9f10a6a78dda28c6e87c405e76aa",
   "scenario/sensor-columns":

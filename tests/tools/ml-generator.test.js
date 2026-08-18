@@ -45,7 +45,7 @@ test("detection model size changes generated weights", () => {
     config,
     "production",
   );
-  assert.match(code, /"model_weights": "yolov8l\.pt"/);
+  assert.match(code, /"model_weights": "yolo26l\.pt"/);
   assert.doesNotMatch(code, /-seg\.pt/);
 });
 
@@ -85,7 +85,7 @@ test("segmentation uses segmentation weights", () => {
     config,
     "production",
   );
-  assert.match(code, /"model_weights": "yolov8s-seg\.pt"/);
+  assert.match(code, /"model_weights": "yolo26s-seg\.pt"/);
 });
 
 test("YOLO templates reuse unique field definitions", () => {

@@ -25,6 +25,9 @@ test("the lightweight catalog preserves all existing recipe IDs", () => {
     [
       "yolo-detection-training",
       "yolo-segmentation-training",
+      "yoloe-open-vocabulary",
+      "yolo26-monocular-depth",
+      "unet-semantic-segmentation",
       "sensor-timeseries-classification",
       "edge-image-classification",
     ],
@@ -70,7 +73,12 @@ test("every source record exposes auditable license status", () => {
 test("catalog search is local, case-insensitive, and returns stable order", () => {
   assert.deepEqual(
     searchRecipeCatalog("YOLO").map(({ id }) => id),
-    ["yolo-detection-training", "yolo-segmentation-training"],
+    [
+      "yolo-detection-training",
+      "yolo-segmentation-training",
+      "yoloe-open-vocabulary",
+      "yolo26-monocular-depth",
+    ],
   );
   assert.equal(
     getRecipeManifest("sensor-timeseries-classification")?.frameworkId,

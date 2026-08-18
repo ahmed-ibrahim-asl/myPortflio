@@ -142,7 +142,7 @@ export function ModelMissionShell() {
         <header className={styles.hero}>
           <div>
             <Link href="/tools/" className={styles.backLink}>
-              ← Back to tools
+              Back to tools
             </Link>
             <span className={styles.kicker}>AI / ML guided builder</span>
             <h1>Model Mission</h1>

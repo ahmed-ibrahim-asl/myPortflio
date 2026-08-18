@@ -56,8 +56,17 @@ export function TaskChooser({
                       {task.technicalTerm}
                     </span>
                     <p>{task.description}</p>
-                    <span className={styles.taskMeta}>
-                      {task.modality} · {task.examples.join(" · ")}
+                    <span className={styles.taskMeta}>{task.modality}</span>
+                    <span
+                      className={styles.taskExamples}
+                      data-mission-task-examples
+                    >
+                      <span>Examples</span>
+                      <span className={styles.exampleList}>
+                        {task.examples.map((example: string) => (
+                          <span key={example}>{example}</span>
+                        ))}
+                      </span>
                     </span>
                   </button>
                 );

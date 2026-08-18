@@ -65,7 +65,7 @@ export function WorldGallery() {
                   <p>{world.description}</p>
                 </div>
                 <span className="text-link" aria-hidden="true">
-                  Browse notes <span aria-hidden="true">↗</span>
+                  Browse notes
                 </span>
               </div>
             </Link>
